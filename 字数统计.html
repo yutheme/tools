@@ -535,6 +535,7 @@
                     <div class="distribution-segment segment-space" id="spaceSegment"></div>
                     <div class="distribution-segment segment-other" id="otherSegment"></div>
                 </div>
+                
                 <div class="tooltip" id="tooltip"></div>
             </div>
             
@@ -626,7 +627,7 @@
                 segment.addEventListener('mousemove', positionTooltip);
             });
             
-            // 提示框定位函数 - 修复位置右移问题
+            // 提示框定位函数
             function positionTooltip(e) {
                 if (!tooltip.classList.contains('tooltip-visible')) return;
                 
@@ -835,15 +836,34 @@
                 
                 segment.style.width = `${percentage}%`;
                 
-                // 设置工具提示内容
-                segment.dataset.tooltip = `${segmentName}: ${value} (${percentage}%)`;
+                // 设置工具提示内容，包含种类、数量和百分比
+                segment.dataset.tooltip = `${segmentName}: ${value}个 (${percentage}%)`;
                 
-                // 仅在占比较大时显示文本
-                if (percentage > 5 && value > 0) {
-                    segment.textContent = `${percentage}%`;
+                // 调整显示文本的规则，由于没有图例，需要更清晰地展示类型
+                if (percentage > 7 && value > 0) {
+                    // 占比较大的部分显示完整类型名称和百分比
+                    segment.textContent = `${segmentName} ${percentage}%`;
+                } else if (percentage > 4 && value > 0) {
+                    // 中等占比显示缩写和百分比
+                    const shortName = getShortName(segmentName);
+                    segment.textContent = `${shortName} ${percentage}%`;
                 } else {
+                    // 占比较小的部分不直接显示文字，但悬停时仍有提示
                     segment.textContent = '';
                 }
+            }
+            
+            // 获取字符类型的短名称，用于空间有限的情况
+            function getShortName(fullName) {
+                const shortNames = {
+                    "汉字": "汉",
+                    "数字": "数",
+                    "标点符号": "标",
+                    "英文字母": "英",
+                    "空格": "空",
+                    "其他字符": "其"
+                };
+                return shortNames[fullName] || fullName;
             }
             
             // 文件上传处理
