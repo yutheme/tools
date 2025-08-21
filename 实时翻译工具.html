@@ -35,29 +35,27 @@
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-        <!-- 标题区域 -->
-        <header class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">
+    <div class="container mx-auto px-4 py-6 max-w-4xl">
+        <!-- 标题区域 - 进一步压缩高度 -->
+        <header class="text-center mb-5">
+            <h1 class="text-2xl font-bold text-gray-800 mb-1">
                 <i class="fa fa-language text-blue-500 mr-2"></i>智能翻译工具
             </h1>
-            <p class="text-gray-600">精准识别，高效翻译</p>
+            <p class="text-gray-600 text-sm">精准识别，高效翻译</p>
         </header>
         
         <!-- 翻译主体卡片 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <!-- 语言方向指示器 -->
-            <div class="bg-blue-50 px-6 py-3 border-b border-gray-100 flex justify-center">
-                <div class="flex items-center space-x-3">
-                    <span id="langFrom" class="font-medium text-gray-700">检测语言</span>
-                    <i class="fa fa-arrow-right text-blue-400"></i>
-                    <span id="langTo" class="font-medium text-gray-700">中文</span>
-                </div>
-            </div>
-            
-            <!-- 输入区域 -->
+            <!-- 输入区域 - 整合语言检测到标题右侧 -->
             <div class="p-6 border-b border-gray-100">
-                <label for="sourceText" class="block text-sm font-medium text-gray-700 mb-2">输入文本：</label>
+                <div class="flex justify-between items-center mb-2">
+                    <label for="sourceText" class="block text-sm font-medium text-gray-700">输入文本：</label>
+                    <div class="flex items-center space-x-2 text-sm">
+                        <span id="langFrom" class="font-medium text-gray-700">检测语言</span>
+                        <i class="fa fa-arrow-right text-blue-400"></i>
+                        <span id="langTo" class="font-medium text-gray-700">中文</span>
+                    </div>
+                </div>
                 <textarea 
                     id="sourceText" 
                     class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 resize-none" 
@@ -119,7 +117,7 @@
             <ul class="text-sm text-gray-600 space-y-1">
                 <li class="flex items-start">
                     <i class="fa fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
-                    <span>输入文本后，顶部会自动显示检测到的语言类型</span>
+                    <span>输入文本后，会自动显示检测到的语言类型</span>
                 </li>
                 <li class="flex items-start">
                     <i class="fa fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
@@ -484,3 +482,4 @@
     </script>
 </body>
 </html>
+    
