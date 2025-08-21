@@ -13,6 +13,7 @@
             --primary: #3B82F6;
             --primary-light: #DBEAFE;
             --primary-dark: #2563EB;
+            --primary-border: rgba(59, 130, 246, 0.5); /* 更柔和的边框颜色 */
             --secondary: #10B981;
             --accent: #8B5CF6;
             --warning: #F59E0B;
@@ -22,9 +23,10 @@
             --gray-2: #CBD5E1;
             --gray-3: #F1F5F9;
             --white: #FFFFFF;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
-            --radius: 12px;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
+            --card-shadow-hover: 0 5px 15px rgba(59, 130, 246, 0.15); /* 卡片悬浮阴影 */
+            --radius: 10px;
             --transition: all 0.3s ease;
         }
         
@@ -38,22 +40,22 @@
             font-family: 'Inter', sans-serif;
             background-color: #F8FAFC;
             color: var(--dark);
-            line-height: 1.6;
-            padding: 15px;
+            line-height: 1.5;
+            padding: 10px;
             min-height: 100vh;
         }
         
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 20px 0;
+            padding: 15px;
         }
         
         header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             position: relative;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
         }
         
         header::after {
@@ -62,17 +64,17 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
+            width: 60px;
+            height: 3px;
             background: var(--primary);
             border-radius: 2px;
         }
         
         h1 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--dark);
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             background: linear-gradient(90deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
@@ -81,7 +83,7 @@
         
         .subtitle {
             color: var(--gray-1);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 400;
         }
         
@@ -89,40 +91,43 @@
             background: var(--white);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
             transition: var(--transition);
+            position: relative; /* 新增：为进度条提供定位上下文 */
         }
         
         .card:hover {
             box-shadow: var(--shadow-hover);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
         
         .input-section {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            position: relative;
         }
         
         .input-actions {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         textarea {
             width: 100%;
-            min-height: 160px;
-            padding: 15px;
+            min-height: 120px;
+            padding: 12px;
             border: 1px solid var(--gray-2);
             border-radius: var(--radius);
             font-family: 'Inter', sans-serif;
-            font-size: 1rem;
+            font-size: 0.95rem;
             resize: vertical;
             transition: var(--transition);
             color: var(--dark);
-            line-height: 1.6;
+            line-height: 1.5;
+            margin-bottom: 5px;
         }
         
         textarea:focus {
@@ -139,13 +144,13 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 10px 18px;
+            gap: 6px;
+            padding: 8px 14px;
             background-color: var(--primary);
             color: white;
             border: none;
             border-radius: var(--radius);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
@@ -153,13 +158,13 @@
         
         .upload-btn:hover {
             background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
         }
         
         .upload-btn svg {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
         }
         
         .file-input {
@@ -167,43 +172,103 @@
         }
         
         .file-info {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--gray-1);
-            margin-top: 8px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        
+        /* 全新的进度显示样式 - 不占用额外空间 */
+        .progress-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: transparent;
+            z-index: 5;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .progress-overlay.active {
+            opacity: 1;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(59, 130, 246, 0.9);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 6;
+        }
+        
+        .progress-text.active {
+            opacity: 1;
+        }
+        
+        /* 统计卡片容器 */
+        .stats-container {
+            overflow: visible; /* 修改：允许卡片上浮时超出容器 */
             margin-bottom: 10px;
+            padding-top: 5px; /* 新增：为卡片上浮留出空间 */
         }
         
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
+            display: flex;
+            gap: 8px;
+            width: 100%;
         }
         
+        /* 统计卡片样式 - 彻底解决悬浮遮挡问题 */
         .stat-card {
             background: var(--white);
             border-radius: var(--radius);
-            padding: 15px 10px;
+            padding: 10px 8px;
+            flex: 1;
+            min-width: 0;
             text-align: center;
             border: 1px solid var(--gray-3);
             transition: var(--transition);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
+            z-index: 1;
         }
         
+        /* 优化的悬浮效果 - 确保完全显示 */
         .stat-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--primary-light);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
-            box-shadow: 0 0 0 2px var(--primary-light);
+            transform: translateY(-5px); /* 增加上浮距离 */
+            border-color: var(--primary-border);
+            box-shadow: var(--card-shadow-hover);
+            z-index: 10; /* 提高层级确保不被遮挡 */
         }
         
         .stat-value {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--primary);
-            margin-bottom: 3px;
+            margin-bottom: 2px;
             transition: color 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .stat-card:hover .stat-value {
@@ -211,36 +276,39 @@
         }
         
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--gray-1);
             font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .stat-percent {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--secondary);
-            margin-top: 3px;
+            margin-top: 2px;
         }
         
         .distribution-section {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             position: relative;
-            padding: 15px;
+            padding: 12px;
             background-color: var(--gray-3);
             border-radius: var(--radius);
         }
         
         .distribution-title {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             color: var(--dark);
         }
         
         .distribution-bar {
-            height: 30px;
+            height: 28px;
             background-color: var(--white);
-            border-radius: 15px;
+            border-radius: 14px;
             overflow: hidden;
             position: relative;
             display: flex;
@@ -253,7 +321,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 500;
             transition: width 0.5s ease;
             position: relative;
@@ -275,21 +343,21 @@
         .actions {
             display: flex;
             justify-content: center;
-            gap: 12px;
-            margin-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 5px;
         }
         
         .action-btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: var(--radius);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
             border: none;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
         
         .clear-btn {
@@ -299,7 +367,7 @@
         
         .clear-btn:hover {
             background-color: var(--gray-2);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
         
         .copy-btn {
@@ -309,42 +377,24 @@
         
         .copy-btn:hover {
             background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        
-        .status-bar {
-            height: 3px;
-            background-color: var(--primary);
-            width: 0%;
-            transition: width 0.4s ease;
-            margin-top: 10px;
-            border-radius: 2px;
-        }
-        
-        .loading-text {
-            text-align: center;
-            color: var(--primary);
-            font-size: 0.85rem;
-            margin: 8px 0;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
         }
         
         .tooltip {
             position: absolute;
             background-color: rgba(30, 41, 59, 0.95);
             color: white;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.75rem;
             pointer-events: none;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
             z-index: 100;
             white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
             transform: translateY(-5px);
         }
         
@@ -353,8 +403,8 @@
             position: absolute;
             top: 100%;
             left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
+            margin-left: -4px;
+            border-width: 4px;
             border-style: solid;
             border-color: rgba(30, 41, 59, 0.95) transparent transparent transparent;
         }
@@ -367,9 +417,9 @@
         
         .notification {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 10px 16px;
+            bottom: 15px;
+            right: 15px;
+            padding: 8px 14px;
             background-color: var(--secondary);
             color: white;
             border-radius: var(--radius);
@@ -378,7 +428,7 @@
             opacity: 0;
             transition: all 0.3s ease;
             z-index: 1000;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .notification.show {
@@ -388,44 +438,35 @@
         
         .footer {
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--gray-1);
-            padding: 15px 0;
-            margin-top: 20px;
+            padding: 10px 0;
+            margin-top: 5px;
             border-top: 1px solid var(--gray-3);
         }
         
         @media (max-width: 768px) {
-            .container {
-                padding: 15px 0;
+            .stat-card {
+                padding: 8px 5px;
             }
             
-            h1 {
-                font-size: 1.6rem;
+            .stat-value {
+                font-size: 1.1rem;
             }
             
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-            
-            .card {
-                padding: 15px;
-            }
-            
-            .action-btn {
-                padding: 8px 16px;
-                font-size: 0.85rem;
+            .stat-label {
+                font-size: 0.7rem;
             }
         }
         
         @media (max-width: 480px) {
-            body {
-                padding: 10px;
+            .stats-grid {
+                flex-wrap: wrap;
             }
             
-            .stats-grid {
-                grid-template-columns: 1fr;
+            .stat-card {
+                flex: 1 0 45%;
+                margin-bottom: 8px;
             }
             
             .actions {
@@ -456,13 +497,19 @@
         </header>
         
         <div class="card input-section">
+            <!-- 进度条和进度文本 - 新的位置和样式 -->
+            <div class="progress-overlay" id="progressOverlay">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-text" id="progressText">正在处理文件...</div>
+            
             <div class="input-actions">
                 <button class="upload-btn" id="fileTrigger">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                         <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
                     </svg>
-                    上传文件 (TXT, DOCX, PDF, PPTX)
+                    上传文件
                 </button>
                 <div class="action-group">
                     <button id="clearButton" class="action-btn clear-btn">
@@ -474,54 +521,55 @@
                     </button>
                 </div>
             </div>
-            <p class="file-info">支持常见文本格式，文件内容将显示在下方输入框中</p>
+            <p class="file-info">支持TXT、DOCX、PDF、PPTX格式</p>
             <textarea id="textInput" placeholder="请输入或粘贴需要统计的文本内容..."></textarea>
-            <div id="statusBar" class="status-bar"></div>
-            <div id="loadingText" class="loading-text">正在处理文件...</div>
+            
             <input type="file" id="fileInput" class="file-input" accept=".txt,.docx,.pdf,.pptx">
         </div>
         
         <div class="card">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="chineseCharCount">0</div>
-                    <div class="stat-label">汉字</div>
-                    <div class="stat-percent" id="chinesePercent">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="numberCount">0</div>
-                    <div class="stat-label">数字</div>
-                    <div class="stat-percent" id="numberPercent">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="punctuationCount">0</div>
-                    <div class="stat-label">标点符号</div>
-                    <div class="stat-percent" id="punctuationPercent">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="letterCount">0</div>
-                    <div class="stat-label">英文字母</div>
-                    <div class="stat-percent" id="letterPercent">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="wordCount">0</div>
-                    <div class="stat-label">英文单词</div>
-                    <div class="stat-percent" id="wordPercent">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="spaceCount">0</div>
-                    <div class="stat-label">空格</div>
-                    <div class="stat-percent" id="spacePercent">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="otherCount">0</div>
-                    <div class="stat-label">其他字符</div>
-                    <div class="stat-percent" id="otherPercent">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalCharCount">0</div>
-                    <div class="stat-label">总字符数</div>
-                    <div class="stat-percent" id="totalPercent">100%</div>
+            <div class="stats-container">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="chineseCharCount">0</div>
+                        <div class="stat-label">汉字</div>
+                        <div class="stat-percent" id="chinesePercent">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="numberCount">0</div>
+                        <div class="stat-label">数字</div>
+                        <div class="stat-percent" id="numberPercent">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="punctuationCount">0</div>
+                        <div class="stat-label">标点符号</div>
+                        <div class="stat-percent" id="punctuationPercent">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="letterCount">0</div>
+                        <div class="stat-label">英文字母</div>
+                        <div class="stat-percent" id="letterPercent">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="wordCount">0</div>
+                        <div class="stat-label">英文单词</div>
+                        <div class="stat-percent" id="wordPercent">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="spaceCount">0</div>
+                        <div class="stat-label">空格</div>
+                        <div class="stat-percent" id="spacePercent">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="otherCount">0</div>
+                        <div class="stat-label">其他字符</div>
+                        <div class="stat-percent" id="otherPercent">0%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalCharCount">0</div>
+                        <div class="stat-label">总字符数</div>
+                        <div class="stat-percent" id="totalPercent">100%</div>
+                    </div>
                 </div>
             </div>
             
@@ -563,8 +611,9 @@
             const textInput = document.getElementById('textInput');
             const fileInput = document.getElementById('fileInput');
             const fileTrigger = document.getElementById('fileTrigger');
-            const statusBar = document.getElementById('statusBar');
-            const loadingText = document.getElementById('loadingText');
+            const progressOverlay = document.getElementById('progressOverlay');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
             const tooltip = document.getElementById('tooltip');
             const clearButton = document.getElementById('clearButton');
             const copyButton = document.getElementById('copyButton');
@@ -839,7 +888,7 @@
                 // 设置工具提示内容，包含种类、数量和百分比
                 segment.dataset.tooltip = `${segmentName}: ${value}个 (${percentage}%)`;
                 
-                // 调整显示文本的规则，由于没有图例，需要更清晰地展示类型
+                // 调整显示文本的规则
                 if (percentage > 7 && value > 0) {
                     // 占比较大的部分显示完整类型名称和百分比
                     segment.textContent = `${segmentName} ${percentage}%`;
@@ -913,10 +962,11 @@
                 }, 3000);
             }
             
-            // 显示处理状态
+            // 显示处理状态 - 新的进度显示方式
             function showProcessing() {
-                loadingText.style.opacity = '1';
-                statusBar.style.width = '0%';
+                progressOverlay.classList.add('active');
+                progressText.classList.add('active');
+                progressBar.style.width = '0%';
                 
                 // 清除任何现有的进度条定时器
                 if (window.progressInterval) {
@@ -930,7 +980,7 @@
                         clearInterval(window.progressInterval);
                     } else {
                         width += 5;
-                        statusBar.style.width = `${width}%`;
+                        progressBar.style.width = `${width}%`;
                     }
                 }, 100);
             }
@@ -943,12 +993,14 @@
                     window.progressInterval = null;
                 }
                 
-                loadingText.style.opacity = '0';
-                statusBar.style.width = '100%';
+                // 完成进度条动画
+                progressBar.style.width = '100%';
                 
-                // 延迟重置进度条，让用户看到完成状态
+                // 延迟隐藏进度显示
                 setTimeout(() => {
-                    statusBar.style.width = '0%';
+                    progressOverlay.classList.remove('active');
+                    progressText.classList.remove('active');
+                    progressBar.style.width = '0%';
                 }, 500);
             }
             
@@ -1034,3 +1086,4 @@
     </script>
 </body>
 </html>
+    
