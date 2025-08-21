@@ -8,9 +8,8 @@
     <!-- 外部资源 -->
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     
-    <!-- 核心样式 - 确保内容对齐和动画效果 -->
     <style>
-        /* 基础样式重置 */
+        /* 基础样式 */
         * {
             margin: 0;
             padding: 0;
@@ -19,7 +18,7 @@
         
         body {
             min-height: 100vh;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, rgba(22, 93, 255, 0.05) 0%, rgba(54, 207, 201, 0.05) 100%);
             padding: 2rem 0;
         }
@@ -53,11 +52,13 @@
             font-size: 1.1rem;
         }
         
-        /* 网格布局 */
+        /* 网格布局 - 关键是让卡片等高 */
         .tools-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 3rem;
+            /* 确保网格项高度一致 */
+            grid-auto-rows: 1fr;
         }
         
         @media (min-width: 640px) {
@@ -72,7 +73,7 @@
             }
         }
         
-        /* 卡片样式 - 重点解决对齐问题 */
+        /* 卡片样式 - 强制统一高度结构 */
         .tool-card {
             background: white;
             border-radius: 1rem;
@@ -82,9 +83,10 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             transform: translateY(0);
             transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            /* 确保卡片高度一致 */
+            /* 固定卡片基础高度 */
             display: flex;
             flex-direction: column;
+            height: 100%;
         }
         
         .tool-card:hover {
@@ -93,7 +95,7 @@
                         0 10px 10px -5px rgba(0, 0, 0, 0.08);
         }
         
-        /* 内容容器 - 自动填充空间并将按钮推到底部 */
+        /* 内容容器 - 严格控制各部分高度 */
         .tool-card-content {
             padding: 1.5rem;
             flex: 1;
@@ -101,6 +103,7 @@
             flex-direction: column;
         }
         
+        /* 图标区域 - 固定高度 */
         .tool-icon {
             width: 3.5rem;
             height: 3.5rem;
@@ -112,26 +115,39 @@
             transition: background-color 0.3s ease;
         }
         
+        /* 标题区域 - 固定高度 */
         .tool-card h2 {
             font-size: 1.25rem;
             font-weight: bold;
             color: #1D2129;
             margin-bottom: 0.75rem;
+            height: 2rem; /* 固定标题高度 */
         }
         
-        .tool-card p {
+        /* 描述文本区域 - 固定高度并处理溢出 */
+        .tool-description {
             color: #6B7280;
             margin-bottom: 1.5rem;
             line-height: 1.6;
-            /* 控制文本高度，超出显示省略号 */
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
+            /* 关键：固定文本区域高度，确保所有卡片一致 */
+            height: 72px; /* 精确计算3行文本高度 */
             overflow: hidden;
-            flex: 1;
+            position: relative;
         }
         
-        /* 确保"立即使用"按钮在文本下方，保持位置一致 */
+        /* 确保文本不会超出固定区域 */
+        .tool-description:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 24px;
+            background: linear-gradient(to top, white, transparent);
+            pointer-events: none;
+        }
+        
+        /* 按钮容器 - 固定位置在文本下方 */
         .tool-action-container {
             margin-top: auto;
         }
@@ -148,15 +164,17 @@
             transition: transform 0.3s ease;
         }
         
-        /* 底部特点介绍 - 确保对齐 */
+        /* 底部特点区域 - 固定高度和位置 */
         .tool-card-footer {
             padding: 1rem 1.5rem;
             background-color: #F5F7FA;
             border-top: 1px solid #E5E7EB;
             font-size: 0.875rem;
             color: #6B7280;
-            /* 固定在卡片底部 */
-            margin-top: auto;
+            /* 固定底部高度 */
+            height: 48px;
+            display: flex;
+            align-items: center;
         }
         
         .tool-card-footer i {
@@ -217,7 +235,6 @@
             background-color: rgba(139, 92, 246, 0.2);
         }
         
-        /* 箭头动画增强 */
         .tool-card:hover .tool-action i {
             transform: translateX(6px);
         }
@@ -225,7 +242,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- 页面标题 -->
         <header class="page-title">
             <h1>
                 <i class="fa fa-wrench" style="color: #165DFF; margin-right: 0.75rem;"></i>实用工具集
@@ -235,7 +251,6 @@
             </p>
         </header>
         
-        <!-- 工具卡片网格 -->
         <div class="tools-grid">
             <!-- 数字大写转换工具 -->
             <div class="tool-card tool-number" onclick="window.open('数字大写转换.html', '_blank')">
@@ -245,9 +260,9 @@
                             <i class="fa fa-exchange text-2xl" style="color: #165DFF;"></i>
                         </div>
                         <h2>数字大写转换</h2>
-                        <p>
+                        <div class="tool-description">
                             快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式，支持大额数字和小数。
-                        </p>
+                        </div>
                         <div class="tool-action-container">
                             <div class="tool-action">
                                 立即使用
@@ -270,9 +285,9 @@
                             <i class="fa fa-file-text-o text-2xl" style="color: #36CFC9;"></i>
                         </div>
                         <h2>字数统计工具</h2>
-                        <p>
-                            精准统计文本中的汉字、数字、字母等字符数量，支持TXT、DOCX、PDF、PPTX文件上传分析。
-                        </p>
+                        <div class="tool-description">
+                            精准统计文本中的汉字、数字、字母等字符数量，支持多种文件格式上传分析。
+                        </div>
                         <div class="tool-action-container">
                             <div class="tool-action">
                                 立即使用
@@ -295,9 +310,9 @@
                             <i class="fa fa-language text-2xl" style="color: #8B5CF6;"></i>
                         </div>
                         <h2>智能翻译工具</h2>
-                        <p>
+                        <div class="tool-description">
                             自动识别语言类型，支持多语言互译，实时响应，操作简单，满足跨语言沟通需求。
-                        </p>
+                        </div>
                         <div class="tool-action-container">
                             <div class="tool-action">
                                 立即使用
@@ -313,25 +328,20 @@
             </div>
         </div>
         
-        <!-- 页脚 -->
         <footer>
             <p>© 2025 实用工具集 | 简洁高效的在线工具解决方案</p>
         </footer>
     </div>
     
-    <!-- 交互效果脚本 -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 页面加载动画
             const cards = document.querySelectorAll('.tool-card');
             
-            // 初始化卡片状态
             cards.forEach(card => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
             });
             
-            // 依次显示卡片
             cards.forEach((card, index) => {
                 setTimeout(() => {
                     card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
