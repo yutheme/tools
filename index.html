@@ -6,27 +6,9 @@
     <title>实用工具集</title>
     
     <!-- 外部资源 -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     
-    <!-- Tailwind配置 -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#165DFF',
-                        secondary: '#36CFC9',
-                        accent: '#8B5CF6',
-                        neutral: '#F5F7FA',
-                        dark: '#1D2129',
-                    },
-                }
-            }
-        }
-    </script>
-    
-    <!-- 核心样式 - 不依赖外部资源 -->
+    <!-- 核心样式 - 确保内容对齐和动画效果 -->
     <style>
         /* 基础样式重置 */
         * {
@@ -75,7 +57,7 @@
         .tools-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 2rem;
+            gap: 3rem;
         }
         
         @media (min-width: 640px) {
@@ -90,24 +72,33 @@
             }
         }
         
-        /* 卡片样式 */
+        /* 卡片样式 - 重点解决对齐问题 */
         .tool-card {
             background: white;
             border-radius: 1rem;
             border: 1px solid #E5E7EB;
             overflow: hidden;
-            transition: all 0.4s ease;
             cursor: pointer;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transform: translateY(0);
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            /* 确保卡片高度一致 */
+            display: flex;
+            flex-direction: column;
         }
         
         .tool-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-18px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 
+                        0 10px 10px -5px rgba(0, 0, 0, 0.08);
         }
         
+        /* 内容容器 - 自动填充空间并将按钮推到底部 */
         .tool-card-content {
             padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         
         .tool-icon {
@@ -132,6 +123,17 @@
             color: #6B7280;
             margin-bottom: 1.5rem;
             line-height: 1.6;
+            /* 控制文本高度，超出显示省略号 */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+        
+        /* 确保"立即使用"按钮在文本下方，保持位置一致 */
+        .tool-action-container {
+            margin-top: auto;
         }
         
         .tool-action {
@@ -146,12 +148,15 @@
             transition: transform 0.3s ease;
         }
         
+        /* 底部特点介绍 - 确保对齐 */
         .tool-card-footer {
             padding: 1rem 1.5rem;
             background-color: #F5F7FA;
             border-top: 1px solid #E5E7EB;
             font-size: 0.875rem;
             color: #6B7280;
+            /* 固定在卡片底部 */
+            margin-top: auto;
         }
         
         .tool-card-footer i {
@@ -212,8 +217,9 @@
             background-color: rgba(139, 92, 246, 0.2);
         }
         
+        /* 箭头动画增强 */
         .tool-card:hover .tool-action i {
-            transform: translateX(4px);
+            transform: translateX(6px);
         }
     </style>
 </head>
@@ -222,7 +228,7 @@
         <!-- 页面标题 -->
         <header class="page-title">
             <h1>
-                <i class="fa fa-wrench text-primary mr-3"></i>实用工具集
+                <i class="fa fa-wrench" style="color: #165DFF; margin-right: 0.75rem;"></i>实用工具集
             </h1>
             <p>
                 精选高效工具，满足日常办公与学习需求，简洁易用，功能强大
@@ -236,15 +242,17 @@
                 <a href="数字大写转换.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-exchange text-2xl text-primary"></i>
+                            <i class="fa fa-exchange text-2xl" style="color: #165DFF;"></i>
                         </div>
                         <h2>数字大写转换</h2>
                         <p>
                             快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式，支持大额数字和小数。
                         </p>
-                        <div class="tool-action">
-                            立即使用
-                            <i class="fa fa-arrow-right"></i>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fa fa-arrow-right"></i>
+                            </div>
                         </div>
                     </div>
                     <div class="tool-card-footer">
@@ -259,15 +267,17 @@
                 <a href="字数统计.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-file-text-o text-2xl text-secondary"></i>
+                            <i class="fa fa-file-text-o text-2xl" style="color: #36CFC9;"></i>
                         </div>
                         <h2>字数统计工具</h2>
                         <p>
                             精准统计文本中的汉字、数字、字母等字符数量，支持TXT、DOCX、PDF、PPTX文件上传分析。
                         </p>
-                        <div class="tool-action">
-                            立即使用
-                            <i class="fa fa-arrow-right"></i>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fa fa-arrow-right"></i>
+                            </div>
                         </div>
                     </div>
                     <div class="tool-card-footer">
@@ -282,15 +292,17 @@
                 <a href="实时翻译工具.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-language text-2xl text-accent"></i>
+                            <i class="fa fa-language text-2xl" style="color: #8B5CF6;"></i>
                         </div>
                         <h2>智能翻译工具</h2>
                         <p>
                             自动识别语言类型，支持多语言互译，实时响应，操作简单，满足跨语言沟通需求。
                         </p>
-                        <div class="tool-action">
-                            立即使用
-                            <i class="fa fa-arrow-right"></i>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fa fa-arrow-right"></i>
+                            </div>
                         </div>
                     </div>
                     <div class="tool-card-footer">
@@ -327,25 +339,6 @@
                     card.style.transform = 'translateY(0)';
                 }, 100 * index);
             });
-            
-            // 验证外部资源
-            const checkFontAwesome = () => {
-                const testElem = document.createElement('i');
-                testElem.className = 'fa fa-check';
-                testElem.style.position = 'absolute';
-                testElem.style.visibility = 'hidden';
-                document.body.appendChild(testElem);
-                
-                // 简单检测Font Awesome是否加载
-                const isLoaded = window.getComputedStyle(testElem).fontFamily !== 'serif';
-                document.body.removeChild(testElem);
-                
-                if (!isLoaded) {
-                    console.warn('Font Awesome未加载，图标可能无法正常显示');
-                }
-            };
-            
-            checkFontAwesome();
         });
     </script>
 </body>
