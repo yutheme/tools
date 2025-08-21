@@ -478,6 +478,7 @@
             <textarea id="textInput" placeholder="请输入或粘贴需要统计的文本内容..."></textarea>
             <div id="statusBar" class="status-bar"></div>
             <div id="loadingText" class="loading-text">正在处理文件...</div>
+            <input type="file" id="fileInput" class="file-input" accept=".txt,.docx,.pdf,.pptx">
         </div>
         
         <div class="card">
@@ -612,31 +613,8 @@
                         tooltip.textContent = tooltipText;
                         tooltip.classList.add('tooltip-visible');
                         
-                        // 计算位置，使悬浮层与比例条顶部紧贴
-                        const segmentRect = segment.getBoundingClientRect();
-                        const containerRect = document.querySelector('.distribution-bar').getBoundingClientRect();
-                        const distributionSectionRect = document.querySelector('.distribution-section').getBoundingClientRect();
-                        
-                        const segmentCenter = segmentRect.left + segmentRect.width / 2;
-                        const relativeLeft = segmentCenter - containerRect.left;
-                        
-                        // 边界检查
-                        const tooltipWidth = tooltip.offsetWidth;
-                        const containerWidth = containerRect.width;
-                        
-                        let leftPos = relativeLeft;
-                        if (leftPos + tooltipWidth/2 > containerWidth) {
-                            leftPos = containerWidth - tooltipWidth/2;
-                        }
-                        if (leftPos - tooltipWidth/2 < 0) {
-                            leftPos = tooltipWidth/2;
-                        }
-                        
-                        // 计算距离顶部的位置，使其与比例条顶部紧贴
-                        const relativeTop = containerRect.top - distributionSectionRect.top - tooltip.offsetHeight;
-                        
-                        tooltip.style.left = `${leftPos}px`;
-                        tooltip.style.top = `${relativeTop}px`;
+                        // 计算提示框位置
+                        positionTooltip(e);
                     }
                 });
                 
@@ -645,32 +623,35 @@
                 });
                 
                 // 移动时更新位置，确保提示框跟随
-                segment.addEventListener('mousemove', (e) => {
-                    if (tooltip.classList.contains('tooltip-visible')) {
-                        const containerRect = document.querySelector('.distribution-bar').getBoundingClientRect();
-                        const distributionSectionRect = document.querySelector('.distribution-section').getBoundingClientRect();
-                        const relativeX = e.clientX - containerRect.left;
-                        
-                        // 边界检查
-                        const tooltipWidth = tooltip.offsetWidth;
-                        const containerWidth = containerRect.width;
-                        
-                        let leftPos = relativeX;
-                        if (leftPos + tooltipWidth/2 > containerWidth) {
-                            leftPos = containerWidth - tooltipWidth/2;
-                        }
-                        if (leftPos - tooltipWidth/2 < 0) {
-                            leftPos = tooltipWidth/2;
-                        }
-                        
-                        // 计算距离顶部的位置，使其与比例条顶部紧贴
-                        const relativeTop = containerRect.top - distributionSectionRect.top - tooltip.offsetHeight;
-                        
-                        tooltip.style.left = `${leftPos}px`;
-                        tooltip.style.top = `${relativeTop}px`;
-                    }
-                });
+                segment.addEventListener('mousemove', positionTooltip);
             });
+            
+            // 提示框定位函数 - 修复位置右移问题
+            function positionTooltip(e) {
+                if (!tooltip.classList.contains('tooltip-visible')) return;
+                
+                const distributionSectionRect = document.querySelector('.distribution-section').getBoundingClientRect();
+                const tooltipWidth = tooltip.offsetWidth;
+                
+                // 获取鼠标在分布区域内的相对X坐标
+                const relativeX = e.clientX - distributionSectionRect.left;
+                
+                // 计算提示框左侧位置，使其水平居中于鼠标
+                let leftPos = relativeX - tooltipWidth / 2;
+                
+                // 边界检查 - 确保提示框不会超出分布区域
+                if (leftPos < 10) {
+                    leftPos = 10; // 左侧留出一点边距
+                } else if (leftPos + tooltipWidth > distributionSectionRect.width - 10) {
+                    leftPos = distributionSectionRect.width - tooltipWidth - 10; // 右侧留出一点边距
+                }
+                
+                // 计算提示框顶部位置，使其位于鼠标上方
+                const topPos = (e.clientY - distributionSectionRect.top) - tooltip.offsetHeight - 10;
+                
+                tooltip.style.left = `${leftPos}px`;
+                tooltip.style.top = `${topPos}px`;
+            }
             
             // 文件处理函数
             const fileHandlers = {
@@ -970,7 +951,7 @@
                 });
             }
             
-            // 修复的复制结果功能
+            // 复制结果功能
             function copyResults() {
                 try {
                     const stats = analyzeText(textInput.value);
@@ -1022,20 +1003,10 @@
                 }
             }
             
-            // 确保事件绑定正确执行
-            if (copyButton) {
-                // 先移除可能存在的旧事件监听器
-                copyButton.removeEventListener('click', copyResults);
-                // 添加新的事件监听器
-                copyButton.addEventListener('click', copyResults);
-                console.log('复制按钮事件已绑定');
-            } else {
-                console.error('未找到复制按钮元素');
-            }
-            
-            // 绑定其他事件处理函数
+            // 绑定事件处理函数
             fileInput.addEventListener('change', handleFileUpload);
             clearButton.addEventListener('click', clearContent);
+            copyButton.addEventListener('click', copyResults);
             
             // 初始化
             updateUI(analyzeText(''));
@@ -1043,4 +1014,3 @@
     </script>
 </body>
 </html>
-    
