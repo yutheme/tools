@@ -11,7 +11,7 @@
     
     <style>
         /* 基础样式 */
-        .translation-result { min-height: 120px; }
+        .translation-result { min-height: 120px; white-space: pre-wrap; word-break: break-word; }
         
         /* 加载动画 */
         .loader {
@@ -46,7 +46,7 @@
         
         <!-- 翻译主体卡片 -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <!-- 语言方向指示器（核心显示区域） -->
+            <!-- 语言方向指示器 -->
             <div class="bg-blue-50 px-6 py-3 border-b border-gray-100 flex justify-center">
                 <div class="flex items-center space-x-3">
                     <span id="langFrom" class="font-medium text-gray-700">检测语言</span>
@@ -61,8 +61,8 @@
                 <textarea 
                     id="sourceText" 
                     class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 resize-none" 
-                    rows="4" 
-                    placeholder="输入任意语言文本，立即显示检测结果..."
+                    rows="6" 
+                    placeholder="输入需要翻译的内容..."
                 ></textarea>
                 <div class="flex justify-between mt-3 text-sm">
                     <span id="charCount" class="text-gray-500">0 字符</span>
@@ -127,10 +127,6 @@
                     <i class="fa fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
                     <span>中文将翻译为英文，其他语言翻译为中文</span>
                 </li>
-                <li class="flex items-start">
-                    <i class="fa fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
-                    <span>如遇网络问题，请检查连接后重试</span>
-                </li>
             </ul>
         </div>
     </div>
@@ -151,7 +147,7 @@
                 'pt': '葡萄牙语', 'it': '意大利语', 'ara': '阿拉伯语',
                 'hi': '印地语', 'vie': '越南语', 'th': '泰语', 'auto': '检测语言'
             },
-            // 语言特征正则表达式 - 增强版
+            // 语言特征正则表达式
             patterns: {
                 'zh': /[\u4e00-\u9fa5\u3400-\u4dbf]/,          // 中文字符（扩展）
                 'en': /[a-zA-Z]/,                               // 英文字符
@@ -233,7 +229,7 @@
             // 移除错误高亮
             elements.sourceText.classList.remove('error-highlight');
             
-            // 更新字符计数
+            // 更新字符计数（包含换行符）
             elements.charCount.textContent = `${inputText.length} 字符`;
             
             // 实时检测语言
@@ -247,10 +243,10 @@
             }
         }
 
-        // 检测语言 - 优化算法
+        // 检测语言
         function detectLanguage(text) {
-            // 清理文本，保留语言特征字符
-            const cleanedText = text.replace(/[^a-zA-Z\u4e00-\u9fa5\u3400-\u4dbf\u3040-\u309F\u30A0-\u30FF\u3005\u3006\uAC00-\uD7AF\u1100-\u11FF\u0400-\u04FF\u0E00-\u0E7F\u0600-\u06FFàâæçéèêëîïôœùûüÿáéíóúñüÁÉÍÓÚÑÜäöüßÄÖÜ]/g, '');
+            // 清理文本，保留语言特征字符，但保留换行符用于格式
+            const cleanedText = text.replace(/[^a-zA-Z\u4e00-\u9fa5\u3400-\u4dbf\u3040-\u309F\u30A0-\u30FF\u3005\u3006\uAC00-\uD7AF\u1100-\u11FF\u0400-\u04FF\u0E00-\u0E7F\u0600-\u06FFàâæçéèêëîïôœùûüÿáéíóúñüÁÉÍÓÚÑÜäöüßÄÖÜ\n\r]/g, '');
             
             if (cleanedText.length === 0) {
                 translationState.from = 'auto';
@@ -319,7 +315,7 @@
         // 清空所有字段
         function clearAllFields() {
             elements.sourceText.value = '';
-            elements.resultText.innerHTML = `<div class="text-gray-400 text-center py-5"><i class="fa fa-info-circle mr-1"></i> 翻译结果将显示在这里</div>`;
+            elements.resultText.innerHTML = `<div class="text-gray-400 text-center py-5"><i class="fa fa-info-circle mr-1"></i> 翻译结果将显示在这里，保留原始格式</div>`;
             elements.charCount.textContent = '0 字符';
             elements.sourceText.classList.remove('error-highlight');
             elements.errorPanel.classList.add('hidden');
@@ -328,12 +324,12 @@
             showNotification('已清空输入');
         }
 
-        // 复制翻译结果
+        // 复制翻译结果（保留格式）
         function copyTranslationResult() {
             const resultText = elements.resultText.textContent.trim();
-            if (resultText && resultText !== '翻译结果将显示在这里') {
+            if (resultText && !resultText.includes('翻译结果将显示在这里')) {
                 navigator.clipboard.writeText(resultText)
-                    .then(() => showNotification('结果已复制'))
+                    .then(() => showNotification('结果已复制（保留格式）'))
                     .catch(() => showNotification('复制失败，请手动复制', false));
             }
         }
@@ -377,10 +373,10 @@
             return PROXY_SERVERS[currentProxyIndex];
         }
 
-        // 执行翻译 - 修复跨域问题
+        // 执行翻译 - 保留格式
         function performTranslation() {
-            const textToTranslate = elements.sourceText.value.trim();
-            if (!textToTranslate) {
+            const textToTranslate = elements.sourceText.value;
+            if (!textToTranslate.trim()) {
                 showNotification('请输入要翻译的文本', false);
                 elements.sourceText.classList.add('error-highlight');
                 return;
@@ -438,14 +434,17 @@
             }
         }
 
-        // 处理翻译响应
+        // 处理翻译响应 - 保留格式
         function handleTranslationResponse(data) {
             if (data.error_code) {
                 throw new Error(`翻译失败: ${data.error_msg || '未知错误'}`);
             }
             
-            // 显示翻译结果
-            elements.resultText.textContent = data.trans_result.map(item => item.dst).join('\n');
+            // 拼接翻译结果，保留原始换行结构
+            let translatedText = data.trans_result.map(item => item.dst).join('\n');
+            
+            // 显示翻译结果（保留格式）
+            elements.resultText.textContent = translatedText;
             
             // 使用API返回的精确语言更新显示
             if (data.from) {
@@ -453,7 +452,7 @@
                 updateLanguageDisplay(true);
             }
             
-            showNotification('翻译完成');
+            showNotification('翻译完成（保留原始格式）');
             elements.loader.classList.add('hidden');
             elements.translateBtn.disabled = false;
         }
@@ -487,4 +486,3 @@
     </script>
 </body>
 </html>
-    
