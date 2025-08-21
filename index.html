@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实用工具集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#8B5CF6',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .tool-card-hover {
+                @apply transform transition-all duration-300 hover:-translate-y-2 hover:shadow-lg cursor-pointer;
+            }
+            .gradient-bg {
+                @apply bg-gradient-to-br from-primary/5 to-secondary/5;
+            }
+            .card-link {
+                @apply block h-full w-full;
+            }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-12 max-w-6xl">
+        <!-- 页面标题 -->
+        <header class="text-center mb-16">
+            <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold text-dark mb-4 flex items-center justify-center">
+                <i class="fa fa-wrench text-primary mr-3"></i>实用工具集
+            </h1>
+            <p class="text-gray-600 max-w-2xl mx-auto text-lg">
+                精选高效工具，满足日常办公与学习需求，简洁易用，功能强大
+            </p>
+        </header>
+        
+        <!-- 工具卡片网格 - 适应未来增加更多工具 -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- 数字大写转换工具 -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden tool-card-hover border border-gray-100 group" onclick="window.location.href='数字大写转换.html'">
+                <a href="数字大写转换.html" class="card-link">
+                    <div class="p-6">
+                        <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
+                            <i class="fa fa-exchange text-2xl text-primary"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-dark mb-3">数字大写转换</h2>
+                        <p class="text-gray-600 mb-6">
+                            快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式，支持大额数字和小数。
+                        </p>
+                        <div class="inline-flex items-center text-primary font-medium hover:text-primary/80 transition-colors">
+                            立即使用
+                            <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 bg-neutral border-t border-gray-100 text-sm text-gray-500">
+                        <i class="fa fa-check-circle text-secondary mr-1"></i>
+                        符合财务规范格式
+                    </div>
+                </a>
+            </div>
+            
+            <!-- 字数统计工具 -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden tool-card-hover border border-gray-100 group" onclick="window.location.href='字数统计.html'">
+                <a href="字数统计.html" class="card-link">
+                    <div class="p-6">
+                        <div class="w-14 h-14 bg-secondary/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-secondary/20 transition-colors">
+                            <i class="fa fa-file-text-o text-2xl text-secondary"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-dark mb-3">字数统计工具</h2>
+                        <p class="text-gray-600 mb-6">
+                            精准统计文本中的汉字、数字、字母等字符数量，支持TXT、DOCX、PDF、PPTX文件上传分析。
+                        </p>
+                        <div class="inline-flex items-center text-secondary font-medium hover:text-secondary/80 transition-colors">
+                            立即使用
+                            <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 bg-neutral border-t border-gray-100 text-sm text-gray-500">
+                        <i class="fa fa-check-circle text-secondary mr-1"></i>
+                        支持多格式文件分析
+                    </div>
+                </a>
+            </div>
+            
+            <!-- 实时翻译工具 -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden tool-card-hover border border-gray-100 group" onclick="window.location.href='实时翻译工具.html'">
+                <a href="实时翻译工具.html" class="card-link">
+                    <div class="p-6">
+                        <div class="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-accent/20 transition-colors">
+                            <i class="fa fa-language text-2xl text-accent"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-dark mb-3">智能翻译工具</h2>
+                        <p class="text-gray-600 mb-6">
+                            自动识别语言类型，支持多语言互译，实时响应，操作简单，满足跨语言沟通需求。
+                        </p>
+                        <div class="inline-flex items-center text-accent font-medium hover:text-accent/80 transition-colors">
+                            立即使用
+                            <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 bg-neutral border-t border-gray-100 text-sm text-gray-500">
+                        <i class="fa fa-check-circle text-secondary mr-1"></i>
+                        自动语言检测
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="mt-16 text-center text-gray-500 text-sm">
+            <p>© 2025 实用工具集 | 简洁高效的在线工具解决方案</p>
+        </footer>
+    </div>
+    
+    <!-- 交互效果脚本 -->
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.tool-card-hover');
+            // 初始设置
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+            });
+            
+            // 依次显示卡片
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        });
+    </script>
+</body>
+</html>

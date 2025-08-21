@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字数统计工具</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.29.3/docxtemplater.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-light: #DBEAFE;
+            --primary-dark: #2563EB;
+            --secondary: #10B981;
+            --accent: #8B5CF6;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --dark: #1E293B;
+            --gray-1: #64748B;
+            --gray-2: #CBD5E1;
+            --gray-3: #F1F5F9;
+            --white: #FFFFFF;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 15px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            color: var(--gray-1);
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+        
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        .input-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 160px;
+            padding: 15px;
+            border: 1px solid var(--gray-2);
+            border-radius: var(--radius);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            transition: var(--transition);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        textarea::placeholder {
+            color: var(--gray-1);
+        }
+        
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .upload-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .upload-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-info {
+            font-size: 0.8rem;
+            color: var(--gray-1);
+            margin-top: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 15px 10px;
+            text-align: center;
+            border: 1px solid var(--gray-3);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-light);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 3px;
+            transition: color 0.3s ease;
+        }
+        
+        .stat-card:hover .stat-value {
+            color: var(--primary-dark);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-1);
+            font-weight: 500;
+        }
+        
+        .stat-percent {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            margin-top: 3px;
+        }
+        
+        .distribution-section {
+            margin-bottom: 20px;
+            position: relative;
+            padding: 15px;
+            background-color: var(--gray-3);
+            border-radius: var(--radius);
+        }
+        
+        .distribution-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+        
+        .distribution-bar {
+            height: 30px;
+            background-color: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .distribution-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: width 0.5s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .distribution-segment:hover {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+        
+        .segment-chinese { background-color: var(--primary); }
+        .segment-number { background-color: var(--secondary); }
+        .segment-punctuation { background-color: var(--warning); }
+        .segment-letter { background-color: var(--danger); }
+        .segment-space { background-color: var(--gray-1); }
+        .segment-other { background-color: var(--accent); }
+        
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .action-btn {
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .clear-btn {
+            background-color: var(--gray-3);
+            color: var(--dark);
+        }
+        
+        .clear-btn:hover {
+            background-color: var(--gray-2);
+            transform: translateY(-2px);
+        }
+        
+        .copy-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .copy-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .status-bar {
+            height: 3px;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+            margin-top: 10px;
+            border-radius: 2px;
+        }
+        
+        .loading-text {
+            text-align: center;
+            color: var(--primary);
+            font-size: 0.85rem;
+            margin: 8px 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background-color: rgba(30, 41, 59, 0.95);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+            z-index: 100;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+        
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(30, 41, 59, 0.95) transparent transparent transparent;
+        }
+        
+        .tooltip-visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 16px;
+            background-color: var(--secondary);
+            color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-size: 0.9rem;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--gray-1);
+            padding: 15px 0;
+            margin-top: 20px;
+            border-top: 1px solid var(--gray-3);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px 0;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .action-btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .input-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .upload-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>字数统计工具</h1>
+            <p class="subtitle">快速统计文本中的汉字、数字、字母等各类字符数量</p>
+        </header>
+        
+        <div class="card input-section">
+            <div class="input-actions">
+                <button class="upload-btn" id="fileTrigger">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                    </svg>
+                    上传文件 (TXT, DOCX, PDF, PPTX)
+                </button>
+                <div class="action-group">
+                    <button id="clearButton" class="action-btn clear-btn">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                        </svg>
+                        清空
+                    </button>
+                </div>
+            </div>
+            <p class="file-info">支持常见文本格式，文件内容将显示在下方输入框中</p>
+            <textarea id="textInput" placeholder="请输入或粘贴需要统计的文本内容..."></textarea>
+            <div id="statusBar" class="status-bar"></div>
+            <div id="loadingText" class="loading-text">正在处理文件...</div>
+        </div>
+        
+        <div class="card">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="chineseCharCount">0</div>
+                    <div class="stat-label">汉字</div>
+                    <div class="stat-percent" id="chinesePercent">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="numberCount">0</div>
+                    <div class="stat-label">数字</div>
+                    <div class="stat-percent" id="numberPercent">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="punctuationCount">0</div>
+                    <div class="stat-label">标点符号</div>
+                    <div class="stat-percent" id="punctuationPercent">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="letterCount">0</div>
+                    <div class="stat-label">英文字母</div>
+                    <div class="stat-percent" id="letterPercent">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="wordCount">0</div>
+                    <div class="stat-label">英文单词</div>
+                    <div class="stat-percent" id="wordPercent">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="spaceCount">0</div>
+                    <div class="stat-label">空格</div>
+                    <div class="stat-percent" id="spacePercent">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="otherCount">0</div>
+                    <div class="stat-label">其他字符</div>
+                    <div class="stat-percent" id="otherPercent">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCharCount">0</div>
+                    <div class="stat-label">总字符数</div>
+                    <div class="stat-percent" id="totalPercent">100%</div>
+                </div>
+            </div>
+            
+            <div class="distribution-section">
+                <div class="distribution-title">字符分布比例</div>
+                <div class="distribution-bar" id="summaryBar">
+                    <div class="distribution-segment segment-chinese" id="chineseSegment"></div>
+                    <div class="distribution-segment segment-number" id="numberSegment"></div>
+                    <div class="distribution-segment segment-punctuation" id="punctuationSegment"></div>
+                    <div class="distribution-segment segment-letter" id="letterSegment"></div>
+                    <div class="distribution-segment segment-space" id="spaceSegment"></div>
+                    <div class="distribution-segment segment-other" id="otherSegment"></div>
+                </div>
+                <div class="tooltip" id="tooltip"></div>
+            </div>
+            
+            <div class="actions">
+                <button id="copyButton" class="action-btn copy-btn">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                        <path d="M8 2.5a.5.5 0 0 0-1 0V4h-2a.5.5 0 0 0 0 1h2v10a.5.5 0 0 0 1 0V5h2a.5.5 0 0 0 0-1h-2V2.5z"/>
+                    </svg>
+                    复制统计结果
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            © 2025 字数统计工具 | 简洁高效的文本分析助手
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // 等待DOM加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            const textInput = document.getElementById('textInput');
+            const fileInput = document.getElementById('fileInput');
+            const fileTrigger = document.getElementById('fileTrigger');
+            const statusBar = document.getElementById('statusBar');
+            const loadingText = document.getElementById('loadingText');
+            const tooltip = document.getElementById('tooltip');
+            const clearButton = document.getElementById('clearButton');
+            const copyButton = document.getElementById('copyButton');
+            const notification = document.getElementById('notification');
+            
+            // 字符分布段元素
+            const segmentElements = {
+                chinese: document.getElementById('chineseSegment'),
+                numbers: document.getElementById('numberSegment'),
+                punctuation: document.getElementById('punctuationSegment'),
+                letters: document.getElementById('letterSegment'),
+                spaces: document.getElementById('spaceSegment'),
+                other: document.getElementById('otherSegment')
+            };
+            
+            // 段名映射
+            const segmentNames = {
+                chinese: "汉字",
+                numbers: "数字",
+                punctuation: "标点符号",
+                letters: "英文字母",
+                spaces: "空格",
+                other: "其他字符"
+            };
+            
+            // 配置PDF.js worker
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 
+                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';
+            
+            // 文件选择触发器
+            fileTrigger.addEventListener('click', () => fileInput.click());
+            
+            // 文本输入事件监听
+            textInput.addEventListener('input', debounce(() => {
+                const stats = analyzeText(textInput.value);
+                updateUI(stats);
+            }, 300));
+            
+            // 添加鼠标事件处理进度条悬停
+            Object.keys(segmentElements).forEach(key => {
+                const segment = segmentElements[key];
+                
+                segment.addEventListener('mouseover', (e) => {
+                    const tooltipText = segment.dataset.tooltip;
+                    
+                    if (tooltipText) {
+                        tooltip.textContent = tooltipText;
+                        tooltip.classList.add('tooltip-visible');
+                        
+                        // 计算位置，使悬浮层与比例条顶部紧贴
+                        const segmentRect = segment.getBoundingClientRect();
+                        const containerRect = document.querySelector('.distribution-bar').getBoundingClientRect();
+                        const distributionSectionRect = document.querySelector('.distribution-section').getBoundingClientRect();
+                        
+                        const segmentCenter = segmentRect.left + segmentRect.width / 2;
+                        const relativeLeft = segmentCenter - containerRect.left;
+                        
+                        // 边界检查
+                        const tooltipWidth = tooltip.offsetWidth;
+                        const containerWidth = containerRect.width;
+                        
+                        let leftPos = relativeLeft;
+                        if (leftPos + tooltipWidth/2 > containerWidth) {
+                            leftPos = containerWidth - tooltipWidth/2;
+                        }
+                        if (leftPos - tooltipWidth/2 < 0) {
+                            leftPos = tooltipWidth/2;
+                        }
+                        
+                        // 计算距离顶部的位置，使其与比例条顶部紧贴
+                        const relativeTop = containerRect.top - distributionSectionRect.top - tooltip.offsetHeight;
+                        
+                        tooltip.style.left = `${leftPos}px`;
+                        tooltip.style.top = `${relativeTop}px`;
+                    }
+                });
+                
+                segment.addEventListener('mouseout', () => {
+                    tooltip.classList.remove('tooltip-visible');
+                });
+                
+                // 移动时更新位置，确保提示框跟随
+                segment.addEventListener('mousemove', (e) => {
+                    if (tooltip.classList.contains('tooltip-visible')) {
+                        const containerRect = document.querySelector('.distribution-bar').getBoundingClientRect();
+                        const distributionSectionRect = document.querySelector('.distribution-section').getBoundingClientRect();
+                        const relativeX = e.clientX - containerRect.left;
+                        
+                        // 边界检查
+                        const tooltipWidth = tooltip.offsetWidth;
+                        const containerWidth = containerRect.width;
+                        
+                        let leftPos = relativeX;
+                        if (leftPos + tooltipWidth/2 > containerWidth) {
+                            leftPos = containerWidth - tooltipWidth/2;
+                        }
+                        if (leftPos - tooltipWidth/2 < 0) {
+                            leftPos = tooltipWidth/2;
+                        }
+                        
+                        // 计算距离顶部的位置，使其与比例条顶部紧贴
+                        const relativeTop = containerRect.top - distributionSectionRect.top - tooltip.offsetHeight;
+                        
+                        tooltip.style.left = `${leftPos}px`;
+                        tooltip.style.top = `${relativeTop}px`;
+                    }
+                });
+            });
+            
+            // 文件处理函数
+            const fileHandlers = {
+                async txt(file) {
+                    showProcessing();
+                    const reader = new FileReader();
+                    return new Promise(resolve => {
+                        reader.onload = e => {
+                            hideProcessing();
+                            resolve(e.target.result);
+                        };
+                        reader.readAsText(file, 'utf-8');
+                    });
+                },
+                
+                async docx(file) {
+                    showProcessing();
+                    const reader = new FileReader();
+                    return new Promise(resolve => {
+                        reader.onload = async e => {
+                            try {
+                                const content = new Uint8Array(e.target.result);
+                                const zip = new JSZip();
+                                const zipContent = await zip.loadAsync(content);
+                                
+                                if (zipContent.files['word/document.xml']) {
+                                    const xml = await zipContent.file('word/document.xml').async('string');
+                                    resolve(xml.replace(/<[^>]+>/g, ''));
+                                } else {
+                                    resolve('');
+                                }
+                            } catch (error) {
+                                console.error("DOCX处理错误:", error);
+                                showNotification("DOCX文件处理失败", "error");
+                                resolve('');
+                            } finally {
+                                hideProcessing();
+                            }
+                        };
+                        reader.readAsArrayBuffer(file);
+                    });
+                },
+                
+                async pdf(file) {
+                    showProcessing();
+                    try {
+                        const arrayBuffer = await file.arrayBuffer();
+                        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                        
+                        let textContent = '';
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const text = await page.getTextContent();
+                            textContent += text.items.map(item => item.str).join(' ');
+                        }
+                        
+                        return textContent;
+                    } catch (error) {
+                        console.error("PDF处理错误:", error);
+                        showNotification("PDF文件处理失败", "error");
+                        return '';
+                    } finally {
+                        hideProcessing();
+                    }
+                },
+                
+                async pptx(file) {
+                    showProcessing();
+                    const reader = new FileReader();
+                    return new Promise(resolve => {
+                        reader.onload = async e => {
+                            try {
+                                const arrayBuffer = e.target.result;
+                                const zip = new JSZip();
+                                await zip.loadAsync(arrayBuffer);
+                                
+                                let text = '';
+                                const slideFiles = Object.keys(zip.files).filter(name => 
+                                    name.startsWith('ppt/slides/') && name.endsWith('.xml')
+                                );
+                                
+                                for (const slideFile of slideFiles) {
+                                    const content = await zip.file(slideFile).async('string');
+                                    text += content.replace(/<[^>]+>/g, '');
+                                }
+                                
+                                resolve(text);
+                            } catch (error) {
+                                console.error("PPTX处理错误:", error);
+                                showNotification("PPTX文件处理失败", "error");
+                                resolve('');
+                            } finally {
+                                hideProcessing();
+                            }
+                        };
+                        reader.readAsArrayBuffer(file);
+                    });
+                }
+            };
+            
+            // 核心统计函数
+            function analyzeText(content) {
+                const chinese = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
+                const numbers = (content.match(/[0-9]/g) || []).length;
+                const punctuation = (content.match(/[，。！？；："'‘’（）、【】《》！？—…,\.!?;:"'\(\)\{\}\[\]~\-]/g) || []).length;
+                
+                // 统计英文字母
+                const letters = (content.match(/[A-Za-z]/g) || []).length;
+                
+                // 统计英文单词
+                const words = (content.match(/\b[a-zA-Z]+\b/g) || []).length;
+                
+                const spaces = (content.match(/\s/g) || []).length;
+                const total = content.length;
+                
+                // 计算其他字符
+                const other = total - (chinese + numbers + punctuation + letters + spaces);
+                
+                return {
+                    chinese,
+                    numbers,
+                    punctuation,
+                    letters,
+                    words,
+                    spaces,
+                    other,
+                    total
+                };
+            }
+            
+            // 防抖动函数
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+            
+            // UI更新函数
+            function updateUI(stats) {
+                const total = stats.total > 0 ? stats.total : 1;
+                
+                // 更新数值
+                document.getElementById('chineseCharCount').textContent = stats.chinese;
+                document.getElementById('numberCount').textContent = stats.numbers;
+                document.getElementById('punctuationCount').textContent = stats.punctuation;
+                document.getElementById('letterCount').textContent = stats.letters;
+                document.getElementById('wordCount').textContent = stats.words;
+                document.getElementById('spaceCount').textContent = stats.spaces;
+                document.getElementById('otherCount').textContent = stats.other;
+                document.getElementById('totalCharCount').textContent = stats.total;
+                
+                // 更新百分比
+                document.getElementById('chinesePercent').textContent = `${Math.round((stats.chinese / total) * 100)}%`;
+                document.getElementById('numberPercent').textContent = `${Math.round((stats.numbers / total) * 100)}%`;
+                document.getElementById('punctuationPercent').textContent = `${Math.round((stats.punctuation / total) * 100)}%`;
+                document.getElementById('letterPercent').textContent = `${Math.round((stats.letters / total) * 100)}%`;
+                document.getElementById('wordPercent').textContent = `${Math.round((stats.words / total) * 100)}%`;
+                document.getElementById('spacePercent').textContent = `${Math.round((stats.spaces / total) * 100)}%`;
+                document.getElementById('otherPercent').textContent = `${Math.round((stats.other / total) * 100)}%`;
+                document.getElementById('totalPercent').textContent = "100%";
+                
+                // 更新进度条
+                updateSegment('chinese', stats.chinese, total);
+                updateSegment('numbers', stats.numbers, total);
+                updateSegment('punctuation', stats.punctuation, total);
+                updateSegment('letters', stats.letters, total);
+                updateSegment('spaces', stats.spaces, total);
+                updateSegment('other', stats.other, total);
+            }
+            
+            function updateSegment(type, value, total) {
+                const percentage = Math.round((value / total) * 100);
+                const segment = segmentElements[type];
+                const segmentName = segmentNames[type];
+                
+                segment.style.width = `${percentage}%`;
+                
+                // 设置工具提示内容
+                segment.dataset.tooltip = `${segmentName}: ${value} (${percentage}%)`;
+                
+                // 仅在占比较大时显示文本
+                if (percentage > 5 && value > 0) {
+                    segment.textContent = `${percentage}%`;
+                } else {
+                    segment.textContent = '';
+                }
+            }
+            
+            // 文件上传处理
+            async function handleFileUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const extension = file.name.split('.').pop().toLowerCase();
+                try {
+                    let content = '';
+                    
+                    if (fileHandlers[extension]) {
+                        content = await fileHandlers[extension](file);
+                    } else {
+                        showNotification('不支持的文件格式', 'error');
+                        return;
+                    }
+                    
+                    textInput.value = content;
+                    const stats = analyzeText(content);
+                    updateUI(stats);
+                    showNotification(`已成功加载 ${file.name}`, 'success');
+                } catch (error) {
+                    console.error('文件处理错误:', error);
+                    showNotification('文件处理失败: ' + error.message, 'error');
+                } finally {
+                    // 重置文件输入，允许重复上传同一文件
+                    fileInput.value = '';
+                }
+            }
+            
+            // 显示通知
+            function showNotification(message, type = 'success') {
+                notification.textContent = message;
+                notification.className = 'notification';
+                
+                if (type === 'error') {
+                    notification.style.backgroundColor = 'var(--danger)';
+                } else {
+                    notification.style.backgroundColor = 'var(--secondary)';
+                }
+                
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // 显示处理状态
+            function showProcessing() {
+                loadingText.style.opacity = '1';
+                statusBar.style.width = '0%';
+                
+                // 清除任何现有的进度条定时器
+                if (window.progressInterval) {
+                    clearInterval(window.progressInterval);
+                }
+                
+                // 模拟进度
+                let width = 0;
+                window.progressInterval = setInterval(() => {
+                    if (width >= 80) {
+                        clearInterval(window.progressInterval);
+                    } else {
+                        width += 5;
+                        statusBar.style.width = `${width}%`;
+                    }
+                }, 100);
+            }
+            
+            // 隐藏处理状态
+            function hideProcessing() {
+                // 清除进度条定时器
+                if (window.progressInterval) {
+                    clearInterval(window.progressInterval);
+                    window.progressInterval = null;
+                }
+                
+                loadingText.style.opacity = '0';
+                statusBar.style.width = '100%';
+                
+                // 延迟重置进度条，让用户看到完成状态
+                setTimeout(() => {
+                    statusBar.style.width = '0%';
+                }, 500);
+            }
+            
+            // 清空按钮功能
+            function clearContent() {
+                textInput.value = '';
+                const stats = analyzeText('');
+                updateUI(stats);
+                showNotification('内容已清空');
+                
+                // 添加动画效果
+                const cards = document.querySelectorAll('.stat-card');
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            card.style.transform = 'translateY(0)';
+                        }, 150);
+                    }, index * 50);
+                });
+            }
+            
+            // 修复的复制结果功能
+            function copyResults() {
+                try {
+                    const stats = analyzeText(textInput.value);
+                    const total = stats.total;
+                    
+                    // 检查是否有可复制的内容
+                    if (total === 0) {
+                        showNotification('没有可复制的统计结果，请先输入文本', 'error');
+                        return;
+                    }
+                    
+                    let resultText = "字数统计结果:\n";
+                    resultText += `总字符数: ${stats.total}\n`;
+                    resultText += `汉字: ${stats.chinese} (${Math.round((stats.chinese / total) * 100)}%)\n`;
+                    resultText += `数字: ${stats.numbers} (${Math.round((stats.numbers / total) * 100)}%)\n`;
+                    resultText += `标点符号: ${stats.punctuation} (${Math.round((stats.punctuation / total) * 100)}%)\n`;
+                    resultText += `英文字母: ${stats.letters} (${Math.round((stats.letters / total) * 100)}%)\n`;
+                    resultText += `英文单词: ${stats.words} (${Math.round((stats.words / total) * 100)}%)\n`;
+                    resultText += `空格: ${stats.spaces} (${Math.round((stats.spaces / total) * 100)}%)\n`;
+                    resultText += `其他字符: ${stats.other} (${Math.round((stats.other / total) * 100)}%)\n`;
+                    
+                    // 创建临时文本区域用于复制（兼容旧浏览器）
+                    const textArea = document.createElement('textarea');
+                    textArea.value = resultText;
+                    textArea.style.position = 'fixed';
+                    textArea.style.opacity = '0';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    // 显示复制成功反馈
+                    const originalText = copyButton.innerHTML;
+                    copyButton.innerHTML = `
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .01-.012Z"/>
+                        </svg>
+                        复制成功
+                    `;
+                    
+                    setTimeout(() => {
+                        copyButton.innerHTML = originalText;
+                    }, 2000);
+                    
+                    showNotification('统计结果已复制到剪贴板');
+                } catch (err) {
+                    console.error('复制失败: ', err);
+                    showNotification('复制失败，请手动复制', 'error');
+                }
+            }
+            
+            // 确保事件绑定正确执行
+            if (copyButton) {
+                // 先移除可能存在的旧事件监听器
+                copyButton.removeEventListener('click', copyResults);
+                // 添加新的事件监听器
+                copyButton.addEventListener('click', copyResults);
+                console.log('复制按钮事件已绑定');
+            } else {
+                console.error('未找到复制按钮元素');
+            }
+            
+            // 绑定其他事件处理函数
+            fileInput.addEventListener('change', handleFileUpload);
+            clearButton.addEventListener('click', clearContent);
+            
+            // 初始化
+            updateUI(analyzeText(''));
+        });
+    </script>
+</body>
+</html>
+    

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字大写转换工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .transition-all-300 {
+                transition: all 300ms ease-in-out;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-neutral to-white min-h-screen flex items-center justify-center p-4 font-sans">
+    <div class="bg-white rounded-2xl shadow-lg w-full max-w-2xl overflow-hidden transition-all-300">
+        <div class="bg-primary text-white p-6">
+            <h1 class="text-xl font-bold flex items-center">
+                <i class="fa fa-exchange mr-3"></i>数字大写转换工具
+            </h1>
+            <p class="text-white/80 text-sm mt-1">支持阿拉伯数字和中文数字转换为大写金额</p>
+        </div>
+        
+        <div class="p-6 space-y-5">
+            <div class="space-y-2">
+                <label for="numberInput" class="block text-dark/80 text-sm font-medium flex items-center">
+                    <i class="fa fa-keyboard-o mr-2 text-primary w-4 text-center"></i>输入数字：
+                </label>
+                <input 
+                    type="text" 
+                    id="numberInput" 
+                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all-300 text-base"
+                    placeholder="例如：1234.56 或 一千二百三十四 或 一二三"
+                >
+                <p class="text-xs text-gray-500">支持阿拉伯数字、中文数字（一二三）、小数和大额数字</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label for="resultOutput" class="block text-dark/80 text-sm font-medium flex items-center">
+                    <i class="fa fa-font mr-2 text-primary w-4 text-center"></i>大写结果：
+                </label>
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="resultOutput" 
+                        readonly
+                        class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 pr-10 transition-all-300 text-base"
+                    >
+                    <button 
+                        id="copyBtn" 
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary transition-all-300"
+                        title="复制结果"
+                    >
+                        <i class="fa fa-copy"></i>
+                    </button>
+                </div>
+                <div id="copyAlert" class="hidden text-xs text-green-500">
+                    <i class="fa fa-check-circle"></i> 已复制到剪贴板
+                </div>
+            </div>
+            
+            <div id="errorBox" class="hidden p-3 bg-red-50 border border-red-100 rounded-lg text-red-500 text-sm transition-all-300">
+                <i class="fa fa-exclamation-circle mr-1"></i>
+                <span id="errorMsg"></span>
+            </div>
+        </div>
+        
+        <div class="bg-neutral px-6 py-3 text-center text-gray-500 text-xs">
+            <p>© 2025 数字大写转换工具 | 支持多种数字格式转换，符合财务规范</p>
+        </div>
+    </div>
+
+    <script>
+        // 确保DOM加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 数字大写转换核心功能
+            const NumberConverter = {
+                // 数字到大写的映射
+                digits: ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'],
+                // 位单位
+                units: ['', '拾', '佰', '仟'],
+                // 节单位（每四位一节）
+                sectionUnits: ['', '万', '亿', '兆', '京', '垓', '秭', '穰', '沟', '涧', '正', '载'],
+                // 中文数字到阿拉伯数字的映射
+                chineseToArabic: {
+                    '零': 0, '一': 1, '二': 2, '三': 3, '四': 4,
+                    '五': 5, '六': 6, '七': 7, '八': 8, '九': 9,
+                    '十': 10, '百': 100, '千': 1000, '万': 10000,
+                    '亿': 100000000, '兆': 1000000000000
+                },
+                
+                /**
+                 * 主转换函数
+                 */
+                convert: function(input) {
+                    if (!input || input.trim() === '') {
+                        throw new Error('请输入有效的数字');
+                    }
+                    
+                    let numStr = input.trim();
+                    let isChineseNumber = false;
+                    
+                    // 检查是否包含中文数字
+                    if (/[\u4e00-\u9fa5]/.test(numStr)) {
+                        isChineseNumber = true;
+                        // 转换中文数字为阿拉伯数字字符串
+                        numStr = this.convertChineseToArabic(numStr).toString();
+                    } else {
+                        // 处理带逗号的阿拉伯数字
+                        numStr = numStr.replace(/,/g, '');
+                    }
+                    
+                    // 验证数字格式
+                    if (!/^-?\d+(\.\d{1,2})?$/.test(numStr)) {
+                        throw new Error('请输入有效的数字（整数、最多两位小数）');
+                    }
+                    
+                    // 处理负数
+                    let isNegative = false;
+                    if (numStr.startsWith('-')) {
+                        isNegative = true;
+                        numStr = numStr.slice(1);
+                    }
+                    
+                    // 分割整数和小数部分
+                    const parts = numStr.split('.');
+                    const integerPart = parts[0];
+                    const decimalPart = parts[1] || '';
+                    
+                    // 处理整数部分为0的特殊情况
+                    if (integerPart === '0' && decimalPart === '') {
+                        return '零元整';
+                    }
+                    
+                    // 转换整数部分
+                    let integerResult = this.convertInteger(integerPart);
+                    
+                    // 转换小数部分
+                    let decimalResult = this.convertDecimal(decimalPart);
+                    
+                    // 组合结果
+                    let result = integerResult + decimalResult;
+                    
+                    // 添加负号
+                    if (isNegative) {
+                        result = '负' + result;
+                    }
+                    
+                    return result;
+                },
+                
+                /**
+                 * 中文数字转阿拉伯数字
+                 */
+                convertChineseToArabic: function(chinese) {
+                    // 预处理常见表达方式
+                    chinese = chinese.replace(/两/g, '二')
+                                     .replace(/廿/g, '二十')
+                                     .replace(/卅/g, '三十')
+                                     .replace(/佰/g, '百')
+                                     .replace(/仟/g, '千')
+                                     .replace(/元/g, '')
+                                     .replace(/角/g, '.')
+                                     .replace(/分/g, '');
+                    
+                    // 分离整数和小数部分
+                    let integerPart = chinese;
+                    let decimalPart = '';
+                    const dotIndex = chinese.indexOf('.');
+                    if (dotIndex !== -1) {
+                        integerPart = chinese.substring(0, dotIndex);
+                        decimalPart = chinese.substring(dotIndex + 1);
+                    }
+                    
+                    // 解析整数部分
+                    let result = this.parseIntegerPart(integerPart);
+                    
+                    // 解析小数部分
+                    if (decimalPart) {
+                        result += this.parseDecimalPart(decimalPart);
+                    }
+                    
+                    return Math.round(result * 100) / 100;
+                },
+                
+                /**
+                 * 解析整数部分
+                 */
+                parseIntegerPart: function(integerStr) {
+                    if (!integerStr) return 0;
+                    
+                    let total = 0;          // 总结果
+                    let currentGroup = 0;   // 当前组的值（用于处理万、亿等大单位）
+                    let currentNumber = 0;  // 当前数字
+                    
+                    // 特殊处理以"十"开头的情况
+                    if (integerStr.startsWith('十')) {
+                        currentNumber = 10;
+                        integerStr = integerStr.substring(1);
+                    }
+                    
+                    for (let i = 0; i < integerStr.length; i++) {
+                        const char = integerStr[i];
+                        const value = this.chineseToArabic[char];
+                        
+                        if (value === undefined) {
+                            throw new Error('包含无效的中文数字字符: ' + char);
+                        }
+                        
+                        // 处理数字（0-9）
+                        if (value < 10) {
+                            currentNumber = currentNumber * 10 + value;
+                        }
+                        // 处理小单位（十、百、千）
+                        else if (value < 10000) {
+                            if (currentNumber === 0) {
+                                // 如"十"、"百"，前面没有数字时默认为1
+                                currentGroup += value;
+                            } else {
+                                // 如"二十"、"三百"
+                                currentGroup += currentNumber * value;
+                                currentNumber = 0;
+                            }
+                        }
+                        // 处理大单位（万、亿、兆）
+                        else {
+                            total += (currentGroup + currentNumber) * value;
+                            currentGroup = 0;
+                            currentNumber = 0;
+                        }
+                    }
+                    
+                    // 加上最后剩余的值
+                    total += currentGroup + currentNumber;
+                    return total;
+                },
+                
+                /**
+                 * 解析小数部分
+                 */
+                parseDecimalPart: function(decimalStr) {
+                    let result = 0;
+                    // 处理角（十分位）
+                    if (decimalStr.length >= 1) {
+                        const jiao = this.chineseToArabic[decimalStr[0]] || 0;
+                        result += jiao * 0.1;
+                    }
+                    // 处理分（百分位）
+                    if (decimalStr.length >= 2) {
+                        const fen = this.chineseToArabic[decimalStr[1]] || 0;
+                        result += fen * 0.01;
+                    }
+                    return result;
+                },
+                
+                /**
+                 * 转换整数部分为大写
+                 */
+                convertInteger: function(integerPart) {
+                    if (integerPart === '0') {
+                        return '';
+                    }
+                    
+                    let result = '';
+                    let sectionCount = 0;
+                    let intPart = integerPart;
+                    
+                    // 按每4位分割处理
+                    while (intPart.length > 0) {
+                        const section = intPart.slice(-4);
+                        intPart = intPart.slice(0, -4);
+                        
+                        let sectionResult = this.convertSection(section);
+                        
+                        if (sectionResult && sectionCount < this.sectionUnits.length) {
+                            sectionResult += this.sectionUnits[sectionCount];
+                        }
+                        
+                        result = sectionResult + result;
+                        sectionCount++;
+                    }
+                    
+                    result = result.replace(/零+/g, '零').replace(/零$/, '');
+                    return (result || '零') + '元';
+                },
+                
+                /**
+                 * 转换四位数字的小节
+                 */
+                convertSection: function(section) {
+                    let sectionResult = '';
+                    let hasNonZero = false;
+                    
+                    for (let i = 0; i < section.length; i++) {
+                        const digit = parseInt(section[i], 10);
+                        const position = section.length - 1 - i;
+                        
+                        if (digit !== 0) {
+                            if (sectionResult.indexOf('零') === sectionResult.length - 1) {
+                                sectionResult = sectionResult.slice(0, -1);
+                            }
+                            sectionResult += this.digits[digit] + this.units[position];
+                            hasNonZero = true;
+                        } else if (hasNonZero) {
+                            sectionResult += '零';
+                        }
+                    }
+                    
+                    if (sectionResult.startsWith('壹拾')) {
+                        sectionResult = sectionResult.replace('壹拾', '拾');
+                    }
+                    
+                    return sectionResult;
+                },
+                
+                /**
+                 * 转换小数部分
+                 */
+                convertDecimal: function(decimalPart) {
+                    if (!decimalPart) {
+                        return '整';
+                    }
+                    
+                    const jiao = decimalPart.length >= 1 ? parseInt(decimalPart[0], 10) : 0;
+                    const fen = decimalPart.length >= 2 ? parseInt(decimalPart[1], 10) : 0;
+                    
+                    let result = '';
+                    if (jiao > 0) {
+                        result += this.digits[jiao] + '角';
+                    }
+                    if (fen > 0) {
+                        result += this.digits[fen] + '分';
+                    }
+                    
+                    if (jiao === 0 && fen === 0) {
+                        result = '整';
+                    }
+                    
+                    return result;
+                }
+            };
+            
+            // DOM元素
+            const numberInput = document.getElementById('numberInput');
+            const resultOutput = document.getElementById('resultOutput');
+            const copyBtn = document.getElementById('copyBtn');
+            const copyAlert = document.getElementById('copyAlert');
+            const errorBox = document.getElementById('errorBox');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            // 输入延迟处理计时器
+            let inputTimer = null;
+            // 延迟时间（毫秒）
+            const INPUT_DELAY = 500;
+            
+            // 输入处理 - 添加延迟验证
+            numberInput.addEventListener('input', function() {
+                const inputValue = this.value.trim();
+                
+                // 清除之前的计时器
+                if (inputTimer) {
+                    clearTimeout(inputTimer);
+                }
+                
+                // 立即清空结果和错误提示，提供即时反馈
+                resultOutput.value = '';
+                errorBox.classList.add('hidden');
+                
+                // 如果输入为空，直接返回
+                if (inputValue === '') {
+                    return;
+                }
+                
+                // 设置新的计时器，延迟处理
+                inputTimer = setTimeout(() => {
+                    try {
+                        // 执行转换并输出
+                        const result = NumberConverter.convert(inputValue);
+                        resultOutput.value = result;
+                        
+                        // 视觉反馈
+                        resultOutput.classList.add('ring-primary/30');
+                        setTimeout(() => resultOutput.classList.remove('ring-primary/30'), 300);
+                    } catch (error) {
+                        errorMsg.textContent = error.message;
+                        // 错误提示添加淡入效果
+                        errorBox.classList.remove('hidden');
+                        errorBox.style.opacity = 0;
+                        setTimeout(() => {
+                            errorBox.style.opacity = 1;
+                        }, 10);
+                    }
+                }, INPUT_DELAY);
+            });
+            
+            // 复制功能
+            copyBtn.addEventListener('click', function() {
+                if (resultOutput.value) {
+                    resultOutput.select();
+                    document.execCommand('copy');
+                    
+                    copyAlert.classList.remove('hidden');
+                    setTimeout(() => copyAlert.classList.add('hidden'), 2000);
+                    
+                    copyBtn.innerHTML = '<i class="fa fa-check"></i>';
+                    setTimeout(() => copyBtn.innerHTML = '<i class="fa fa-copy"></i>', 1000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+    

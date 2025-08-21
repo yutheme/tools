@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能翻译工具</title>
+    <!-- 引入外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
+    
+    <style>
+        /* 基础样式 */
+        .translation-result { min-height: 120px; }
+        
+        /* 加载动画 */
+        .loader {
+            border-top-color: #3B82F6;
+            animation: spinner 0.6s linear infinite;
+        }
+        @keyframes spinner { to { transform: rotate(360deg); } }
+        
+        /* 语言变化动画 */
+        @keyframes langChange {
+            0% { opacity: 0.5; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .lang-update { animation: langChange 0.3s ease-out; }
+        
+        /* 错误提示样式 */
+        .error-highlight {
+            border-color: #EF4444 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- 标题区域 -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                <i class="fa fa-language text-blue-500 mr-2"></i>智能翻译工具
+            </h1>
+            <p class="text-gray-600">精准识别，高效翻译</p>
+        </header>
+        
+        <!-- 翻译主体卡片 -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <!-- 语言方向指示器（核心显示区域） -->
+            <div class="bg-blue-50 px-6 py-3 border-b border-gray-100 flex justify-center">
+                <div class="flex items-center space-x-3">
+                    <span id="langFrom" class="font-medium text-gray-700">检测语言</span>
+                    <i class="fa fa-arrow-right text-blue-400"></i>
+                    <span id="langTo" class="font-medium text-gray-700">中文</span>
+                </div>
+            </div>
+            
+            <!-- 输入区域 -->
+            <div class="p-6 border-b border-gray-100">
+                <label for="sourceText" class="block text-sm font-medium text-gray-700 mb-2">输入文本：</label>
+                <textarea 
+                    id="sourceText" 
+                    class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-500 resize-none" 
+                    rows="4" 
+                    placeholder="输入任意语言文本，立即显示检测结果..."
+                ></textarea>
+                <div class="flex justify-between mt-3 text-sm">
+                    <span id="charCount" class="text-gray-500">0 字符</span>
+                    <button id="clearBtn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-trash-o mr-1"></i> 清空
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 翻译按钮 -->
+            <div class="p-4 flex justify-center border-b border-gray-100">
+                <button id="translateBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full shadow transition-colors flex items-center">
+                    <i class="fa fa-language mr-2"></i>
+                    <span>开始翻译</span>
+                    <div id="loader" class="hidden ml-2 w-4 h-4 border-2 border-white rounded-full loader"></div>
+                </button>
+            </div>
+            
+            <!-- 结果区域 -->
+            <div class="p-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">翻译结果：</label>
+                <div id="resultText" class="w-full p-3 bg-gray-50 rounded-lg translation-result">
+                    <div class="text-gray-400 text-center py-5">
+                        <i class="fa fa-info-circle mr-1"></i> 翻译结果将显示在这里
+                    </div>
+                </div>
+                <button id="copyBtn" class="mt-3 text-blue-500 hover:text-blue-600 text-sm">
+                    <i class="fa fa-copy mr-1"></i> 复制结果
+                </button>
+            </div>
+        </div>
+        
+        <!-- 错误提示区域 -->
+        <div id="errorPanel" class="mt-4 bg-red-50 border border-red-100 rounded-lg p-4 hidden">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fa fa-exclamation-circle text-red-500"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800">操作提示</h3>
+                    <div class="mt-2 text-sm text-red-700">
+                        <p id="errorMessage">翻译服务暂时不可用，请稍后再试</p>
+                    </div>
+                    <div class="mt-3">
+                        <button id="retryBtn" class="inline-flex items-center px-3 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <i class="fa fa-refresh mr-1"></i> 重试
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 精简帮助信息 -->
+        <div class="mt-6 bg-white rounded-xl p-4 shadow-sm">
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">使用帮助</h3>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li class="flex items-start">
+                    <i class="fa fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
+                    <span>输入文本后，顶部会自动显示检测到的语言类型</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fa fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
+                    <span>中文将翻译为英文，其他语言翻译为中文</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fa fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
+                    <span>如遇网络问题，请检查连接后重试</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- 通知提示 -->
+    <div id="notification" class="fixed bottom-5 right-5 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center">
+        <i class="fa fa-check-circle mr-2 text-green-400"></i>
+        <span id="notificationText">操作成功</span>
+    </div>
+
+    <script>
+        // 语言映射配置
+        const LANGUAGE_CONFIG = {
+            // 语言名称映射
+            names: {
+                'zh': '中文', 'en': '英文', 'jp': '日语', 'kor': '韩语',
+                'ru': '俄语', 'fra': '法语', 'spa': '西班牙语', 'de': '德语',
+                'pt': '葡萄牙语', 'it': '意大利语', 'ara': '阿拉伯语',
+                'hi': '印地语', 'vie': '越南语', 'th': '泰语', 'auto': '检测语言'
+            },
+            // 语言特征正则表达式 - 增强版
+            patterns: {
+                'zh': /[\u4e00-\u9fa5\u3400-\u4dbf]/,          // 中文字符（扩展）
+                'en': /[a-zA-Z]/,                               // 英文字符
+                'jp': /[\u3040-\u309F\u30A0-\u30FF\u3005\u3006]/, // 日文字符（扩展）
+                'kor': /[\uAC00-\uD7AF\u1100-\u11FF]/,          // 韩文字符（扩展）
+                'ru': /[\u0400-\u04FF]/,                        // 俄文字符
+                'th': /[\u0E00-\u0E7F]/,                        // 泰文字符
+                'ara': /[\u0600-\u06FF]/,                       // 阿拉伯文字符
+                'fra': /[àâæçéèêëîïôœùûüÿ]/,                    // 法文字符
+                'spa': /[áéíóúñüÁÉÍÓÚÑÜ]/,                      // 西班牙文字符（包含大写）
+                'de': /[äöüßÄÖÜ]/                               // 德文字符（包含大写）
+            }
+        };
+
+        // DOM元素引用
+        const elements = {
+            sourceText: document.getElementById('sourceText'),
+            resultText: document.getElementById('resultText'),
+            translateBtn: document.getElementById('translateBtn'),
+            clearBtn: document.getElementById('clearBtn'),
+            copyBtn: document.getElementById('copyBtn'),
+            charCount: document.getElementById('charCount'),
+            loader: document.getElementById('loader'),
+            langFrom: document.getElementById('langFrom'),
+            langTo: document.getElementById('langTo'),
+            notification: document.getElementById('notification'),
+            notificationText: document.getElementById('notificationText'),
+            errorPanel: document.getElementById('errorPanel'),
+            errorMessage: document.getElementById('errorMessage'),
+            retryBtn: document.getElementById('retryBtn')
+        };
+
+        // 翻译方向状态
+        let translationState = {
+            from: 'auto',
+            to: 'zh'
+        };
+
+        // 代理服务器列表 - 解决跨域问题
+        const PROXY_SERVERS = [
+            'https://api.allorigins.win/get?url=',
+            'https://cors-anywhere.herokuapp.com/',
+            'https://proxy.cors.sh/'
+        ];
+        
+        // 当前使用的代理索引
+        let currentProxyIndex = 0;
+
+        // 初始化
+        function initialize() {
+            updateLanguageDisplay();
+            attachEventListeners();
+        }
+
+        // 绑定事件监听器
+        function attachEventListeners() {
+            // 输入事件 - 实时检测语言
+            elements.sourceText.addEventListener('input', handleTextInput);
+            
+            // 其他事件
+            elements.clearBtn.addEventListener('click', clearAllFields);
+            elements.copyBtn.addEventListener('click', copyTranslationResult);
+            elements.translateBtn.addEventListener('click', performTranslation);
+            elements.retryBtn.addEventListener('click', performTranslation);
+            
+            // 回车键翻译
+            elements.sourceText.addEventListener('keydown', e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    performTranslation();
+                }
+            });
+        }
+
+        // 处理文本输入 - 实时检测语言
+        function handleTextInput() {
+            const inputText = elements.sourceText.value.trim();
+            
+            // 移除错误高亮
+            elements.sourceText.classList.remove('error-highlight');
+            
+            // 更新字符计数
+            elements.charCount.textContent = `${inputText.length} 字符`;
+            
+            // 实时检测语言
+            if (inputText.length > 0) {
+                detectLanguage(inputText);
+                updateLanguageDisplay(true); // 强制更新显示
+            } else {
+                // 重置为初始状态
+                translationState = { from: 'auto', to: 'zh' };
+                updateLanguageDisplay(true);
+            }
+        }
+
+        // 检测语言 - 优化算法
+        function detectLanguage(text) {
+            // 清理文本，保留语言特征字符
+            const cleanedText = text.replace(/[^a-zA-Z\u4e00-\u9fa5\u3400-\u4dbf\u3040-\u309F\u30A0-\u30FF\u3005\u3006\uAC00-\uD7AF\u1100-\u11FF\u0400-\u04FF\u0E00-\u0E7F\u0600-\u06FFàâæçéèêëîïôœùûüÿáéíóúñüÁÉÍÓÚÑÜäöüßÄÖÜ]/g, '');
+            
+            if (cleanedText.length === 0) {
+                translationState.from = 'auto';
+                return;
+            }
+
+            let detectedLang = 'auto';
+            let highestConfidence = 0;
+
+            // 检查每种语言的特征模式
+            Object.keys(LANGUAGE_CONFIG.patterns).forEach(lang => {
+                const pattern = LANGUAGE_CONFIG.patterns[lang];
+                const matches = cleanedText.match(pattern) || [];
+                const confidence = matches.length / cleanedText.length;
+                
+                // 为不同语言设置不同的最低置信度阈值
+                const thresholds = {
+                    'zh': 0.15, 'en': 0.2, 'jp': 0.1, 'kor': 0.1,
+                    'ru': 0.1, 'th': 0.1, 'ara': 0.1, 'fra': 0.1,
+                    'spa': 0.1, 'de': 0.1
+                };
+                
+                const minConfidence = thresholds[lang] || 0.15;
+                
+                // 找到最可能的语言
+                if (confidence > minConfidence && confidence > highestConfidence) {
+                    highestConfidence = confidence;
+                    detectedLang = lang;
+                }
+            });
+
+            // 特殊情况处理：混合语言
+            if (detectedLang === 'en' && LANGUAGE_CONFIG.patterns.zh.test(cleanedText)) {
+                const enMatches = cleanedText.match(LANGUAGE_CONFIG.patterns.en) || [];
+                const zhMatches = cleanedText.match(LANGUAGE_CONFIG.patterns.zh) || [];
+                
+                if (zhMatches.length > enMatches.length * 0.5) {
+                    detectedLang = 'zh';
+                }
+            }
+
+            // 更新翻译方向
+            translationState.from = detectedLang;
+            translationState.to = detectedLang === 'zh' ? 'en' : 'zh';
+        }
+
+        // 更新语言显示
+        function updateLanguageDisplay(forceUpdate = false) {
+            const fromLangName = LANGUAGE_CONFIG.names[translationState.from] || '检测语言';
+            const toLangName = LANGUAGE_CONFIG.names[translationState.to] || '中文';
+            
+            // 只有当语言变化时才更新，减少不必要的DOM操作
+            if (elements.langFrom.textContent !== fromLangName || forceUpdate) {
+                elements.langFrom.textContent = fromLangName;
+                elements.langFrom.classList.add('lang-update');
+                setTimeout(() => elements.langFrom.classList.remove('lang-update'), 300);
+            }
+            
+            if (elements.langTo.textContent !== toLangName || forceUpdate) {
+                elements.langTo.textContent = toLangName;
+                elements.langTo.classList.add('lang-update');
+                setTimeout(() => elements.langTo.classList.remove('lang-update'), 300);
+            }
+        }
+
+        // 清空所有字段
+        function clearAllFields() {
+            elements.sourceText.value = '';
+            elements.resultText.innerHTML = `<div class="text-gray-400 text-center py-5"><i class="fa fa-info-circle mr-1"></i> 翻译结果将显示在这里</div>`;
+            elements.charCount.textContent = '0 字符';
+            elements.sourceText.classList.remove('error-highlight');
+            elements.errorPanel.classList.add('hidden');
+            translationState = { from: 'auto', to: 'zh' };
+            updateLanguageDisplay(true);
+            showNotification('已清空输入');
+        }
+
+        // 复制翻译结果
+        function copyTranslationResult() {
+            const resultText = elements.resultText.textContent.trim();
+            if (resultText && resultText !== '翻译结果将显示在这里') {
+                navigator.clipboard.writeText(resultText)
+                    .then(() => showNotification('结果已复制'))
+                    .catch(() => showNotification('复制失败，请手动复制', false));
+            }
+        }
+
+        // 显示通知
+        function showNotification(message, isSuccess = true) {
+            elements.notificationText.textContent = message;
+            elements.notification.classList.remove('translate-y-20', 'opacity-0');
+            
+            if (!isSuccess) {
+                elements.notification.classList.add('bg-red-600');
+                elements.notification.classList.remove('bg-gray-800');
+                elements.notification.querySelector('i').className = 'fa fa-exclamation-circle mr-2 text-white';
+            } else {
+                elements.notification.classList.remove('bg-red-600');
+                elements.notification.classList.add('bg-gray-800');
+                elements.notification.querySelector('i').className = 'fa fa-check-circle mr-2 text-green-400';
+            }
+            
+            setTimeout(() => {
+                elements.notification.classList.add('translate-y-20', 'opacity-0');
+            }, 2000);
+        }
+
+        // 显示错误面板
+        function showError(message) {
+            elements.errorMessage.textContent = message;
+            elements.errorPanel.classList.remove('hidden');
+            elements.sourceText.classList.add('error-highlight');
+        }
+
+        // 隐藏错误面板
+        function hideError() {
+            elements.errorPanel.classList.add('hidden');
+            elements.sourceText.classList.remove('error-highlight');
+        }
+
+        // 切换到下一个代理服务器
+        function switchToNextProxy() {
+            currentProxyIndex = (currentProxyIndex + 1) % PROXY_SERVERS.length;
+            return PROXY_SERVERS[currentProxyIndex];
+        }
+
+        // 执行翻译 - 修复跨域问题
+        function performTranslation() {
+            const textToTranslate = elements.sourceText.value.trim();
+            if (!textToTranslate) {
+                showNotification('请输入要翻译的文本', false);
+                elements.sourceText.classList.add('error-highlight');
+                return;
+            }
+            
+            // 显示加载状态，隐藏错误
+            elements.loader.classList.remove('hidden');
+            elements.translateBtn.disabled = true;
+            elements.resultText.innerHTML = `<div class="text-gray-400 text-center py-5"><div class="w-5 h-5 border-2 border-gray-300 rounded-full loader mx-auto inline-block"></div><span class="ml-2">翻译中...</span></div>`;
+            hideError();
+            
+            // 百度翻译API参数
+            const apiParams = {
+                q: textToTranslate,
+                from: translationState.from,
+                to: translationState.to,
+                appid: "20250819002434150",
+                salt: Math.floor(Math.random() * 1000000000),
+                sign: ''
+            };
+            
+            // 计算签名
+            apiParams.sign = CryptoJS.MD5(apiParams.appid + textToTranslate + apiParams.salt + "4xWe9UsRP2w9xByjpuHr").toString();
+            
+            // 构建API URL
+            const apiUrl = `https://fanyi-api.baidu.com/api/trans/vip/translate?q=${encodeURIComponent(textToTranslate)}&from=${apiParams.from}&to=${apiParams.to}&appid=${apiParams.appid}&salt=${apiParams.salt}&sign=${apiParams.sign}`;
+            
+            // 使用代理服务器解决跨域问题
+            const proxyUrl = PROXY_SERVERS[currentProxyIndex];
+            let requestUrl = `${proxyUrl}${encodeURIComponent(apiUrl)}`;
+            
+            // 针对不同代理服务器的特殊处理
+            if (proxyUrl.includes('allorigins.win')) {
+                // allorigins.win需要特殊处理响应
+                fetch(requestUrl)
+                    .then(response => {
+                        if (!response.ok) throw new Error(`HTTP错误: ${response.status}`);
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (!data.contents) throw new Error('未获取到翻译数据');
+                        return JSON.parse(data.contents);
+                    })
+                    .then(handleTranslationResponse)
+                    .catch(error => handleTranslationError(error));
+            } else {
+                // 其他代理服务器
+                fetch(requestUrl)
+                    .then(response => {
+                        if (!response.ok) throw new Error(`HTTP错误: ${response.status}`);
+                        return response.json();
+                    })
+                    .then(handleTranslationResponse)
+                    .catch(error => handleTranslationError(error));
+            }
+        }
+
+        // 处理翻译响应
+        function handleTranslationResponse(data) {
+            if (data.error_code) {
+                throw new Error(`翻译失败: ${data.error_msg || '未知错误'}`);
+            }
+            
+            // 显示翻译结果
+            elements.resultText.textContent = data.trans_result.map(item => item.dst).join('\n');
+            
+            // 使用API返回的精确语言更新显示
+            if (data.from) {
+                translationState.from = data.from;
+                updateLanguageDisplay(true);
+            }
+            
+            showNotification('翻译完成');
+            elements.loader.classList.add('hidden');
+            elements.translateBtn.disabled = false;
+        }
+
+        // 处理翻译错误
+        function handleTranslationError(error) {
+            // 尝试切换代理服务器
+            switchToNextProxy();
+            
+            let errorMessage = '';
+            if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+                errorMessage = '网络连接问题，已自动切换代理，请重试';
+            } else if (error.message.includes('403')) {
+                errorMessage = 'API权限不足，请检查密钥配置';
+            } else if (error.message.includes('500')) {
+                errorMessage = '服务器内部错误，请稍后再试';
+            } else {
+                errorMessage = error.message;
+            }
+            
+            elements.resultText.innerHTML = `<div class="text-red-500 text-center py-5"><i class="fa fa-exclamation-circle mr-1"></i> 翻译失败</div>`;
+            showError(errorMessage);
+            showNotification(errorMessage, false);
+            
+            elements.loader.classList.add('hidden');
+            elements.translateBtn.disabled = false;
+        }
+
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
+    
