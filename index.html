@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>实用工具集</title>
+    
+    <!-- 外部资源 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Tailwind配置 -->
     <script>
         tailwind.config = {
             theme: {
@@ -21,98 +25,276 @@
             }
         }
     </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .tool-card-hover {
-                @apply transform transition-all duration-300 hover:-translate-y-2 hover:shadow-lg cursor-pointer;
+    
+    <!-- 核心样式 - 不依赖外部资源 -->
+    <style>
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, rgba(22, 93, 255, 0.05) 0%, rgba(54, 207, 201, 0.05) 100%);
+            padding: 2rem 0;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* 标题样式 */
+        .page-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .page-title h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: bold;
+            color: #1D2129;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .page-title p {
+            color: #6B7280;
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+        
+        /* 网格布局 */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        @media (min-width: 640px) {
+            .tools-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
-            .gradient-bg {
-                @apply bg-gradient-to-br from-primary/5 to-secondary/5;
+        }
+        
+        @media (min-width: 1024px) {
+            .tools-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
-            .card-link {
-                @apply block h-full w-full;
-            }
+        }
+        
+        /* 卡片样式 */
+        .tool-card {
+            background: white;
+            border-radius: 1rem;
+            border: 1px solid #E5E7EB;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .tool-card-content {
+            padding: 1.5rem;
+        }
+        
+        .tool-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .tool-card h2 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1D2129;
+            margin-bottom: 0.75rem;
+        }
+        
+        .tool-card p {
+            color: #6B7280;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .tool-action {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .tool-action i {
+            margin-left: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .tool-card-footer {
+            padding: 1rem 1.5rem;
+            background-color: #F5F7FA;
+            border-top: 1px solid #E5E7EB;
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+        
+        .tool-card-footer i {
+            color: #36CFC9;
+            margin-right: 0.25rem;
+        }
+        
+        /* 链接样式 */
+        .card-link {
+            display: block;
+            height: 100%;
+            width: 100%;
+            text-decoration: none;
+        }
+        
+        /* 页脚样式 */
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            color: #6B7280;
+            font-size: 0.875rem;
+        }
+        
+        /* 工具特定颜色 */
+        .tool-number .tool-icon {
+            background-color: rgba(22, 93, 255, 0.1);
+        }
+        
+        .tool-number .tool-action {
+            color: #165DFF;
+        }
+        
+        .tool-number:hover .tool-icon {
+            background-color: rgba(22, 93, 255, 0.2);
+        }
+        
+        .tool-wordcount .tool-icon {
+            background-color: rgba(54, 207, 201, 0.1);
+        }
+        
+        .tool-wordcount .tool-action {
+            color: #36CFC9;
+        }
+        
+        .tool-wordcount:hover .tool-icon {
+            background-color: rgba(54, 207, 201, 0.2);
+        }
+        
+        .tool-translate .tool-icon {
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+        
+        .tool-translate .tool-action {
+            color: #8B5CF6;
+        }
+        
+        .tool-translate:hover .tool-icon {
+            background-color: rgba(139, 92, 246, 0.2);
+        }
+        
+        .tool-card:hover .tool-action i {
+            transform: translateX(4px);
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen font-sans">
-    <div class="container mx-auto px-4 py-12 max-w-6xl">
+<body>
+    <div class="container">
         <!-- 页面标题 -->
-        <header class="text-center mb-16">
-            <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold text-dark mb-4 flex items-center justify-center">
+        <header class="page-title">
+            <h1>
                 <i class="fa fa-wrench text-primary mr-3"></i>实用工具集
             </h1>
-            <p class="text-gray-600 max-w-2xl mx-auto text-lg">
+            <p>
                 精选高效工具，满足日常办公与学习需求，简洁易用，功能强大
             </p>
         </header>
         
-        <!-- 工具卡片网格 - 适应未来增加更多工具 -->
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- 工具卡片网格 -->
+        <div class="tools-grid">
             <!-- 数字大写转换工具 -->
-            <div class="bg-white rounded-2xl shadow-md overflow-hidden tool-card-hover border border-gray-100 group" onclick="window.location.href='数字大写转换.html'">
-                <a href="数字大写转换.html" class="card-link">
-                    <div class="p-6">
-                        <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
+            <div class="tool-card tool-number" onclick="window.open('数字大写转换.html', '_blank')">
+                <a href="数字大写转换.html" class="card-link" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
                             <i class="fa fa-exchange text-2xl text-primary"></i>
                         </div>
-                        <h2 class="text-xl font-bold text-dark mb-3">数字大写转换</h2>
-                        <p class="text-gray-600 mb-6">
+                        <h2>数字大写转换</h2>
+                        <p>
                             快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式，支持大额数字和小数。
                         </p>
-                        <div class="inline-flex items-center text-primary font-medium hover:text-primary/80 transition-colors">
+                        <div class="tool-action">
                             立即使用
-                            <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                            <i class="fa fa-arrow-right"></i>
                         </div>
                     </div>
-                    <div class="px-6 py-4 bg-neutral border-t border-gray-100 text-sm text-gray-500">
-                        <i class="fa fa-check-circle text-secondary mr-1"></i>
+                    <div class="tool-card-footer">
+                        <i class="fa fa-check-circle"></i>
                         符合财务规范格式
                     </div>
                 </a>
             </div>
             
             <!-- 字数统计工具 -->
-            <div class="bg-white rounded-2xl shadow-md overflow-hidden tool-card-hover border border-gray-100 group" onclick="window.location.href='字数统计.html'">
-                <a href="字数统计.html" class="card-link">
-                    <div class="p-6">
-                        <div class="w-14 h-14 bg-secondary/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-secondary/20 transition-colors">
+            <div class="tool-card tool-wordcount" onclick="window.open('字数统计.html', '_blank')">
+                <a href="字数统计.html" class="card-link" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
                             <i class="fa fa-file-text-o text-2xl text-secondary"></i>
                         </div>
-                        <h2 class="text-xl font-bold text-dark mb-3">字数统计工具</h2>
-                        <p class="text-gray-600 mb-6">
+                        <h2>字数统计工具</h2>
+                        <p>
                             精准统计文本中的汉字、数字、字母等字符数量，支持TXT、DOCX、PDF、PPTX文件上传分析。
                         </p>
-                        <div class="inline-flex items-center text-secondary font-medium hover:text-secondary/80 transition-colors">
+                        <div class="tool-action">
                             立即使用
-                            <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                            <i class="fa fa-arrow-right"></i>
                         </div>
                     </div>
-                    <div class="px-6 py-4 bg-neutral border-t border-gray-100 text-sm text-gray-500">
-                        <i class="fa fa-check-circle text-secondary mr-1"></i>
+                    <div class="tool-card-footer">
+                        <i class="fa fa-check-circle"></i>
                         支持多格式文件分析
                     </div>
                 </a>
             </div>
             
             <!-- 实时翻译工具 -->
-            <div class="bg-white rounded-2xl shadow-md overflow-hidden tool-card-hover border border-gray-100 group" onclick="window.location.href='实时翻译工具.html'">
-                <a href="实时翻译工具.html" class="card-link">
-                    <div class="p-6">
-                        <div class="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-accent/20 transition-colors">
+            <div class="tool-card tool-translate" onclick="window.open('实时翻译工具.html', '_blank')">
+                <a href="实时翻译工具.html" class="card-link" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
                             <i class="fa fa-language text-2xl text-accent"></i>
                         </div>
-                        <h2 class="text-xl font-bold text-dark mb-3">智能翻译工具</h2>
-                        <p class="text-gray-600 mb-6">
+                        <h2>智能翻译工具</h2>
+                        <p>
                             自动识别语言类型，支持多语言互译，实时响应，操作简单，满足跨语言沟通需求。
                         </p>
-                        <div class="inline-flex items-center text-accent font-medium hover:text-accent/80 transition-colors">
+                        <div class="tool-action">
                             立即使用
-                            <i class="fa fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                            <i class="fa fa-arrow-right"></i>
                         </div>
                     </div>
-                    <div class="px-6 py-4 bg-neutral border-t border-gray-100 text-sm text-gray-500">
-                        <i class="fa fa-check-circle text-secondary mr-1"></i>
+                    <div class="tool-card-footer">
+                        <i class="fa fa-check-circle"></i>
                         自动语言检测
                     </div>
                 </a>
@@ -120,17 +302,18 @@
         </div>
         
         <!-- 页脚 -->
-        <footer class="mt-16 text-center text-gray-500 text-sm">
+        <footer>
             <p>© 2025 实用工具集 | 简洁高效的在线工具解决方案</p>
         </footer>
     </div>
     
     <!-- 交互效果脚本 -->
     <script>
-        // 页面加载动画
         document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.tool-card-hover');
-            // 初始设置
+            // 页面加载动画
+            const cards = document.querySelectorAll('.tool-card');
+            
+            // 初始化卡片状态
             cards.forEach(card => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
@@ -139,11 +322,32 @@
             // 依次显示卡片
             cards.forEach((card, index) => {
                 setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
                 }, 100 * index);
             });
+            
+            // 验证外部资源
+            const checkFontAwesome = () => {
+                const testElem = document.createElement('i');
+                testElem.className = 'fa fa-check';
+                testElem.style.position = 'absolute';
+                testElem.style.visibility = 'hidden';
+                document.body.appendChild(testElem);
+                
+                // 简单检测Font Awesome是否加载
+                const isLoaded = window.getComputedStyle(testElem).fontFamily !== 'serif';
+                document.body.removeChild(testElem);
+                
+                if (!isLoaded) {
+                    console.warn('Font Awesome未加载，图标可能无法正常显示');
+                }
+            };
+            
+            checkFontAwesome();
         });
     </script>
 </body>
 </html>
+    
