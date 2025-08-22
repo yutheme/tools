@@ -142,7 +142,7 @@
             <ul class="text-sm text-gray-600 space-y-1">
                 <li class="flex items-start">
                     <i class="fa fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
-                    <span>输入文本后，会自动显示检测到的语言类型</span>
+                    <span>支持实时识别中文、英文、日语、韩语、俄语、法语、西班牙语等多种语言</span>
                 </li>
                 <li class="flex items-start">
                     <i class="fa fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
@@ -159,25 +159,38 @@
     </div>
 
     <script>
-        // 语言映射配置
+        // 扩展语言映射配置，增加更多语言
         const LANGUAGE_CONFIG = {
             names: {
                 'zh': '中文', 'en': '英文', 'jp': '日语', 'kor': '韩语',
                 'ru': '俄语', 'fra': '法语', 'spa': '西班牙语', 'de': '德语',
                 'pt': '葡萄牙语', 'it': '意大利语', 'ara': '阿拉伯语',
-                'hi': '印地语', 'vie': '越南语', 'th': '泰语', 'auto': '检测语言'
+                'hi': '印地语', 'vie': '越南语', 'th': '泰语', 'nl': '荷兰语',
+                'sv': '瑞典语', 'pl': '波兰语', 'auto': '检测语言'
             },
             patterns: {
-                'zh': /[\u4e00-\u9fa5\u3400-\u4dbf]/,
-                'en': /[a-zA-Z]/,
-                'jp': /[\u3040-\u309F\u30A0-\u30FF\u3005\u3006]/,
-                'kor': /[\uAC00-\uD7AF\u1100-\u11FF]/,
-                'ru': /[\u0400-\u04FF]/,
-                'th': /[\u0E00-\u0E7F]/,
-                'ara': /[\u0600-\u06FF]/,
-                'fra': /[àâæçéèêëîïôœùûüÿ]/,
-                'spa': /[áéíóúñüÁÉÍÓÚÑÜ]/,
-                'de': /[äöüßÄÖÜ]/
+                'zh': /[\u4e00-\u9fa5\u3400-\u4dbf]/,                  // 中文
+                'en': /[a-zA-Z]/,                                       // 英文
+                'jp': /[\u3040-\u309F\u30A0-\u30FF\u3005\u3006]/,       // 日语
+                'kor': /[\uAC00-\uD7AF\u1100-\u11FF]/,                  // 韩语
+                'ru': /[\u0400-\u04FF]/,                                // 俄语
+                'th': /[\u0E00-\u0E7F]/,                                // 泰语
+                'ara': /[\u0600-\u06FF]/,                               // 阿拉伯语
+                'fra': /[àâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ]/,            // 法语
+                'spa': /[áéíóúñüÁÉÍÓÚÑÜ]/,                              // 西班牙语
+                'de': /[äöüßÄÖÜ]/,                                      // 德语
+                'pt': /[áéíóúãõçÁÉÍÓÚÃÕÇ]/,                             // 葡萄牙语
+                'it': /[àèéìíòóùúÀÈÉÌÍÒÓÙÚ]/,                           // 意大利语
+                'nl': /[ëïàâêôûĳËÏÀÂÊÔÛĲ]/,                             // 荷兰语
+                'sv': /[åäöÅÄÖ]/,                                       // 瑞典语
+                'pl': /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/                           // 波兰语
+            },
+            // 每种语言的权重，确保主要语言有更高优先级
+            weights: {
+                'zh': 1.0, 'en': 1.0, 'jp': 0.9, 'kor': 0.9,
+                'ru': 0.8, 'fra': 0.8, 'spa': 0.8, 'de': 0.7,
+                'pt': 0.7, 'it': 0.7, 'ara': 0.7, 'hi': 0.6,
+                'vie': 0.6, 'th': 0.6, 'nl': 0.6, 'sv': 0.5, 'pl': 0.5
             }
         };
 
@@ -222,6 +235,7 @@
 
         // 绑定事件监听器
         function attachEventListeners() {
+            // 输入时立即检测语言
             elements.sourceText.addEventListener('input', handleTextInput);
             elements.clearBtn.addEventListener('click', clearAllFields);
             elements.copyBtn.addEventListener('click', copyTranslationResult);
@@ -237,7 +251,7 @@
             });
         }
 
-        // 处理文本输入
+        // 处理文本输入 - 实时检测语言
         function handleTextInput() {
             const inputText = elements.sourceText.value.trim();
             
@@ -253,46 +267,52 @@
             }
         }
 
-        // 检测语言
+        // 增强的语言检测算法，支持所有配置的语言
         function detectLanguage(text) {
-            const cleanedText = text.replace(/[^a-zA-Z\u4e00-\u9fa5\u3400-\u4dbf\u3040-\u309F\u30A0-\u30FF\u3005\u3006\uAC00-\uD7AF\u1100-\u11FF\u0400-\u04FF\u0E00-\u0E7F\u0600-\u06FFàâæçéèêëîïôœùûüÿáéíóúñüÁÉÍÓÚÑÜäöüßÄÖÜ\n\r]/g, '');
+            // 清理文本，保留有语言特征的字符
+            const cleanedText = text.replace(/[\s0-9\p{P}]/gu, '');
             
+            // 如果清理后文本为空，保持自动检测
             if (cleanedText.length === 0) {
                 translationState.from = 'auto';
+                translationState.to = 'zh';
                 return;
             }
 
             let detectedLang = 'auto';
-            let highestConfidence = 0;
+            let highestScore = 0;
 
+            // 检查所有支持的语言
             Object.keys(LANGUAGE_CONFIG.patterns).forEach(lang => {
                 const pattern = LANGUAGE_CONFIG.patterns[lang];
                 const matches = cleanedText.match(pattern) || [];
-                const confidence = matches.length / cleanedText.length;
                 
-                const thresholds = {
-                    'zh': 0.15, 'en': 0.2, 'jp': 0.1, 'kor': 0.1,
-                    'ru': 0.1, 'th': 0.1, 'ara': 0.1, 'fra': 0.1,
-                    'spa': 0.1, 'de': 0.1
-                };
+                // 计算匹配度分数，结合语言权重
+                const matchRatio = matches.length / cleanedText.length;
+                const weight = LANGUAGE_CONFIG.weights[lang] || 0.5;
+                const score = matchRatio * weight;
                 
-                const minConfidence = thresholds[lang] || 0.15;
+                // 设定最低匹配阈值
+                const minThreshold = lang === 'zh' || lang === 'en' ? 0.1 : 0.2;
                 
-                if (confidence > minConfidence && confidence > highestConfidence) {
-                    highestConfidence = confidence;
+                // 更新最高得分语言
+                if (matchRatio > minThreshold && score > highestScore) {
+                    highestScore = score;
                     detectedLang = lang;
                 }
             });
 
+            // 特殊处理混合语言情况
             if (detectedLang === 'en' && LANGUAGE_CONFIG.patterns.zh.test(cleanedText)) {
                 const enMatches = cleanedText.match(LANGUAGE_CONFIG.patterns.en) || [];
                 const zhMatches = cleanedText.match(LANGUAGE_CONFIG.patterns.zh) || [];
                 
-                if (zhMatches.length > enMatches.length * 0.5) {
+                if (zhMatches.length > enMatches.length * 0.4) {
                     detectedLang = 'zh';
                 }
             }
 
+            // 更新翻译状态
             translationState.from = detectedLang;
             translationState.to = detectedLang === 'zh' ? 'en' : 'zh';
         }
@@ -302,17 +322,14 @@
             const fromLangName = LANGUAGE_CONFIG.names[translationState.from] || '检测语言';
             const toLangName = LANGUAGE_CONFIG.names[translationState.to] || '中文';
             
-            if (elements.langFrom.textContent !== fromLangName || forceUpdate) {
-                elements.langFrom.textContent = fromLangName;
-                elements.langFrom.classList.add('lang-update');
-                setTimeout(() => elements.langFrom.classList.remove('lang-update'), 300);
-            }
+            // 立即更新显示
+            elements.langFrom.textContent = fromLangName;
+            elements.langFrom.classList.add('lang-update');
+            setTimeout(() => elements.langFrom.classList.remove('lang-update'), 300);
             
-            if (elements.langTo.textContent !== toLangName || forceUpdate) {
-                elements.langTo.textContent = toLangName;
-                elements.langTo.classList.add('lang-update');
-                setTimeout(() => elements.langTo.classList.remove('lang-update'), 300);
-            }
+            elements.langTo.textContent = toLangName;
+            elements.langTo.classList.add('lang-update');
+            setTimeout(() => elements.langTo.classList.remove('lang-update'), 300);
         }
 
         // 清空所有字段
@@ -444,6 +461,7 @@
             let translatedText = data.trans_result.map(item => item.dst).join('\n');
             elements.resultText.textContent = translatedText;
             
+            // 根据API返回结果更新语言检测
             if (data.from) {
                 translationState.from = data.from;
                 updateLanguageDisplay(true);
