@@ -103,7 +103,7 @@
             flex-direction: column;
         }
         
-        /* 图标区域 - 固定高度 */
+        /* 图标区域 - 保持原始大小 */
         .tool-icon {
             width: 3.5rem;
             height: 3.5rem;
@@ -113,6 +113,11 @@
             justify-content: center;
             margin-bottom: 1.25rem;
             transition: background-color 0.3s ease;
+        }
+        
+        /* 增大图标尺寸 - 关键修改 */
+        .tool-icon i {
+            font-size: 1.6rem !important; /* 使用!important确保样式生效 */
         }
         
         /* 标题区域 - 固定高度 */
@@ -257,7 +262,7 @@
                 <a href="数字大写转换.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-exchange text-2xl" style="color: #165DFF;"></i>
+                            <i class="fa fa-exchange" style="color: #165DFF;"></i>
                         </div>
                         <h2>数字大写转换</h2>
                         <div class="tool-description">
@@ -282,7 +287,7 @@
                 <a href="字数统计.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-file-text-o text-2xl" style="color: #36CFC9;"></i>
+                            <i class="fa fa-file-text-o" style="color: #36CFC9;"></i>
                         </div>
                         <h2>字数统计工具</h2>
                         <div class="tool-description">
@@ -307,7 +312,7 @@
                 <a href="实时翻译工具.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-language text-2xl" style="color: #8B5CF6;"></i>
+                            <i class="fa fa-language" style="color: #8B5CF6;"></i>
                         </div>
                         <h2>智能翻译工具</h2>
                         <div class="tool-description">
