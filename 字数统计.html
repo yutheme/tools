@@ -1027,9 +1027,9 @@
                     let resultText = "字数统计结果:\n";
                     resultText += `总字符数: ${stats.total}\n`;
                     resultText += `汉字: ${stats.chinese} (${Math.round((stats.chinese / total) * 100)}%)\n`;
-                    resultText += `数字: ${stats。numbers} (${Math。round((stats。numbers / total) * 100)}%)\n`;
+                    resultText += `数字: ${stats.numbers} (${Math.round((stats.numbers / total) * 100)}%)\n`;
                     resultText += `英文字母: ${stats.letters} (${Math.round((stats.letters / total) * 100)}%)\n`;
-                    resultText += `英文单词: ${stats.words}\n`;
+                    resultText += `英文单词: ${stats。words}\n`;
                     resultText += `标点符号: ${stats.punctuation} (${Math.round((stats.punctuation / total) * 100)}%)\n`;
                     resultText += `空格: ${stats.spaces} (${Math.round((stats.spaces / total) * 100)}%)\n`;
                     resultText += `其他字符: ${stats.other} (${Math.round((stats.other / total) * 100)}%)\n`;
@@ -1042,11 +1042,11 @@
                     document。body。appendChild(textArea);
                     textArea。select();
                     document。execCommand('copy');
-                    document.body.removeChild(textArea);
+                    document。body。removeChild(textArea);
                     
                     // 显示复制成功反馈
                     const originalText = copyButton.innerHTML;
-                    copyButton。innerHTML = `
+                    copyButton.innerHTML = `
                         <i class="fas fa-check"></i>
                         复制成功
                     `;
@@ -1057,15 +1057,15 @@
                     
                     showNotification('统计结果已复制到剪贴板');
                 } catch (err) {
-                    console.error('复制失败: ', err);
-                    showNotification('复制失败，请手动复制', 'error');
+                    console。error('复制失败: '， err);
+                    showNotification('复制失败，请手动复制'， 'error');
                 }
             }
             
             // 绑定事件处理函数
-            fileInput.addEventListener('change', handleFileUpload);
-            clearButton.addEventListener('click', clearContent);
-            copyButton。addEventListener('click', copyResults);
+            fileInput。addEventListener('change'， handleFileUpload);
+            clearButton。addEventListener('click'， clearContent);
+            copyButton.addEventListener('click', copyResults);
             
             // 初始化
             updateUI(analyzeText(''));
