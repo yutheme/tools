@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>实用工具集</title>
-
+    
     <!-- 外部资源 -->
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     
@@ -23,14 +23,14 @@
             padding: 2rem 0;
         }
         
-        。container {
+        .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 1rem;
         }
         
         /* 标题样式 */
-        。page-title {
+        .page-title {
             text-align: center;
             margin-bottom: 3rem;
         }
@@ -376,20 +376,20 @@
     </div>
     
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document。addEventListener('DOMContentLoaded'， () => {
             const cards = document.querySelectorAll('.tool-card');
             
             cards.forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
+                card。style。opacity = '0';
+                card。style。transform = 'translateY(20px)';
             });
             
-            cards.forEach((card, index) => {
+            cards。forEach((card， index) => {
                 setTimeout(() => {
                     card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
                     card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, 200 * index);
+                    card。style。transform = 'translateY(0)';
+                }， 200 * index);
             });
         });
     </script>
