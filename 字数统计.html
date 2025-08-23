@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>字数统计工具</title>
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.29.3/docxtemplater.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
@@ -13,7 +15,7 @@
             --primary: #3B82F6;
             --primary-light: #DBEAFE;
             --primary-dark: #2563EB;
-            --primary-border: rgba(59, 130, 246, 0.5); /* 更柔和的边框颜色 */
+            --primary-border: rgba(59, 130, 246, 0.5);
             --secondary: #10B981;
             --accent: #8B5CF6;
             --warning: #F59E0B;
@@ -25,7 +27,7 @@
             --white: #FFFFFF;
             --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
-            --card-shadow-hover: 0 5px 15px rgba(59, 130, 246, 0.15); /* 卡片悬浮阴影 */
+            --card-shadow-hover: 0 5px 15px rgba(59, 130, 246, 0.15);
             --radius: 10px;
             --transition: all 0.3s ease;
         }
@@ -79,6 +81,9 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .subtitle {
@@ -94,7 +99,7 @@
             padding: 15px;
             margin-bottom: 15px;
             transition: var(--transition);
-            position: relative; /* 新增：为进度条提供定位上下文 */
+            position: relative;
         }
         
         .card:hover {
@@ -162,11 +167,6 @@
             box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
         }
         
-        .upload-btn svg {
-            width: 14px;
-            height: 14px;
-        }
-        
         .file-input {
             display: none;
         }
@@ -178,7 +178,6 @@
             margin-bottom: 5px;
         }
         
-        /* 全新的进度显示样式 - 不占用额外空间 */
         .progress-overlay {
             position: absolute;
             top: 0;
@@ -224,11 +223,10 @@
             opacity: 1;
         }
         
-        /* 统计卡片容器 */
         .stats-container {
-            overflow: visible; /* 修改：允许卡片上浮时超出容器 */
+            overflow: visible;
             margin-bottom: 10px;
-            padding-top: 5px; /* 新增：为卡片上浮留出空间 */
+            padding-top: 5px;
         }
         
         .stats-grid {
@@ -237,7 +235,6 @@
             width: 100%;
         }
         
-        /* 统计卡片样式 - 彻底解决悬浮遮挡问题 */
         .stat-card {
             background: var(--white);
             border-radius: var(--radius);
@@ -252,12 +249,11 @@
             z-index: 1;
         }
         
-        /* 优化的悬浮效果 - 确保完全显示 */
         .stat-card:hover {
-            transform: translateY(-5px); /* 增加上浮距离 */
+            transform: translateY(-5px);
             border-color: var(--primary-border);
             box-shadow: var(--card-shadow-hover);
-            z-index: 10; /* 提高层级确保不被遮挡 */
+            z-index: 10;
         }
         
         .stat-value {
@@ -492,12 +488,14 @@
 <body>
     <div class="container">
         <header>
-            <h1>字数统计工具</h1>
+            <h1>
+                <i class="fas fa-file-alt"></i>
+                字数统计工具
+            </h1>
             <p class="subtitle">快速统计文本中的汉字、数字、字母等各类字符数量</p>
         </header>
         
         <div class="card input-section">
-            <!-- 进度条和进度文本 - 新的位置和样式 -->
             <div class="progress-overlay" id="progressOverlay">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
@@ -505,18 +503,12 @@
             
             <div class="input-actions">
                 <button class="upload-btn" id="fileTrigger">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                        <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
-                    </svg>
+                    <i class="fas fa-upload"></i>
                     上传文件
                 </button>
                 <div class="action-group">
                     <button id="clearButton" class="action-btn clear-btn">
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                        </svg>
+                        <i class="fas fa-trash-alt"></i>
                         清空
                     </button>
                 </div>
@@ -589,10 +581,7 @@
             
             <div class="actions">
                 <button id="copyButton" class="action-btn copy-btn">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                        <path d="M8 2.5a.5.5 0 0 0-1 0V4h-2a.5.5 0 0 0 0 1h2v10a.5.5 0 0 0 1 0V5h2a.5.5 0 0 0 0-1h-2V2.5z"/>
-                    </svg>
+                    <i class="fas fa-copy"></i>
                     复制统计结果
                 </button>
             </div>
@@ -962,7 +951,7 @@
                 }, 3000);
             }
             
-            // 显示处理状态 - 新的进度显示方式
+            // 显示处理状态
             function showProcessing() {
                 progressOverlay.classList.add('active');
                 progressText.classList.add('active');
@@ -1026,47 +1015,45 @@
             // 复制结果功能
             function copyResults() {
                 try {
-                    const stats = analyzeText(textInput.value);
-                    const total = stats.total;
+                    const stats = analyzeText(textInput。value);
+                    const total = stats。total;
                     
                     // 检查是否有可复制的内容
                     if (total === 0) {
-                        showNotification('没有可复制的统计结果，请先输入文本', 'error');
+                        showNotification('没有可复制的统计结果，请先输入文本'， 'error');
                         return;
                     }
                     
                     let resultText = "字数统计结果:\n";
                     resultText += `总字符数: ${stats.total}\n`;
                     resultText += `汉字: ${stats.chinese} (${Math.round((stats.chinese / total) * 100)}%)\n`;
-                    resultText += `数字: ${stats.numbers} (${Math.round((stats.numbers / total) * 100)}%)\n`;
+                    resultText += `数字: ${stats。numbers} (${Math。round((stats。numbers / total) * 100)}%)\n`;
                     resultText += `英文字母: ${stats.letters} (${Math.round((stats.letters / total) * 100)}%)\n`;
                     resultText += `英文单词: ${stats.words}\n`;
                     resultText += `标点符号: ${stats.punctuation} (${Math.round((stats.punctuation / total) * 100)}%)\n`;
                     resultText += `空格: ${stats.spaces} (${Math.round((stats.spaces / total) * 100)}%)\n`;
                     resultText += `其他字符: ${stats.other} (${Math.round((stats.other / total) * 100)}%)\n`;
                     
-                    // 创建临时文本区域用于复制（兼容旧浏览器）
+                    // 创建临时文本区域用于复制
                     const textArea = document.createElement('textarea');
-                    textArea.value = resultText;
-                    textArea.style.position = 'fixed';
-                    textArea.style.opacity = '0';
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
+                    textArea。value = resultText;
+                    textArea。style。position = 'fixed';
+                    textArea。style。opacity = '0';
+                    document。body。appendChild(textArea);
+                    textArea。select();
+                    document。execCommand('copy');
                     document.body.removeChild(textArea);
                     
                     // 显示复制成功反馈
                     const originalText = copyButton.innerHTML;
-                    copyButton.innerHTML = `
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .01-.012Z"/>
-                        </svg>
+                    copyButton。innerHTML = `
+                        <i class="fas fa-check"></i>
                         复制成功
                     `;
                     
                     setTimeout(() => {
-                        copyButton.innerHTML = originalText;
-                    }, 2000);
+                        copyButton。innerHTML = originalText;
+                    }， 2000);
                     
                     showNotification('统计结果已复制到剪贴板');
                 } catch (err) {
@@ -1078,7 +1065,7 @@
             // 绑定事件处理函数
             fileInput.addEventListener('change', handleFileUpload);
             clearButton.addEventListener('click', clearContent);
-            copyButton.addEventListener('click', copyResults);
+            copyButton。addEventListener('click', copyResults);
             
             // 初始化
             updateUI(analyzeText(''));
@@ -1086,4 +1073,3 @@
     </script>
 </body>
 </html>
-    
