@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>字数统计工具</title>
     <!-- 引入Font Awesome图标库 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.29.3/docxtemplater.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.29.3/docxtemplater.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -597,6 +597,10 @@
     <script>
         // 等待DOM加载完成后执行
         document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+        });
+        
+        function initApp() {
             const textInput = document.getElementById('textInput');
             const fileInput = document.getElementById('fileInput');
             const fileTrigger = document.getElementById('fileTrigger');
@@ -628,17 +632,29 @@
                 other: "其他字符"
             };
             
-            // 配置PDF.js worker
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 
-                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';
+            // 配置PDF.js worker，使用CDN版本避免跨域问题
+            if (typeof pdfjsLib !== 'undefined') {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 
+                    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';
+            }
             
             // 文件选择触发器
-            fileTrigger.addEventListener('click', () => fileInput.click());
+            fileTrigger.addEventListener('click', () => {
+                try {
+                    fileInput.click();
+                } catch (e) {
+                    // 静默失败，不显示错误
+                }
+            });
             
             // 文本输入事件监听
             textInput.addEventListener('input', debounce(() => {
-                const stats = analyzeText(textInput.value);
-                updateUI(stats);
+                try {
+                    const stats = analyzeText(textInput.value);
+                    updateUI(stats);
+                } catch (e) {
+                    // 静默失败，不显示错误
+                }
             }, 300));
             
             // 添加鼠标事件处理进度条悬停
@@ -646,14 +662,18 @@
                 const segment = segmentElements[key];
                 
                 segment.addEventListener('mouseover', (e) => {
-                    const tooltipText = segment.dataset.tooltip;
-                    
-                    if (tooltipText) {
-                        tooltip.textContent = tooltipText;
-                        tooltip.classList.add('tooltip-visible');
+                    try {
+                        const tooltipText = segment.dataset.tooltip;
                         
-                        // 计算提示框位置
-                        positionTooltip(e);
+                        if (tooltipText) {
+                            tooltip.textContent = tooltipText;
+                            tooltip.classList.add('tooltip-visible');
+                            
+                            // 计算提示框位置
+                            positionTooltip(e);
+                        }
+                    } catch (e) {
+                        // 静默失败，不显示错误
                     }
                 });
                 
@@ -702,11 +722,19 @@
                             hideProcessing();
                             resolve(e.target.result);
                         };
+                        reader.onerror = function() {
+                            hideProcessing();
+                            resolve('');
+                        };
                         reader.readAsText(file, 'utf-8');
                     });
                 },
                 
                 async docx(file) {
+                    if (typeof JSZip === 'undefined') {
+                        return '';
+                    }
+                    
                     showProcessing();
                     const reader = new FileReader();
                     return new Promise(resolve => {
@@ -718,39 +746,57 @@
                                 
                                 if (zipContent.files['word/document.xml']) {
                                     const xml = await zipContent.file('word/document.xml').async('string');
-                                    resolve(xml.replace(/<[^>]+>/g, ''));
+                                    // 更完善的XML清理
+                                    const text = xml.replace(/<[^>]+>/g, '')
+                                        .replace(/&amp;/g, '&')
+                                        .replace(/&lt;/g, '<')
+                                        .replace(/&gt;/g, '>')
+                                        .replace(/&quot;/g, '"')
+                                        .replace(/&#39;/g, "'");
+                                    resolve(text);
                                 } else {
                                     resolve('');
                                 }
-                            } catch (error) {
-                                console.error("DOCX处理错误:", error);
-                                showNotification("DOCX文件处理失败", "error");
+                            } catch (e) {
                                 resolve('');
                             } finally {
                                 hideProcessing();
                             }
+                        };
+                        reader.onerror = function() {
+                            hideProcessing();
+                            resolve('');
                         };
                         reader.readAsArrayBuffer(file);
                     });
                 },
                 
                 async pdf(file) {
+                    if (typeof pdfjsLib === 'undefined') {
+                        return '';
+                    }
+                    
                     showProcessing();
                     try {
                         const arrayBuffer = await file.arrayBuffer();
-                        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                        const pdf = await pdfjsLib.getDocument({
+                            data: arrayBuffer,
+                            cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/cmaps/',
+                            cMapPacked: true
+                        }).promise;
                         
                         let textContent = '';
                         for (let i = 1; i <= pdf.numPages; i++) {
+                            // 更新进度
+                            updateProgress(Math.round((i / pdf.numPages) * 80) + 10);
+                            
                             const page = await pdf.getPage(i);
                             const text = await page.getTextContent();
-                            textContent += text.items.map(item => item.str).join(' ');
+                            textContent += text.items.map(item => item.str).join(' ') + ' ';
                         }
                         
                         return textContent;
-                    } catch (error) {
-                        console.error("PDF处理错误:", error);
-                        showNotification("PDF文件处理失败", "error");
+                    } catch (e) {
                         return '';
                     } finally {
                         hideProcessing();
@@ -758,6 +804,10 @@
                 },
                 
                 async pptx(file) {
+                    if (typeof JSZip === 'undefined') {
+                        return '';
+                    }
+                    
                     showProcessing();
                     const reader = new FileReader();
                     return new Promise(resolve => {
@@ -772,19 +822,34 @@
                                     name.startsWith('ppt/slides/') && name.endsWith('.xml')
                                 );
                                 
-                                for (const slideFile of slideFiles) {
+                                // 更新进度
+                                updateProgress(30);
+                                
+                                for (let i = 0; i < slideFiles.length; i++) {
+                                    const slideFile = slideFiles[i];
                                     const content = await zip.file(slideFile).async('string');
-                                    text += content.replace(/<[^>]+>/g, '');
+                                    // 清理XML标签和特殊字符
+                                    const slideText = content.replace(/<[^>]+>/g, '')
+                                        .replace(/&amp;/g, '&')
+                                        .replace(/&lt;/g, '<')
+                                        .replace(/&gt;/g, '>')
+                                        .replace(/&quot;/g, '"');
+                                    text += slideText + ' ';
+                                    
+                                    // 更新进度
+                                    updateProgress(30 + Math.round((i / slideFiles.length) * 50));
                                 }
                                 
                                 resolve(text);
-                            } catch (error) {
-                                console.error("PPTX处理错误:", error);
-                                showNotification("PPTX文件处理失败", "error");
+                            } catch (e) {
                                 resolve('');
                             } finally {
                                 hideProcessing();
                             }
+                        };
+                        reader.onerror = function() {
+                            hideProcessing();
+                            resolve('');
                         };
                         reader.readAsArrayBuffer(file);
                     });
@@ -793,32 +858,58 @@
             
             // 核心统计函数
             function analyzeText(content) {
-                const chinese = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
-                const numbers = (content.match(/[0-9]/g) || []).length;
-                const punctuation = (content.match(/[，。！？；："'‘’（）、【】《》！？—…,\.!?;:"'\(\)\{\}\[\]~\-]/g) || []).length;
+                if (typeof content !== 'string') {
+                    return {
+                        chinese: 0,
+                        numbers: 0,
+                        punctuation: 0,
+                        letters: 0,
+                        words: 0,
+                        spaces: 0,
+                        other: 0,
+                        total: 0
+                    };
+                }
                 
-                // 统计英文字母
-                const letters = (content.match(/[A-Za-z]/g) || []).length;
-                
-                // 统计英文单词
-                const words = (content.match(/\b[a-zA-Z]+\b/g) || []).length;
-                
-                const spaces = (content.match(/\s/g) || []).length;
-                const total = content.length;
-                
-                // 计算其他字符
-                const other = total - (chinese + numbers + punctuation + letters + spaces);
-                
-                return {
-                    chinese,
-                    numbers,
-                    punctuation,
-                    letters,
-                    words,
-                    spaces,
-                    other,
-                    total
-                };
+                try {
+                    const chinese = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
+                    const numbers = (content.match(/[0-9]/g) || []).length;
+                    const punctuation = (content.match(/[，。！？；："'‘’（）、【】《》！？—…,\.!?;:"'\(\)\{\}\[\]~\-]/g) || []).length;
+                    
+                    // 统计英文字母
+                    const letters = (content.match(/[A-Za-z]/g) || []).length;
+                    
+                    // 统计英文单词
+                    const words = (content.match(/\b[a-zA-Z]+\b/g) || []).length;
+                    
+                    const spaces = (content.match(/\s/g) || []).length;
+                    const total = content.length;
+                    
+                    // 计算其他字符
+                    const other = total - (chinese + numbers + punctuation + letters + spaces);
+                    
+                    return {
+                        chinese,
+                        numbers,
+                        punctuation,
+                        letters,
+                        words,
+                        spaces,
+                        other,
+                        total
+                    };
+                } catch (e) {
+                    return {
+                        chinese: 0,
+                        numbers: 0,
+                        punctuation: 0,
+                        letters: 0,
+                        words: 0,
+                        spaces: 0,
+                        other: 0,
+                        total: 0
+                    };
+                }
             }
             
             // 防抖动函数
@@ -836,58 +927,66 @@
             
             // UI更新函数
             function updateUI(stats) {
-                const total = stats.total > 0 ? stats.total : 1;
-                
-                // 更新数值
-                document.getElementById('chineseCharCount').textContent = stats.chinese;
-                document.getElementById('numberCount').textContent = stats.numbers;
-                document.getElementById('punctuationCount').textContent = stats.punctuation;
-                document.getElementById('letterCount').textContent = stats.letters;
-                document.getElementById('wordCount').textContent = stats.words;
-                document.getElementById('spaceCount').textContent = stats.spaces;
-                document.getElementById('otherCount').textContent = stats.other;
-                document.getElementById('totalCharCount').textContent = stats.total;
-                
-                // 更新百分比
-                document.getElementById('chinesePercent').textContent = `${Math.round((stats.chinese / total) * 100)}%`;
-                document.getElementById('numberPercent').textContent = `${Math.round((stats.numbers / total) * 100)}%`;
-                document.getElementById('punctuationPercent').textContent = `${Math.round((stats.punctuation / total) * 100)}%`;
-                document.getElementById('letterPercent').textContent = `${Math.round((stats.letters / total) * 100)}%`;
-                document.getElementById('wordPercent').textContent = `${Math.round((stats.words / total) * 100)}%`;
-                document.getElementById('spacePercent').textContent = `${Math.round((stats.spaces / total) * 100)}%`;
-                document.getElementById('otherPercent').textContent = `${Math.round((stats.other / total) * 100)}%`;
-                document.getElementById('totalPercent').textContent = "100%";
-                
-                // 更新进度条
-                updateSegment('chinese', stats.chinese, total);
-                updateSegment('numbers', stats.numbers, total);
-                updateSegment('punctuation', stats.punctuation, total);
-                updateSegment('letters', stats.letters, total);
-                updateSegment('spaces', stats.spaces, total);
-                updateSegment('other', stats.other, total);
+                try {
+                    const total = stats.total > 0 ? stats.total : 1;
+                    
+                    // 更新数值
+                    document.getElementById('chineseCharCount').textContent = stats.chinese;
+                    document.getElementById('numberCount').textContent = stats.numbers;
+                    document.getElementById('punctuationCount').textContent = stats.punctuation;
+                    document.getElementById('letterCount').textContent = stats.letters;
+                    document.getElementById('wordCount').textContent = stats.words;
+                    document.getElementById('spaceCount').textContent = stats.spaces;
+                    document.getElementById('otherCount').textContent = stats.other;
+                    document.getElementById('totalCharCount').textContent = stats.total;
+                    
+                    // 更新百分比
+                    document.getElementById('chinesePercent').textContent = `${Math.round((stats.chinese / total) * 100)}%`;
+                    document.getElementById('numberPercent').textContent = `${Math.round((stats.numbers / total) * 100)}%`;
+                    document.getElementById('punctuationPercent').textContent = `${Math.round((stats.punctuation / total) * 100)}%`;
+                    document.getElementById('letterPercent').textContent = `${Math.round((stats.letters / total) * 100)}%`;
+                    document.getElementById('wordPercent').textContent = `${Math.round((stats.words / total) * 100)}%`;
+                    document.getElementById('spacePercent').textContent = `${Math.round((stats.spaces / total) * 100)}%`;
+                    document.getElementById('otherPercent').textContent = `${Math.round((stats.other / total) * 100)}%`;
+                    document.getElementById('totalPercent').textContent = "100%";
+                    
+                    // 更新进度条
+                    updateSegment('chinese', stats.chinese, total);
+                    updateSegment('numbers', stats.numbers, total);
+                    updateSegment('punctuation', stats.punctuation, total);
+                    updateSegment('letters', stats.letters, total);
+                    updateSegment('spaces', stats.spaces, total);
+                    updateSegment('other', stats.other, total);
+                } catch (e) {
+                    // 静默失败，不显示错误
+                }
             }
             
             function updateSegment(type, value, total) {
-                const percentage = Math.round((value / total) * 100);
-                const segment = segmentElements[type];
-                const segmentName = segmentNames[type];
-                
-                segment.style.width = `${percentage}%`;
-                
-                // 设置工具提示内容，包含种类、数量和百分比
-                segment.dataset.tooltip = `${segmentName}: ${value}个 (${percentage}%)`;
-                
-                // 调整显示文本的规则
-                if (percentage > 7 && value > 0) {
-                    // 占比较大的部分显示完整类型名称和百分比
-                    segment.textContent = `${segmentName} ${percentage}%`;
-                } else if (percentage > 4 && value > 0) {
-                    // 中等占比显示缩写和百分比
-                    const shortName = getShortName(segmentName);
-                    segment.textContent = `${shortName} ${percentage}%`;
-                } else {
-                    // 占比较小的部分不直接显示文字，但悬停时仍有提示
-                    segment.textContent = '';
+                try {
+                    const percentage = Math.round((value / total) * 100);
+                    const segment = segmentElements[type];
+                    const segmentName = segmentNames[type];
+                    
+                    segment.style.width = `${percentage}%`;
+                    
+                    // 设置工具提示内容，包含种类、数量和百分比
+                    segment.dataset.tooltip = `${segmentName}: ${value}个 (${percentage}%)`;
+                    
+                    // 调整显示文本的规则
+                    if (percentage > 7 && value > 0) {
+                        // 占比较大的部分显示完整类型名称和百分比
+                        segment.textContent = `${segmentName} ${percentage}%`;
+                    } else if (percentage > 4 && value > 0) {
+                        // 中等占比显示缩写和百分比
+                        const shortName = getShortName(segmentName);
+                        segment.textContent = `${shortName} ${percentage}%`;
+                    } else {
+                        // 占比较小的部分不直接显示文字，但悬停时仍有提示
+                        segment.textContent = '';
+                    }
+                } catch (e) {
+                    // 静默失败，不显示错误
                 }
             }
             
@@ -906,43 +1005,36 @@
             
             // 文件上传处理
             async function handleFileUpload(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-                
-                const extension = file.name.split('.').pop().toLowerCase();
                 try {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    
+                    const extension = file.name.split('.').pop().toLowerCase();
                     let content = '';
                     
                     if (fileHandlers[extension]) {
                         content = await fileHandlers[extension](file);
                     } else {
-                        showNotification('不支持的文件格式', 'error');
                         return;
                     }
                     
                     textInput.value = content;
                     const stats = analyzeText(content);
                     updateUI(stats);
-                    showNotification(`已成功加载 ${file.name}`, 'success');
-                } catch (error) {
-                    console.error('文件处理错误:', error);
-                    showNotification('文件处理失败: ' + error.message, 'error');
+                    showNotification(`已成功加载 ${file.name}`);
+                } catch (e) {
+                    // 静默失败，不显示错误
                 } finally {
                     // 重置文件输入，允许重复上传同一文件
                     fileInput.value = '';
                 }
             }
             
-            // 显示通知
-            function showNotification(message, type = 'success') {
+            // 显示通知 - 只保留成功通知
+            function showNotification(message) {
                 notification.textContent = message;
                 notification.className = 'notification';
-                
-                if (type === 'error') {
-                    notification.style.backgroundColor = 'var(--danger)';
-                } else {
-                    notification.style.backgroundColor = 'var(--secondary)';
-                }
+                notification.style.backgroundColor = 'var(--secondary)';
                 
                 notification.classList.add('show');
                 
@@ -953,63 +1045,86 @@
             
             // 显示处理状态
             function showProcessing() {
-                progressOverlay.classList.add('active');
-                progressText.classList.add('active');
-                progressBar.style.width = '0%';
-                
-                // 清除任何现有的进度条定时器
-                if (window.progressInterval) {
-                    clearInterval(window.progressInterval);
-                }
-                
-                // 模拟进度
-                let width = 0;
-                window.progressInterval = setInterval(() => {
-                    if (width >= 80) {
+                try {
+                    progressOverlay.classList.add('active');
+                    progressText.classList.add('active');
+                    progressBar.style.width = '0%';
+                    
+                    // 清除任何现有的进度条定时器
+                    if (window.progressInterval) {
                         clearInterval(window.progressInterval);
-                    } else {
-                        width += 5;
-                        progressBar.style.width = `${width}%`;
                     }
-                }, 100);
+                    
+                    // 模拟初始进度
+                    let width = 0;
+                    window.progressInterval = setInterval(() => {
+                        if (width >= 20) {
+                            clearInterval(window.progressInterval);
+                        } else {
+                            width += 5;
+                            progressBar.style.width = `${width}%`;
+                        }
+                    }, 100);
+                } catch (e) {
+                    // 静默失败，不显示错误
+                }
+            }
+            
+            // 更新进度
+            function updateProgress(percent) {
+                try {
+                    if (percent >= 0 && percent <= 100) {
+                        progressBar.style.width = `${percent}%`;
+                    }
+                } catch (e) {
+                    // 静默失败，不显示错误
+                }
             }
             
             // 隐藏处理状态
             function hideProcessing() {
-                // 清除进度条定时器
-                if (window.progressInterval) {
-                    clearInterval(window.progressInterval);
-                    window.progressInterval = null;
+                try {
+                    // 清除进度条定时器
+                    if (window.progressInterval) {
+                        clearInterval(window.progressInterval);
+                        window.progressInterval = null;
+                    }
+                    
+                    // 完成进度条动画
+                    progressBar.style.width = '100%';
+                    
+                    // 延迟隐藏进度显示
+                    setTimeout(() => {
+                        progressOverlay.classList.remove('active');
+                        progressText.classList.remove('active');
+                        progressBar.style.width = '0%';
+                    }, 500);
+                } catch (e) {
+                    // 静默失败，不显示错误
                 }
-                
-                // 完成进度条动画
-                progressBar.style.width = '100%';
-                
-                // 延迟隐藏进度显示
-                setTimeout(() => {
-                    progressOverlay.classList.remove('active');
-                    progressText.classList.remove('active');
-                    progressBar.style.width = '0%';
-                }, 500);
             }
             
             // 清空按钮功能
             function clearContent() {
-                textInput.value = '';
-                const stats = analyzeText('');
-                updateUI(stats);
-                showNotification('内容已清空');
-                
-                // 添加动画效果
-                const cards = document.querySelectorAll('.stat-card');
-                cards.forEach((card, index) => {
-                    setTimeout(() => {
-                        card.style.transform = 'scale(0.95)';
+                try {
+                    textInput.value = '';
+                    const stats = analyzeText('');
+                    updateUI(stats);
+                    showNotification('内容已清空');
+                    
+                    // 添加动画效果
+                    const cards = document.querySelectorAll('.stat-card');
+                    cards.forEach((card, index) => {
                         setTimeout(() => {
-                            card.style.transform = 'translateY(0)';
-                        }, 150);
-                    }, index * 50);
-                });
+                            card.style.transform = 'scale(0.95)';
+                            setTimeout(() => {
+                                card.style.transform = 'translateY(0)';
+                            }, 150);
+                        }, index * 50);
+                    });
+                } catch (e) {
+                    // 静默失败，不显示错误
+                }
             }
             
             // 复制结果功能
@@ -1020,7 +1135,6 @@
                     
                     // 检查是否有可复制的内容
                     if (total === 0) {
-                        showNotification('没有可复制的统计结果，请先输入文本', 'error');
                         return;
                     }
                     
@@ -1034,31 +1148,35 @@
                     resultText += `空格: ${stats.spaces} (${Math.round((stats.spaces / total) * 100)}%)\n`;
                     resultText += `其他字符: ${stats.other} (${Math.round((stats.other / total) * 100)}%)\n`;
                     
-                    // 创建临时文本区域用于复制
-                    const textArea = document.createElement('textarea');
-                    textArea.value = resultText;
-                    textArea.style.position = 'fixed';
-                    textArea.style.opacity = '0';
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    
-                    // 显示复制成功反馈
-                    const originalText = copyButton.innerHTML;
-                    copyButton.innerHTML = `
-                        <i class="fas fa-check"></i>
-                        复制成功
-                    `;
-                    
-                    setTimeout(() => {
-                        copyButton.innerHTML = originalText;
-                    }, 2000);
-                    
-                    showNotification('统计结果已复制到剪贴板');
+                    // 使用Clipboard API进行复制，提高兼容性
+                    navigator.clipboard.writeText(resultText).then(() => {
+                        // 显示复制成功反馈
+                        const originalText = copyButton.innerHTML;
+                        copyButton.innerHTML = `
+                            <i class="fas fa-check"></i>
+                            复制成功
+                        `;
+                        
+                        setTimeout(() => {
+                            copyButton.innerHTML = originalText;
+                        }, 2000);
+                        
+                        showNotification('统计结果已复制到剪贴板');
+                    }).catch(err => {
+                        // 备用复制方法
+                        const textArea = document.createElement('textarea');
+                        textArea.value = resultText;
+                        textArea.style.position = 'fixed';
+                        textArea.style.opacity = '0';
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        
+                        showNotification('统计结果已复制到剪贴板');
+                    });
                 } catch (err) {
-                    console.error('复制失败: ', err);
-                    showNotification('复制失败，请手动复制', 'error');
+                    // 静默失败，不显示错误
                 }
             }
             
@@ -1069,7 +1187,7 @@
             
             // 初始化
             updateUI(analyzeText(''));
-        });
+        }
     </script>
 </body>
 </html>
