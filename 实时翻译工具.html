@@ -184,13 +184,6 @@
                 'nl': /[ëïàâêôûĳËÏÀÂÊÔÛĲ]/,                             // 荷兰语
                 'sv': /[åäöÅÄÖ]/,                                       // 瑞典语
                 'pl': /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/                           // 波兰语
-            },
-            // 每种语言的权重，确保主要语言有更高优先级
-            weights: {
-                'zh': 1.0, 'en': 1.0, 'jp': 0.9, 'kor': 0.9,
-                'ru': 0.8, 'fra': 0.8, 'spa': 0.8, 'de': 0.7,
-                'pt': 0.7, 'it': 0.7, 'ara': 0.7, 'hi': 0.6,
-                'vie': 0.6, 'th': 0.6, 'nl': 0.6, 'sv': 0.5, 'pl': 0.5
             }
         };
 
@@ -235,7 +228,7 @@
 
         // 绑定事件监听器
         function attachEventListeners() {
-            // 输入时立即检测语言
+            // 移除防抖，确保每次输入都立即检测
             elements.sourceText.addEventListener('input', handleTextInput);
             elements.clearBtn.addEventListener('click', clearAllFields);
             elements.copyBtn.addEventListener('click', copyTranslationResult);
@@ -259,6 +252,10 @@
             elements.charCount.innerHTML = `<i class="fa fa-file-text-o mr-1.5"></i>${inputText.length} 字符`;
             
             if (inputText.length > 0) {
+                // 立即显示"检测中..."状态
+                elements.langFrom.textContent = '检测中...';
+                
+                // 强制同步执行语言检测，确保立即更新
                 detectLanguage(inputText);
                 updateLanguageDisplay(true);
             } else {
@@ -267,7 +264,7 @@
             }
         }
 
-        // 增强的语言检测算法，支持所有配置的语言
+        // 简化的语言检测算法，优先确保响应速度
         function detectLanguage(text) {
             // 清理文本，保留有语言特征的字符
             const cleanedText = text.replace(/[\s0-9\p{P}]/gu, '');
@@ -279,42 +276,52 @@
                 return;
             }
 
-            let detectedLang = 'auto';
-            let highestScore = 0;
-
-            // 检查所有支持的语言
-            Object.keys(LANGUAGE_CONFIG.patterns).forEach(lang => {
-                const pattern = LANGUAGE_CONFIG.patterns[lang];
-                const matches = cleanedText.match(pattern) || [];
-                
-                // 计算匹配度分数，结合语言权重
-                const matchRatio = matches.length / cleanedText.length;
-                const weight = LANGUAGE_CONFIG.weights[lang] || 0.5;
-                const score = matchRatio * weight;
-                
-                // 设定最低匹配阈值
-                const minThreshold = lang === 'zh' || lang === 'en' ? 0.1 : 0.2;
-                
-                // 更新最高得分语言
-                if (matchRatio > minThreshold && score > highestScore) {
-                    highestScore = score;
-                    detectedLang = lang;
-                }
-            });
-
-            // 特殊处理混合语言情况
-            if (detectedLang === 'en' && LANGUAGE_CONFIG.patterns.zh.test(cleanedText)) {
-                const enMatches = cleanedText.match(LANGUAGE_CONFIG.patterns.en) || [];
-                const zhMatches = cleanedText.match(LANGUAGE_CONFIG.patterns.zh) || [];
-                
-                if (zhMatches.length > enMatches.length * 0.4) {
-                    detectedLang = 'zh';
-                }
+            // 简化检测逻辑，先检查最常见的语言
+            if (LANGUAGE_CONFIG.patterns.zh.test(cleanedText)) {
+                translationState.from = 'zh';
+                translationState.to = 'en';
+                return;
             }
-
-            // 更新翻译状态
-            translationState.from = detectedLang;
-            translationState.to = detectedLang === 'zh' ? 'en' : 'zh';
+            
+            if (LANGUAGE_CONFIG.patterns.en.test(cleanedText)) {
+                translationState.from = 'en';
+                translationState.to = 'zh';
+                return;
+            }
+            
+            if (LANGUAGE_CONFIG.patterns.jp.test(cleanedText)) {
+                translationState.from = 'jp';
+                translationState.to = 'zh';
+                return;
+            }
+            
+            if (LANGUAGE_CONFIG.patterns.kor.test(cleanedText)) {
+                translationState.from = 'kor';
+                translationState.to = 'zh';
+                return;
+            }
+            
+            if (LANGUAGE_CONFIG.patterns.ru.test(cleanedText)) {
+                translationState.from = 'ru';
+                translationState.to = 'zh';
+                return;
+            }
+            
+            if (LANGUAGE_CONFIG.patterns.fra.test(cleanedText)) {
+                translationState.from = 'fra';
+                translationState.to = 'zh';
+                return;
+            }
+            
+            if (LANGUAGE_CONFIG.patterns.spa.test(cleanedText)) {
+                translationState.from = 'spa';
+                translationState.to = 'zh';
+                return;
+            }
+            
+            // 如果都不匹配，默认检测为英文
+            translationState.from = 'en';
+            translationState.to = 'zh';
         }
 
         // 更新语言显示
@@ -322,7 +329,7 @@
             const fromLangName = LANGUAGE_CONFIG.names[translationState.from] || '检测语言';
             const toLangName = LANGUAGE_CONFIG.names[translationState.to] || '中文';
             
-            // 立即更新显示
+            // 立即更新显示，不做额外判断
             elements.langFrom.textContent = fromLangName;
             elements.langFrom.classList.add('lang-update');
             setTimeout(() => elements.langFrom.classList.remove('lang-update'), 300);
@@ -408,11 +415,15 @@
             elements.resultText.innerHTML = `<div class="text-gray-400 text-center py-5"><div class="w-5 h-5 result-loader mx-auto inline-block"></div><span class="ml-2">翻译中...</span></div>`;
             hideError();
             
+            // 确保中文翻译为英文，其他语言翻译为中文
+            const fromLang = translationState.from;
+            const toLang = fromLang === 'zh' ? 'en' : 'zh';
+            
             // 百度翻译API参数
             const apiParams = {
                 q: textToTranslate,
-                from: translationState.from,
-                to: translationState.to,
+                from: fromLang,
+                to: toLang,
                 appid: "20250819002434150",
                 salt: Math.floor(Math.random() * 1000000000),
                 sign: ''
@@ -464,6 +475,7 @@
             // 根据API返回结果更新语言检测
             if (data.from) {
                 translationState.from = data.from;
+                translationState.to = data.from === 'zh' ? 'en' : 'zh';
                 updateLanguageDisplay(true);
             }
             
@@ -500,3 +512,4 @@
     </script>
 </body>
 </html>
+    
