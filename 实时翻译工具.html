@@ -53,6 +53,17 @@
         .btn-hover-effect:active {
             transform: translateY(0);
         }
+        
+        /* 语言选择器样式 */
+        .lang-selector {
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .lang-selector:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
@@ -72,9 +83,11 @@
                 <div class="flex justify-between items-center mb-2">
                     <label for="sourceText" class="block text-sm font-medium text-gray-700">输入文本：</label>
                     <div class="flex items-center space-x-2 text-sm">
-                        <span id="langFrom" class="font-medium text-gray-700">检测语言</span>
-                        <i class="fa fa-arrow-right text-blue-400"></i>
-                        <span id="langTo" class="font-medium text-gray-700">中文</span>
+                        <span id="langFrom" class="font-medium text-gray-700 lang-selector">检测语言</span>
+                        <button id="swapLangBtn" class="text-blue-400 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50 transition-colors">
+                            <i class="fa fa-exchange"></i>
+                        </button>
+                        <span id="langTo" class="font-medium text-gray-700 lang-selector">中文</span>
                     </div>
                 </div>
                 <textarea 
@@ -142,13 +155,28 @@
             <ul class="text-sm text-gray-600 space-y-1">
                 <li class="flex items-start">
                     <i class="fa fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
-                    <span>支持实时识别中文、英文、日语、韩语、俄语、法语、西班牙语等多种语言</span>
+                    <span>支持识别并翻译中文、英文、日语、韩语、俄语、法语、西班牙语等多种语言</span>
                 </li>
                 <li class="flex items-start">
                     <i class="fa fa-circle text-xs text-blue-500 mt-1.5 mr-2"></i>
-                    <span>中文将翻译为英文，其他语言翻译为中文</span>
+                    <span>点击语言名称可手动选择翻译方向，点击交换按钮可快速切换源语言和目标语言</span>
                 </li>
             </ul>
+        </div>
+    </div>
+    
+    <!-- 语言选择面板 -->
+    <div id="langSelectorPanel" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-5 transform transition-all">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">选择语言</h3>
+            <div class="grid grid-cols-3 gap-2 max-h-60 overflow-y-auto pr-2">
+                <!-- 语言选项将通过JS动态生成 -->
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end">
+                <button id="closeLangSelector" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg transition-colors">
+                    取消
+                </button>
+            </div>
         </div>
     </div>
     
@@ -159,15 +187,36 @@
     </div>
 
     <script>
-        // 扩展语言映射配置，增加更多语言
+        // 扩展语言映射配置，确保与百度翻译API语言代码一致
         const LANGUAGE_CONFIG = {
+            // 百度翻译API支持的语言列表及对应名称
+            // 语言代码参考: https://fanyi-api.baidu.com/doc/21
             names: {
-                'zh': '中文', 'en': '英文', 'jp': '日语', 'kor': '韩语',
-                'ru': '俄语', 'fra': '法语', 'spa': '西班牙语', 'de': '德语',
-                'pt': '葡萄牙语', 'it': '意大利语', 'ara': '阿拉伯语',
-                'hi': '印地语', 'vie': '越南语', 'th': '泰语', 'nl': '荷兰语',
-                'sv': '瑞典语', 'pl': '波兰语', 'auto': '检测语言'
+                'auto': '自动检测',
+                'zh': '中文',
+                'en': '英语',
+                'jp': '日语',
+                'kor': '韩语',
+                'ru': '俄语',
+                'fra': '法语',
+                'spa': '西班牙语',
+                'de': '德语',
+                'pt': '葡萄牙语',
+                'it': '意大利语',
+                'ara': '阿拉伯语',
+                'hi': '印地语',
+                'vie': '越南语',
+                'th': '泰语',
+                'nl': '荷兰语',
+                'sv': '瑞典语',
+                'pl': '波兰语',
+                'dan': '丹麦语',
+                'fin': '芬兰语',
+                'cs': '捷克语',
+                'ro': '罗马尼亚语',
+                'hu': '匈牙利语'
             },
+            // 语言检测模式 - 更精确的正则表达式
             patterns: {
                 'zh': /[\u4e00-\u9fa5\u3400-\u4dbf]/,                  // 中文
                 'en': /[a-zA-Z]/,                                       // 英文
@@ -183,7 +232,23 @@
                 'it': /[àèéìíòóùúÀÈÉÌÍÒÓÙÚ]/,                           // 意大利语
                 'nl': /[ëïàâêôûĳËÏÀÂÊÔÛĲ]/,                             // 荷兰语
                 'sv': /[åäöÅÄÖ]/,                                       // 瑞典语
-                'pl': /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/                           // 波兰语
+                'pl': /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/,                          // 波兰语
+                'dan': /[æøåÆØÅ]/,                                      // 丹麦语
+                'fin': /[äöÄÖ]/,                                         // 芬兰语
+                'cs': /[áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/,               // 捷克语
+                'ro': /[ăâîșțĂÂÎȘȚ]/,                                    // 罗马尼亚语
+                'hu': /[áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/                            // 匈牙利语
+            },
+            // 定义常用的翻译方向
+            commonDirections: {
+                'zh': 'en',     // 中文 -> 英文
+                'en': 'zh',     // 英文 -> 中文
+                'jp': 'zh',     // 日语 -> 中文
+                'kor': 'zh',    // 韩语 -> 中文
+                'ru': 'zh',     // 俄语 -> 中文
+                'fra': 'zh',    // 法语 -> 中文
+                'spa': 'zh',    // 西班牙语 -> 中文
+                'auto': 'zh'    // 自动检测 -> 中文
             }
         };
 
@@ -198,11 +263,14 @@
             loader: document.getElementById('loader'),
             langFrom: document.getElementById('langFrom'),
             langTo: document.getElementById('langTo'),
+            swapLangBtn: document.getElementById('swapLangBtn'),
             notification: document.getElementById('notification'),
             notificationText: document.getElementById('notificationText'),
             errorPanel: document.getElementById('errorPanel'),
             errorMessage: document.getElementById('errorMessage'),
-            retryBtn: document.getElementById('retryBtn')
+            retryBtn: document.getElementById('retryBtn'),
+            langSelectorPanel: document.getElementById('langSelectorPanel'),
+            closeLangSelector: document.getElementById('closeLangSelector')
         };
 
         // 翻译方向状态
@@ -210,6 +278,9 @@
             from: 'auto',
             to: 'zh'
         };
+
+        // 当前正在选择的语言类型 ('from' 或 'to')
+        let selectingLangType = null;
 
         // 代理服务器列表
         const PROXY_SERVERS = [
@@ -223,17 +294,76 @@
         // 初始化
         function initialize() {
             updateLanguageDisplay();
+            createLanguageSelectorOptions();
             attachEventListeners();
+        }
+
+        // 创建语言选择器选项
+        function createLanguageSelectorOptions() {
+            const langGrid = elements.langSelectorPanel.querySelector('.grid');
+            langGrid.innerHTML = '';
+            
+            // 生成语言选项
+            Object.keys(LANGUAGE_CONFIG.names).forEach(langCode => {
+                if (langCode === 'auto') return; // 自动检测不放在手动选择中
+                
+                const langName = LANGUAGE_CONFIG.names[langCode];
+                const langOption = document.createElement('button');
+                langOption.className = 'py-2 px-3 rounded text-left hover:bg-blue-50 text-gray-800 text-sm transition-colors';
+                langOption.textContent = langName;
+                langOption.dataset.langCode = langCode;
+                
+                langOption.addEventListener('click', () => {
+                    if (selectingLangType === 'from') {
+                        translationState.from = langCode;
+                        // 自动调整目标语言
+                        translationState.to = LANGUAGE_CONFIG.commonDirections[langCode] || 'zh';
+                    } else if (selectingLangType === 'to') {
+                        translationState.to = langCode;
+                    }
+                    
+                    updateLanguageDisplay(true);
+                    elements.langSelectorPanel.classList.add('hidden');
+                });
+                
+                langGrid.appendChild(langOption);
+            });
         }
 
         // 绑定事件监听器
         function attachEventListeners() {
-            // 移除防抖，确保每次输入都立即检测
-            elements.sourceText.addEventListener('input', handleTextInput);
+            // 文本输入事件
+            elements.sourceText.addEventListener('input', debounce(handleTextInput, 300));
+            
+            // 其他按钮事件
             elements.clearBtn.addEventListener('click', clearAllFields);
             elements.copyBtn.addEventListener('click', copyTranslationResult);
             elements.translateBtn.addEventListener('click', performTranslation);
             elements.retryBtn.addEventListener('click', performTranslation);
+            elements.closeLangSelector.addEventListener('click', () => {
+                elements.langSelectorPanel.classList.add('hidden');
+            });
+            
+            // 语言选择事件
+            elements.langFrom.addEventListener('click', () => {
+                selectingLangType = 'from';
+                elements.langSelectorPanel.classList.remove('hidden');
+            });
+            
+            elements.langTo.addEventListener('click', () => {
+                selectingLangType = 'to';
+                elements.langSelectorPanel.classList.remove('hidden');
+            });
+            
+            // 交换语言按钮
+            elements.swapLangBtn.addEventListener('click', swapLanguages);
+            
+            // 点击外部关闭语言选择面板
+            elements.langSelectorPanel.addEventListener('click', (e) => {
+                if (e.target === elements.langSelectorPanel) {
+                    elements.langSelectorPanel.classList.add('hidden');
+                }
+            });
             
             // 回车键翻译
             elements.sourceText.addEventListener('keydown', e => {
@@ -244,6 +374,17 @@
             });
         }
 
+        // 防抖函数
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this;
+                const args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
+
         // 处理文本输入 - 实时检测语言
         function handleTextInput() {
             const inputText = elements.sourceText.value.trim();
@@ -251,20 +392,19 @@
             elements.sourceText.classList.remove('error-highlight');
             elements.charCount.innerHTML = `<i class="fa fa-file-text-o mr-1.5"></i>${inputText.length} 字符`;
             
-            if (inputText.length > 0) {
-                // 立即显示"检测中..."状态
+            // 只有当源语言是自动检测时才进行语言检测
+            if (inputText.length > 0 && translationState.from === 'auto') {
+                // 显示"检测中..."状态
                 elements.langFrom.textContent = '检测中...';
-                
-                // 强制同步执行语言检测，确保立即更新
                 detectLanguage(inputText);
                 updateLanguageDisplay(true);
-            } else {
+            } else if (inputText.length === 0) {
                 translationState = { from: 'auto', to: 'zh' };
                 updateLanguageDisplay(true);
             }
         }
 
-        // 简化的语言检测算法，优先确保响应速度
+        // 改进的语言检测算法
         function detectLanguage(text) {
             // 清理文本，保留有语言特征的字符
             const cleanedText = text.replace(/[\s0-9\p{P}]/gu, '');
@@ -276,60 +416,62 @@
                 return;
             }
 
-            // 简化检测逻辑，先检查最常见的语言
-            if (LANGUAGE_CONFIG.patterns.zh.test(cleanedText)) {
-                translationState.from = 'zh';
-                translationState.to = 'en';
-                return;
+            // 统计每种语言特征字符的出现次数
+            const langScores = {};
+            
+            // 初始化分数对象
+            Object.keys(LANGUAGE_CONFIG.patterns).forEach(lang => {
+                langScores[lang] = 0;
+            });
+            
+            // 计算每个语言的匹配分数
+            Object.entries(LANGUAGE_CONFIG.patterns).forEach(([lang, pattern]) => {
+                const matches = cleanedText.match(pattern);
+                langScores[lang] = matches ? matches.length : 0;
+            });
+            
+            // 找出得分最高的语言
+            let highestScore = 0;
+            let detectedLang = 'en'; // 默认英语
+            
+            Object.entries(langScores).forEach(([lang, score]) => {
+                if (score > highestScore) {
+                    highestScore = score;
+                    detectedLang = lang;
+                }
+            });
+            
+            // 设置检测到的语言和对应的目标语言
+            translationState.from = detectedLang;
+            translationState.to = LANGUAGE_CONFIG.commonDirections[detectedLang] || 'zh';
+        }
+
+        // 交换源语言和目标语言
+        function swapLanguages() {
+            const inputText = elements.sourceText.value.trim();
+            const resultText = elements.resultText.textContent.trim();
+            
+            // 交换语言
+            const tempLang = translationState.from;
+            translationState.from = translationState.to;
+            translationState.to = tempLang;
+            
+            // 如果有内容，也交换文本
+            if (inputText && resultText && !resultText.includes('翻译结果将显示在这里')) {
+                elements.sourceText.value = resultText;
+                elements.resultText.innerHTML = `<div class="text-gray-400 text-center py-5"><i class="fa fa-info-circle mr-1.5"></i> 翻译结果将显示在这里</div>`;
+                elements.charCount.innerHTML = `<i class="fa fa-file-text-o mr-1.5"></i>${resultText.length} 字符`;
             }
             
-            if (LANGUAGE_CONFIG.patterns.en.test(cleanedText)) {
-                translationState.from = 'en';
-                translationState.to = 'zh';
-                return;
-            }
-            
-            if (LANGUAGE_CONFIG.patterns.jp.test(cleanedText)) {
-                translationState.from = 'jp';
-                translationState.to = 'zh';
-                return;
-            }
-            
-            if (LANGUAGE_CONFIG.patterns.kor.test(cleanedText)) {
-                translationState.from = 'kor';
-                translationState.to = 'zh';
-                return;
-            }
-            
-            if (LANGUAGE_CONFIG.patterns.ru.test(cleanedText)) {
-                translationState.from = 'ru';
-                translationState.to = 'zh';
-                return;
-            }
-            
-            if (LANGUAGE_CONFIG.patterns.fra.test(cleanedText)) {
-                translationState.from = 'fra';
-                translationState.to = 'zh';
-                return;
-            }
-            
-            if (LANGUAGE_CONFIG.patterns.spa.test(cleanedText)) {
-                translationState.from = 'spa';
-                translationState.to = 'zh';
-                return;
-            }
-            
-            // 如果都不匹配，默认检测为英文
-            translationState.from = 'en';
-            translationState.to = 'zh';
+            updateLanguageDisplay(true);
         }
 
         // 更新语言显示
         function updateLanguageDisplay(forceUpdate = false) {
-            const fromLangName = LANGUAGE_CONFIG.names[translationState.from] || '检测语言';
+            const fromLangName = LANGUAGE_CONFIG.names[translationState.from] || '自动检测';
             const toLangName = LANGUAGE_CONFIG.names[translationState.to] || '中文';
             
-            // 立即更新显示，不做额外判断
+            // 更新显示
             elements.langFrom.textContent = fromLangName;
             elements.langFrom.classList.add('lang-update');
             setTimeout(() => elements.langFrom.classList.remove('lang-update'), 300);
@@ -415,9 +557,9 @@
             elements.resultText.innerHTML = `<div class="text-gray-400 text-center py-5"><div class="w-5 h-5 result-loader mx-auto inline-block"></div><span class="ml-2">翻译中...</span></div>`;
             hideError();
             
-            // 确保中文翻译为英文，其他语言翻译为中文
+            // 使用当前选择的翻译方向
             const fromLang = translationState.from;
-            const toLang = fromLang === 'zh' ? 'en' : 'zh';
+            const toLang = translationState.to;
             
             // 百度翻译API参数
             const apiParams = {
@@ -466,16 +608,29 @@
         // 处理翻译响应
         function handleTranslationResponse(data) {
             if (data.error_code) {
-                throw new Error(`翻译失败: ${data.error_msg || '未知错误'}`);
+                // 处理API返回的错误代码
+                const errorMessages = {
+                    '52001': '请求超时，请重试',
+                    '52002': '系统错误，请重试',
+                    '52003': '未授权用户，请检查appid是否正确',
+                    '54000': '必填参数为空，请检查参数',
+                    '54001': '签名错误，请检查签名生成方式',
+                    '54003': '访问频率受限，请稍后再试',
+                    '54004': '账户余额不足，请充值',
+                    '54005': '长query请求频繁，请稍后再试',
+                    '58000': '客户端IP非法，请检查ip是否在白名单中',
+                    '58001': '语言不支持，请检查语言代码'
+                };
+                
+                throw new Error(errorMessages[data.error_code] || `翻译失败: ${data.error_msg || '未知错误'}`);
             }
             
             let translatedText = data.trans_result.map(item => item.dst).join('\n');
             elements.resultText.textContent = translatedText;
             
             // 根据API返回结果更新语言检测
-            if (data.from) {
+            if (data.from && translationState.from === 'auto') {
                 translationState.from = data.from;
-                translationState.to = data.from === 'zh' ? 'en' : 'zh';
                 updateLanguageDisplay(true);
             }
             
@@ -486,6 +641,7 @@
 
         // 处理翻译错误
         function handleTranslationError(error) {
+            // 切换到下一个代理
             switchToNextProxy();
             
             let errorMessage = '';
@@ -512,4 +668,3 @@
     </script>
 </body>
 </html>
-    
