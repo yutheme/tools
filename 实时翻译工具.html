@@ -7,7 +7,6 @@
     <!-- 引入外部资源 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
     
     <style>
         /* 基础样式 */
@@ -187,68 +186,84 @@
     </div>
 
     <script>
-        // 扩展语言映射配置，确保与百度翻译API语言代码一致
+        // 语言映射配置 - 使用Google Translate API语言代码
         const LANGUAGE_CONFIG = {
-            // 百度翻译API支持的语言列表及对应名称
-            // 语言代码参考: https://fanyi-api.baidu.com/doc/21
+            // Google Translate API语言代码
+            // 参考文档: https://cloud.google.com/translate/docs/languages
             names: {
                 'auto': '自动检测',
                 'zh': '中文',
+                'zh-CN': '中文(简体)',
+                'zh-TW': '中文(繁体)',
                 'en': '英语',
-                'jp': '日语',
-                'kor': '韩语',
+                'ja': '日语',
+                'ko': '韩语',
                 'ru': '俄语',
-                'fra': '法语',
-                'spa': '西班牙语',
+                'fr': '法语',
+                'es': '西班牙语',
                 'de': '德语',
                 'pt': '葡萄牙语',
                 'it': '意大利语',
-                'ara': '阿拉伯语',
+                'ar': '阿拉伯语',
                 'hi': '印地语',
-                'vie': '越南语',
+                'vi': '越南语',
                 'th': '泰语',
                 'nl': '荷兰语',
                 'sv': '瑞典语',
                 'pl': '波兰语',
-                'dan': '丹麦语',
-                'fin': '芬兰语',
+                'da': '丹麦语',
+                'fi': '芬兰语',
                 'cs': '捷克语',
                 'ro': '罗马尼亚语',
-                'hu': '匈牙利语'
+                'hu': '匈牙利语',
+                'el': '希腊语',
+                'tr': '土耳其语',
+                'id': '印尼语',
+                'ms': '马来语',
+                'uk': '乌克兰语'
             },
             // 语言检测模式 - 更精确的正则表达式
             patterns: {
                 'zh': /[\u4e00-\u9fa5\u3400-\u4dbf]/,                  // 中文
+                'zh-CN': /[\u4e00-\u9fa5\u3400-\u4dbf]/,               // 中文简体
+                'zh-TW': /[\u4e00-\u9fa5\u3400-\u4dbf]/,               // 中文繁体
                 'en': /[a-zA-Z]/,                                       // 英文
-                'jp': /[\u3040-\u309F\u30A0-\u30FF\u3005\u3006]/,       // 日语
-                'kor': /[\uAC00-\uD7AF\u1100-\u11FF]/,                  // 韩语
+                'ja': /[\u3040-\u309F\u30A0-\u30FF\u3005\u3006]/,      // 日语
+                'ko': /[\uAC00-\uD7AF\u1100-\u11FF]/,                  // 韩语
                 'ru': /[\u0400-\u04FF]/,                                // 俄语
                 'th': /[\u0E00-\u0E7F]/,                                // 泰语
-                'ara': /[\u0600-\u06FF]/,                               // 阿拉伯语
-                'fra': /[àâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ]/,            // 法语
-                'spa': /[áéíóúñüÁÉÍÓÚÑÜ]/,                              // 西班牙语
+                'ar': /[\u0600-\u06FF]/,                               // 阿拉伯语
+                'fr': /[àâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ]/,             // 法语
+                'es': /[áéíóúñüÁÉÍÓÚÑÜ]/,                              // 西班牙语
                 'de': /[äöüßÄÖÜ]/,                                      // 德语
                 'pt': /[áéíóúãõçÁÉÍÓÚÃÕÇ]/,                             // 葡萄牙语
                 'it': /[àèéìíòóùúÀÈÉÌÍÒÓÙÚ]/,                           // 意大利语
                 'nl': /[ëïàâêôûĳËÏÀÂÊÔÛĲ]/,                             // 荷兰语
                 'sv': /[åäöÅÄÖ]/,                                       // 瑞典语
                 'pl': /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/,                          // 波兰语
-                'dan': /[æøåÆØÅ]/,                                      // 丹麦语
-                'fin': /[äöÄÖ]/,                                         // 芬兰语
+                'da': /[æøåÆØÅ]/,                                      // 丹麦语
+                'fi': /[äöÄÖ]/,                                         // 芬兰语
                 'cs': /[áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/,               // 捷克语
                 'ro': /[ăâîșțĂÂÎȘȚ]/,                                    // 罗马尼亚语
-                'hu': /[áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/                            // 匈牙利语
+                'hu': /[áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/,                           // 匈牙利语
+                'el': /[\u0370-\u03FF]/,                               // 希腊语
+                'tr': /[\u011F-\u0130\u015E-\u015F]/,                  // 土耳其语
+                'id': /[\u0000-\u007F]/,                               // 印尼语
+                'ms': /[\u0000-\u007F]/,                               // 马来语
+                'uk': /[\u0400-\u04FF]/                                // 乌克兰语
             },
             // 定义常用的翻译方向
             commonDirections: {
-                'zh': 'en',     // 中文 -> 英文
-                'en': 'zh',     // 英文 -> 中文
-                'jp': 'zh',     // 日语 -> 中文
-                'kor': 'zh',    // 韩语 -> 中文
-                'ru': 'zh',     // 俄语 -> 中文
-                'fra': 'zh',    // 法语 -> 中文
-                'spa': 'zh',    // 西班牙语 -> 中文
-                'auto': 'zh'    // 自动检测 -> 中文
+                'zh': 'en',      // 中文 -> 英文
+                'zh-CN': 'en',   // 中文简体 -> 英文
+                'zh-TW': 'en',   // 中文繁体 -> 英文
+                'en': 'zh-CN',   // 英文 -> 中文简体
+                'ja': 'zh-CN',   // 日语 -> 中文简体
+                'ko': 'zh-CN',   // 韩语 -> 中文简体
+                'ru': 'zh-CN',   // 俄语 -> 中文简体
+                'fr': 'zh-CN',   // 法语 -> 中文简体
+                'es': 'zh-CN',   // 西班牙语 -> 中文简体
+                'auto': 'zh-CN'  // 自动检测 -> 中文简体
             }
         };
 
@@ -282,20 +297,40 @@
         // 当前正在选择的语言类型 ('from' 或 'to')
         let selectingLangType = null;
 
-        // 代理服务器列表
-        const PROXY_SERVERS = [
-            'https://api.allorigins.win/get?url=',
-            'https://cors-anywhere.herokuapp.com/',
-            'https://proxy.cors.sh/'
-        ];
-        
-        let currentProxyIndex = 0;
-
         // 初始化
         function initialize() {
             updateLanguageDisplay();
             createLanguageSelectorOptions();
             attachEventListeners();
+        }
+
+        // Google Translate 翻译函数（使用免费的translate.googleapis.com）
+        async function googleTranslate(text, from, to) {
+            try {
+                // Google Translate 免费 API 端点
+                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP错误: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // 提取翻译结果
+                let translatedText = '';
+                if (data && data[0]) {
+                    translatedText = data[0].map(item => item[0]).join('');
+                }
+
+                return {
+                    translatedText: translatedText,
+                    detectedLang: data[2] || from
+                };
+            } catch (error) {
+                throw error;
+            }
         }
 
         // 创建语言选择器选项
@@ -536,131 +571,69 @@
             elements.sourceText.classList.remove('error-highlight');
         }
 
-        // 切换到下一个代理服务器
-        function switchToNextProxy() {
-            currentProxyIndex = (currentProxyIndex + 1) % PROXY_SERVERS.length;
-            return PROXY_SERVERS[currentProxyIndex];
-        }
-
         // 执行翻译
-        function performTranslation() {
+        async function performTranslation() {
             const textToTranslate = elements.sourceText.value;
             if (!textToTranslate.trim()) {
                 showNotification('请输入要翻译的文本', false);
                 elements.sourceText.classList.add('error-highlight');
                 return;
             }
-            
+
             // 显示加载状态
             elements.loader.classList.remove('hidden');
             elements.translateBtn.disabled = true;
             elements.resultText.innerHTML = `<div class="text-gray-400 text-center py-5"><div class="w-5 h-5 result-loader mx-auto inline-block"></div><span class="ml-2">翻译中...</span></div>`;
             hideError();
-            
+
             // 使用当前选择的翻译方向
             const fromLang = translationState.from;
             const toLang = translationState.to;
-            
-            // 百度翻译API参数
-            const apiParams = {
-                q: textToTranslate,
-                from: fromLang,
-                to: toLang,
-                appid: "20250819002434150",
-                salt: Math.floor(Math.random() * 1000000000),
-                sign: ''
-            };
-            
-            // 计算签名
-            apiParams.sign = CryptoJS.MD5(apiParams.appid + textToTranslate + apiParams.salt + "4xWe9UsRP2w9xByjpuHr").toString();
-            
-            // 构建API URL
-            const apiUrl = `https://fanyi-api.baidu.com/api/trans/vip/translate?q=${encodeURIComponent(textToTranslate)}&from=${apiParams.from}&to=${apiParams.to}&appid=${apiParams.appid}&salt=${apiParams.salt}&sign=${apiParams.sign}`;
-            
-            // 使用代理服务器解决跨域问题
-            const proxyUrl = PROXY_SERVERS[currentProxyIndex];
-            let requestUrl = `${proxyUrl}${encodeURIComponent(apiUrl)}`;
-            
-            // 针对不同代理服务器的特殊处理
-            if (proxyUrl.includes('allorigins.win')) {
-                fetch(requestUrl)
-                    .then(response => {
-                        if (!response.ok) throw new Error(`HTTP错误: ${response.status}`);
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (!data.contents) throw new Error('未获取到翻译数据');
-                        return JSON.parse(data.contents);
-                    })
-                    .then(handleTranslationResponse)
-                    .catch(error => handleTranslationError(error));
-            } else {
-                fetch(requestUrl)
-                    .then(response => {
-                        if (!response.ok) throw new Error(`HTTP错误: ${response.status}`);
-                        return response.json();
-                    })
-                    .then(handleTranslationResponse)
-                    .catch(error => handleTranslationError(error));
-            }
-        }
 
-        // 处理翻译响应
-        function handleTranslationResponse(data) {
-            if (data.error_code) {
-                // 处理API返回的错误代码
-                const errorMessages = {
-                    '52001': '请求超时，请重试',
-                    '52002': '系统错误，请重试',
-                    '52003': '未授权用户，请检查appid是否正确',
-                    '54000': '必填参数为空，请检查参数',
-                    '54001': '签名错误，请检查签名生成方式',
-                    '54003': '访问频率受限，请稍后再试',
-                    '54004': '账户余额不足，请充值',
-                    '54005': '长query请求频繁，请稍后再试',
-                    '58000': '客户端IP非法，请检查ip是否在白名单中',
-                    '58001': '语言不支持，请检查语言代码'
-                };
-                
-                throw new Error(errorMessages[data.error_code] || `翻译失败: ${data.error_msg || '未知错误'}`);
+            try {
+                // 调用 Google Translate 翻译
+                const result = await googleTranslate(textToTranslate, fromLang, toLang);
+
+                // 显示翻译结果
+                elements.resultText.textContent = result.translatedText;
+
+                // 根据API返回结果更新语言检测
+                if (result.detectedLang && result.detectedLang !== fromLang && translationState.from === 'auto') {
+                    translationState.from = result.detectedLang;
+                    updateLanguageDisplay(true);
+                }
+
+                showNotification('翻译完成');
+            } catch (error) {
+                handleTranslationError(error);
+            } finally {
+                elements.loader.classList.add('hidden');
+                elements.translateBtn.disabled = false;
             }
-            
-            let translatedText = data.trans_result.map(item => item.dst).join('\n');
-            elements.resultText.textContent = translatedText;
-            
-            // 根据API返回结果更新语言检测
-            if (data.from && translationState.from === 'auto') {
-                translationState.from = data.from;
-                updateLanguageDisplay(true);
-            }
-            
-            showNotification('翻译完成');
-            elements.loader.classList.add('hidden');
-            elements.translateBtn.disabled = false;
         }
 
         // 处理翻译错误
         function handleTranslationError(error) {
-            // 切换到下一个代理
-            switchToNextProxy();
-            
             let errorMessage = '';
-            if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
-                errorMessage = '网络连接问题，已自动切换代理，请重试';
-            } else if (error.message.includes('403')) {
-                errorMessage = 'API权限不足，请检查密钥配置';
-            } else if (error.message.includes('500')) {
+            const errorMsg = error.message || error.toString();
+
+            if (errorMsg.includes('Failed to fetch') || errorMsg.includes('CORS') || errorMsg.includes('NetworkError')) {
+                errorMessage = '网络连接问题，请检查网络后重试';
+            } else if (errorMsg.includes('429') || errorMsg.includes('Too Many Requests')) {
+                errorMessage = '请求过于频繁，请稍后再试';
+            } else if (errorMsg.includes('403') || errorMsg.includes('Forbidden')) {
+                errorMessage = '访问被拒绝，请检查网络设置';
+            } else if (errorMsg.includes('400') || errorMsg.includes('Bad Request')) {
+                errorMessage = '请求参数错误，请检查输入';
+            } else if (errorMsg.includes('500')) {
                 errorMessage = '服务器内部错误，请稍后再试';
             } else {
-                errorMessage = error.message;
+                errorMessage = errorMsg;
             }
-            
+
             elements.resultText.innerHTML = `<div class="text-red-500 text-center py-5"><i class="fa fa-exclamation-circle mr-1"></i> 翻译失败</div>`;
             showError(errorMessage);
             showNotification(errorMessage, false);
-            
-            elements.loader.classList.add('hidden');
-            elements.translateBtn.disabled = false;
         }
 
         // 初始化应用
