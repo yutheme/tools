@@ -858,7 +858,7 @@
             const inputText = elements.sourceText.value.trim();
             
             elements.sourceText.classList.remove('error-highlight');
-            elements.charCount.innerHTML = `<i class="fa fa-file-text-o mr-1.5"></i>${inputText.length} 字符`;
+            elements.charCount.innerHTML = `<i class="fas fa-file-lines mr-1.5"></i>${inputText.length} 字符`;
             
             // 只有当源语言是自动检测时才进行语言检测
             if (inputText.length > 0 && translationState.from === 'auto') {
@@ -927,8 +927,8 @@
             // 如果有内容，也交换文本
             if (inputText && resultText && !resultText.includes('翻译结果将显示在这里')) {
                 elements.sourceText.value = resultText;
-                elements.resultText.innerHTML = `<div class="text-gray-400 text-center py-5"><i class="fa fa-info-circle mr-1.5"></i> 翻译结果将显示在这里</div>`;
-                elements.charCount.innerHTML = `<i class="fa fa-file-text-o mr-1.5"></i>${resultText.length} 字符`;
+                elements.resultText.innerHTML = `<div class="result-placeholder"><i class="fas fa-info-circle mr-1.5"></i> 翻译结果将显示在这里</div>`;
+                elements.charCount.innerHTML = `<i class="fas fa-file-lines mr-1.5"></i>${resultText.length} 字符`;
             }
             
             updateLanguageDisplay(true);
