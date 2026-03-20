@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="apple-mobile-web-app-title" content="MyWebSite">
-    <title>实用工具集</title>
+    <meta name="apple-mobile-web-app-title" content="实用工具集">
+    <meta name="description" content="实用工具集提供数字大写转换、字数统计、智能翻译等多种在线工具，简洁高效，满足日常办公与学习需求">
+    <meta name="keywords" content="实用工具,数字大写转换,字数统计,智能翻译,在线工具,办公工具">
+    <title>实用工具集 - 高效的在线工具解决方案</title>
     <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="shortcut icon" href="favicon.ico">
@@ -14,20 +16,34 @@
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     
     <style>
+        /* CSS 变量 - 统一管理主题颜色和样式 */
+        :root {
+            --color-primary: #165DFF;
+            --color-secondary: #36CFC9;
+            --color-tertiary: #8B5CF6;
+            --color-text-dark: #1D2129;
+            --color-text-gray: #6B7280;
+            --color-bg-light: #F5F7FA;
+            --radius-lg: 1rem;
+            --radius-md: 0.75rem;
+            --shadow-initial: 0 1px 2px rgba(0,0,0,0.02), 0 1px 3px rgba(0,0,0,0.01);
+            --shadow-hover: 0 4px 8px rgba(0,0,0,0.05), 0 10px 15px rgba(0,0,0,0.07), 0 15px 25px rgba(0,0,0,0.05);
+        }
+
         /* 基础样式 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             min-height: 100vh;
             font-family: system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, rgba(22, 93, 255, 0.05) 0%, rgba(54, 207, 201, 0.05) 100%);
             padding: 2rem 0;
         }
-        
+
         .container {
             max-width: 1280px;
             margin: 0 auto;
@@ -43,7 +59,7 @@
         .page-title h1 {
             font-size: clamp(2rem, 5vw, 3rem);
             font-weight: bold;
-            color: #1D2129;
+            color: var(--color-text-dark);
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
@@ -51,7 +67,7 @@
         }
         
         .page-title p {
-            color: #6B7280;
+            color: var(--color-text-gray);
             max-width: 600px;
             margin: 0 auto;
             font-size: 1.1rem;
@@ -80,63 +96,24 @@
         /* 卡片样式 - 强化边界效果 */
         .tool-card {
             background: white;
-            border-radius: 1rem;
-            /* 强化边框 - 稍微加深颜色 */
+            border-radius: var(--radius-lg);
             border: 1px solid rgba(0, 0, 0, 0.08);
             overflow: hidden;
             cursor: pointer;
             transform: translateY(0);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
             height: 100%;
             position: relative;
             z-index: 1;
-            /* 轻微初始阴影增强边界感 */
-            box-shadow: 
-                0 1px 2px rgba(0, 0, 0, 0.02),
-                0 1px 3px rgba(0, 0, 0, 0.01);
+            box-shadow: var(--shadow-initial);
         }
-        
-        /* 关键帧动画 - 阴影快速渐显 */
-        @keyframes shadowIn {
-            0% {
-                box-shadow: 
-                    0 1px 2px rgba(0, 0, 0, 0.02),
-                    0 1px 3px rgba(0, 0, 0, 0.01);
-            }
-            100% {
-                box-shadow: 
-                    0 4px 8px rgba(0, 0, 0, 0.05),
-                    0 10px 15px rgba(0, 0, 0, 0.07),
-                    0 15px 25px rgba(0, 0, 0, 0.05);
-            }
-        }
-        
-        /* 关键帧动画 - 阴影快速渐隐 */
-        @keyframes shadowOut {
-            0% {
-                box-shadow: 
-                    0 4px 8px rgba(0, 0, 0, 0.05),
-                    0 10px 15px rgba(0, 0, 0, 0.07),
-                    0 15px 25px rgba(0, 0, 0, 0.05);
-            }
-            100% {
-                box-shadow: 
-                    0 1px 2px rgba(0, 0, 0, 0.02),
-                    0 1px 3px rgba(0, 0, 0, 0.01);
-            }
-        }
-        
-        /* 悬停时应用快速渐显动画 */
+
+        /* 悬停效果 */
         .tool-card:hover {
             transform: translateY(-10px);
-            animation: shadowIn 0.5s forwards ease-out;
-        }
-        
-        /* 非悬停时应用快速渐隐动画 */
-        .tool-card:not(:hover) {
-            animation: shadowOut 0.5s forwards ease-in;
+            box-shadow: var(--shadow-hover);
         }
         
         /* 内容容器 */
@@ -151,38 +128,38 @@
         .tool-icon {
             width: 3.5rem;
             height: 3.5rem;
-            border-radius: 0.75rem;
+            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 1.25rem;
             transition: background-color 0.2s ease;
         }
-        
+
         /* 图标尺寸为1.8rem */
         .tool-icon i {
             font-size: 1.8rem !important;
         }
-        
+
         /* 标题区域 */
         .tool-card h2 {
             font-size: 1.25rem;
             font-weight: bold;
-            color: #1D2129;
+            color: var(--color-text-dark);
             margin-bottom: 0.75rem;
             height: 2rem;
         }
-        
+
         /* 描述文本区域 */
         .tool-description {
-            color: #6B7280;
+            color: var(--color-text-gray);
             margin-bottom: 1.5rem;
             line-height: 1.6;
             height: 72px;
             overflow: hidden;
             position: relative;
         }
-        
+
         .tool-description:after {
             content: "";
             position: absolute;
@@ -214,18 +191,17 @@
         /* 底部特点区域 */
         .tool-card-footer {
             padding: 1rem 1.5rem;
-            background-color: #F5F7FA;
-            /* 强化底部边框与卡片的区分 */
+            background-color: var(--color-bg-light);
             border-top: 1px solid rgba(0, 0, 0, 0.08);
             font-size: 0.875rem;
-            color: #6B7280;
+            color: var(--color-text-gray);
             height: 48px;
             display: flex;
             align-items: center;
         }
-        
+
         .tool-card-footer i {
-            color: #36CFC9;
+            color: var(--color-secondary);
             margin-right: 0.25rem;
         }
         
@@ -249,39 +225,39 @@
         .tool-number .tool-icon {
             background-color: rgba(22, 93, 255, 0.1);
         }
-        
+
         .tool-number .tool-action {
-            color: #165DFF;
+            color: var(--color-primary);
         }
-        
+
         .tool-number:hover .tool-icon {
             background-color: rgba(22, 93, 255, 0.2);
         }
-        
+
         .tool-wordcount .tool-icon {
             background-color: rgba(54, 207, 201, 0.1);
         }
-        
+
         .tool-wordcount .tool-action {
-            color: #36CFC9;
+            color: var(--color-secondary);
         }
-        
+
         .tool-wordcount:hover .tool-icon {
             background-color: rgba(54, 207, 201, 0.2);
         }
-        
+
         .tool-translate .tool-icon {
             background-color: rgba(139, 92, 246, 0.1);
         }
-        
+
         .tool-translate .tool-action {
-            color: #8B5CF6;
+            color: var(--color-tertiary);
         }
-        
+
         .tool-translate:hover .tool-icon {
             background-color: rgba(139, 92, 246, 0.2);
         }
-        
+
         .tool-card:hover .tool-action i {
             transform: translateX(6px);
         }
@@ -379,24 +355,35 @@
             <p>© 2025 实用工具集 | 简洁高效的在线工具解决方案</p>
         </footer>
     </div>
-    
+
+    <!-- 入场动画样式 -->
+    <style>
+        .card-enter {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .card-enter-active {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+    </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.querySelectorAll('.tool-card');
-            
-            cards.forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-            });
-            
+
+            // 合并循环,减少重复遍历
             cards.forEach((card, index) => {
+                // 初始状态
+                card.classList.add('card-enter');
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+
+                // 延迟触发入场动画
                 setTimeout(() => {
-                    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
+                    card.classList.add('card-enter-active');
                 }, 200 * index);
             });
         });
     </script>
-</body>
-</html>
+
