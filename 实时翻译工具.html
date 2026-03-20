@@ -184,13 +184,13 @@
             color: var(--gray-500);
             display: flex;
             align-items: center;
+            flex: 1;
         }
 
         .button-group {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            justify-content: center;
         }
 
         .btn {
@@ -666,7 +666,7 @@
                 'zh-CN': /[\u4e00-\u9fa5\u3400-\u4dbf]/,               // 中文简体
                 'zh-TW': /[\u4e00-\u9fa5\u3400-\u4dbf]/,               // 中文繁体
                 'en': /[a-zA-Z]/,                                       // 英文
-                'ja': /[\u3040-\u309F\u30A0-\u30FF\u3005\u3006]/,      // 日语
+                'ja': /[\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF\u4E00-\u9FAF]/, // 日语：平假名、片假名、假名扩展、汉字
                 'ko': /[\uAC00-\uD7AF\u1100-\u11FF]/,                  // 韩语
                 'ru': /[\u0400-\u04FF]/,                                // 俄语
                 'th': /[\u0E00-\u0E7F]/,                                // 泰语
