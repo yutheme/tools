@@ -499,59 +499,6 @@
             }
         }
     </style>
-        
-        /* 加载动画 */
-        .loader {
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #ffffff;
-            border-radius: 50%;
-            animation: spinner 0.6s linear infinite;
-        }
-        @keyframes spinner { to { transform: rotate(360deg); } }
-        
-        /* 结果区域的加载动画 */
-        .result-loader {
-            border: 2px solid rgba(156, 163, 175, 0.3);
-            border-top-color: #6b7280;
-            border-radius: 50%;
-            animation: spinner 0.6s linear infinite;
-        }
-        
-        /* 语言变化动画 */
-        @keyframes langChange {
-            0% { opacity: 0.5; transform: scale(0.95); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        .lang-update { animation: langChange 0.3s ease-out; }
-        
-        /* 错误提示样式 */
-        .error-highlight {
-            border-color: #EF4444 !important;
-            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
-        }
-        
-        /* 按钮悬停效果增强 */
-        .btn-hover-effect {
-            transition: all 0.2s ease;
-        }
-        .btn-hover-effect:hover {
-            transform: translateY(-1px);
-        }
-        .btn-hover-effect:active {
-            transform: translateY(0);
-        }
-        
-        /* 语言选择器样式 */
-        .lang-selector {
-            cursor: pointer;
-            padding: 2px 5px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-        .lang-selector:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-    </style>
 </head>
 <body>
     <div class="container">
