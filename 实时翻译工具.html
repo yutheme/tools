@@ -768,19 +768,19 @@
 
         // 创建语言选择器选项
         function createLanguageSelectorOptions() {
-            const langGrid = elements.langSelectorPanel.querySelector('.grid');
+            const langGrid = elements.langSelectorPanel.querySelector('.lang-grid');
             langGrid.innerHTML = '';
-            
+
             // 生成语言选项
             Object.keys(LANGUAGE_CONFIG.names).forEach(langCode => {
                 if (langCode === 'auto') return; // 自动检测不放在手动选择中
-                
+
                 const langName = LANGUAGE_CONFIG.names[langCode];
                 const langOption = document.createElement('button');
-                langOption.className = 'py-2 px-3 rounded text-left hover:bg-blue-50 text-gray-800 text-sm transition-colors';
+                langOption.className = 'lang-option';
                 langOption.textContent = langName;
                 langOption.dataset.langCode = langCode;
-                
+
                 langOption.addEventListener('click', () => {
                     if (selectingLangType === 'from') {
                         translationState.from = langCode;
@@ -793,7 +793,7 @@
                     updateLanguageDisplay(true);
                     elements.langSelectorPanel.classList.remove('show');
                 });
-                
+
                 langGrid.appendChild(langOption);
             });
         }
