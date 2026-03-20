@@ -399,7 +399,7 @@
             position: absolute;
             top: 100%;
             left: 50%;
-            margin-left: -4px;
+            transform: translateX(-50%);
             border-width: 4px;
             border-style: solid;
             border-color: rgba(30, 41, 59, 0.95) transparent transparent transparent;
@@ -503,12 +503,12 @@
             
             <div class="input-actions">
                 <button class="upload-btn" id="fileTrigger">
-                    <i class="fas fa-upload"></i>
+                    <i class="fas fa-cloud-arrow-up"></i>
                     上传文件
                 </button>
                 <div class="action-group">
                     <button id="clearButton" class="action-btn clear-btn">
-                        <i class="fas fa-trash-alt"></i>
+                        <i class="fas fa-trash"></i>
                         清空
                     </button>
                 </div>
@@ -581,7 +581,7 @@
             
             <div class="actions">
                 <button id="copyButton" class="action-btn copy-btn">
-                    <i class="fas fa-copy"></i>
+                    <i class="fas fa-clipboard"></i>
                     复制统计结果
                 </button>
             </div>
@@ -599,6 +599,20 @@
         document.addEventListener('DOMContentLoaded', function() {
             initApp();
         });
+
+        // 使用立即执行函数避免全局变量污染
+        (function() {
+            // 进度条定时器存储在模块作用域内
+            let progressInterval = null;
+
+            // 暴露清理函数
+            window.clearProgressInterval = function() {
+                if (progressInterval) {
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+                }
+            };
+        })();
         
         function initApp() {
             const textInput = document.getElementById('textInput');
@@ -638,42 +652,28 @@
                     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';
             }
             
-            // 文件选择触发器
+            // 文件选择触发器 - 简化错误处理
             fileTrigger.addEventListener('click', () => {
-                try {
-                    fileInput.click();
-                } catch (e) {
-                    // 静默失败，不显示错误
-                }
+                fileInput.click();
             });
             
-            // 文本输入事件监听
+            // 文本输入事件监听 - 简化错误处理
             textInput.addEventListener('input', debounce(() => {
-                try {
-                    const stats = analyzeText(textInput.value);
-                    updateUI(stats);
-                } catch (e) {
-                    // 静默失败，不显示错误
-                }
+                const stats = analyzeText(textInput.value);
+                updateUI(stats);
             }, 300));
             
-            // 添加鼠标事件处理进度条悬停
+            // 添加鼠标事件处理进度条悬停 - 简化错误处理
             Object.keys(segmentElements).forEach(key => {
                 const segment = segmentElements[key];
-                
+
                 segment.addEventListener('mouseover', (e) => {
-                    try {
-                        const tooltipText = segment.dataset.tooltip;
-                        
-                        if (tooltipText) {
-                            tooltip.textContent = tooltipText;
-                            tooltip.classList.add('tooltip-visible');
-                            
-                            // 计算提示框位置
-                            positionTooltip(e);
-                        }
-                    } catch (e) {
-                        // 静默失败，不显示错误
+                    const tooltipText = segment.dataset.tooltip;
+
+                    if (tooltipText) {
+                        tooltip.textContent = tooltipText;
+                        tooltip.classList.add('tooltip-visible');
+                        positionTooltip(e);
                     }
                 });
                 
@@ -1051,13 +1051,29 @@
                     progressBar.style.width = '0%';
                     
                     // 清除任何现有的进度条定时器
-                    if (window.progressInterval) {
-                        clearInterval(window.progressInterval);
+                    if (window.clearProgressInterval) {
+                        window.clearProgressInterval();
                     }
-                    
+
                     // 模拟初始进度
                     let width = 0;
-                    window.progressInterval = setInterval(() => {
+                    let localInterval = setInterval(() => {
+                        if (width >= 20) {
+                            clearInterval(localInterval);
+                            window.clearProgressInterval();
+                        } else {
+                            width += 5;
+                            progressBar.style.width = `${width}%`;
+                        }
+                    }, 100);
+
+                    // 暴露清理函数
+                    window.clearProgressInterval = function() {
+                        if (localInterval) {
+                            clearInterval(localInterval);
+                            localInterval = null;
+                        }
+                    };
                         if (width >= 20) {
                             clearInterval(window.progressInterval);
                         } else {
@@ -1085,9 +1101,8 @@
             function hideProcessing() {
                 try {
                     // 清除进度条定时器
-                    if (window.progressInterval) {
-                        clearInterval(window.progressInterval);
-                        window.progressInterval = null;
+                    if (window.clearProgressInterval) {
+                        window.clearProgressInterval();
                     }
                     
                     // 完成进度条动画

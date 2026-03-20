@@ -4,84 +4,242 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数字大写转换工具</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#165DFF',
-                        secondary: '#36CFC9',
-                        neutral: '#F5F7FA',
-                        dark: '#1D2129',
-                    },
-                }
-            }
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+        /* 统一使用CSS变量管理主题 */
+        :root {
+            --primary: #165DFF;
+            --primary-light: rgba(22, 93, 255, 0.1);
+            --secondary: #36CFC9;
+            --neutral: #F5F7FA;
+            --dark: #1D2129;
+            --gray-100: #F5F7FA;
+            --gray-200: #E5E7EB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --radius: 12px;
+            --transition: all 0.3s ease;
         }
-    </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .transition-all-300 {
-                transition: all 300ms ease-in-out;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--gray-100) 0%, white 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+            width: 1rem;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.1);
+        }
+
+        .form-group input[readonly] {
+            background: var(--gray-100);
+            cursor: not-allowed;
+        }
+
+        .form-group .hint {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper .copy-btn {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray-400);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .input-wrapper .copy-btn:hover {
+            color: var(--primary);
+        }
+
+        .copy-alert {
+            font-size: 0.75rem;
+            color: #10B981;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .copy-alert.show {
+            display: block;
+        }
+
+        .error-box {
+            padding: 0.75rem;
+            background: #FEF2F2;
+            border: 1px solid #FEE2E2;
+            border-radius: 8px;
+            color: #DC2626;
+            font-size: 0.875rem;
+            display: none;
+            transition: var(--transition);
+        }
+
+        .error-box.show {
+            display: block;
+        }
+
+        .footer {
+            background: var(--neutral);
+            padding: 0.75rem 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container {
+                border-radius: 0;
+            }
+
+            .content {
+                padding: 1rem;
             }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-neutral to-white min-h-screen flex items-center justify-center p-4 font-sans">
-    <div class="bg-white rounded-2xl shadow-lg w-full max-w-2xl overflow-hidden transition-all-300">
-        <div class="bg-primary text-white p-6">
-            <h1 class="text-xl font-bold flex items-center">
-                <i class="fa fa-exchange mr-3"></i>数字大写转换工具
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-right-left"></i>
+                数字大写转换工具
             </h1>
-            <p class="text-white/80 text-sm mt-1">支持阿拉伯数字和中文数字转换为大写金额</p>
+            <p>支持阿拉伯数字和中文数字转换为大写金额</p>
         </div>
-        
-        <div class="p-6 space-y-5">
-            <div class="space-y-2">
-                <label for="numberInput" class="block text-dark/80 text-sm font-medium flex items-center">
-                    <i class="fa fa-keyboard-o mr-2 text-primary w-4 text-center"></i>输入数字：
+
+        <div class="content">
+            <div class="form-group">
+                <label for="numberInput">
+                    <i class="fas fa-keyboard"></i>
+                    输入数字：
                 </label>
-                <input 
-                    type="text" 
-                    id="numberInput" 
-                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all-300 text-base"
+                <input
+                    type="text"
+                    id="numberInput"
                     placeholder="例如：1234.56 或 一千二百三十四 或 一二三"
                 >
-                <p class="text-xs text-gray-500">支持阿拉伯数字、中文数字（一二三）、小数和大额数字</p>
+                <p class="hint">支持阿拉伯数字、中文数字（一二三）、小数和大额数字</p>
             </div>
-            
-            <div class="space-y-2">
-                <label for="resultOutput" class="block text-dark/80 text-sm font-medium flex items-center">
-                    <i class="fa fa-font mr-2 text-primary w-4 text-center"></i>大写结果：
+
+            <div class="form-group">
+                <label for="resultOutput">
+                    <i class="fas fa-font"></i>
+                    大写结果：
                 </label>
-                <div class="relative">
-                    <input 
-                        type="text" 
-                        id="resultOutput" 
+                <div class="input-wrapper">
+                    <input
+                        type="text"
+                        id="resultOutput"
                         readonly
-                        class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 pr-10 transition-all-300 text-base"
                     >
-                    <button 
-                        id="copyBtn" 
-                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary transition-all-300"
-                        title="复制结果"
-                    >
-                        <i class="fa fa-copy"></i>
+                    <button id="copyBtn" class="copy-btn" title="复制结果">
+                        <i class="fas fa-clipboard"></i>
                     </button>
                 </div>
-                <div id="copyAlert" class="hidden text-xs text-green-500">
-                    <i class="fa fa-check-circle"></i> 已复制到剪贴板
+                <div id="copyAlert" class="copy-alert">
+                    <i class="fas fa-check-circle"></i> 已复制到剪贴板
                 </div>
             </div>
-            
-            <div id="errorBox" class="hidden p-3 bg-red-50 border border-red-100 rounded-lg text-red-500 text-sm transition-all-300">
-                <i class="fa fa-exclamation-circle mr-1"></i>
+
+            <div id="errorBox" class="error-box">
+                <i class="fas fa-exclamation-circle"></i>
                 <span id="errorMsg"></span>
             </div>
         </div>
-        
-        <div class="bg-neutral px-6 py-3 text-center text-gray-500 text-xs">
+
+        <div class="footer">
             <p>© 2025 数字大写转换工具 | 支持多种数字格式转换，符合财务规范</p>
         </div>
     </div>
@@ -296,8 +454,15 @@
                         sectionCount++;
                     }
                     
+                    // 去除连续零和尾部零
                     result = result.replace(/零+/g, '零').replace(/零$/, '');
-                    return (result || '零') + '元';
+
+                    // 处理特殊情况
+                    if (result === '') {
+                        return '零元整';
+                    }
+
+                    return result + '元';
                 },
                 
                 /**
@@ -306,26 +471,32 @@
                 convertSection: function(section) {
                     let sectionResult = '';
                     let hasNonZero = false;
-                    
+
                     for (let i = 0; i < section.length; i++) {
                         const digit = parseInt(section[i], 10);
                         const position = section.length - 1 - i;
-                        
+
                         if (digit !== 0) {
-                            if (sectionResult.indexOf('零') === sectionResult.length - 1) {
+                            // 移除前导零
+                            if (sectionResult.endsWith('零')) {
                                 sectionResult = sectionResult.slice(0, -1);
                             }
                             sectionResult += this.digits[digit] + this.units[position];
                             hasNonZero = true;
                         } else if (hasNonZero) {
+                            // 只在非零数字后面添加零
                             sectionResult += '零';
                         }
                     }
-                    
+
+                    // 移除尾部的零
+                    sectionResult = sectionResult.replace(/零+$/, '');
+
+                    // 优化：壹拾 → 拾
                     if (sectionResult.startsWith('壹拾')) {
-                        sectionResult = sectionResult.replace('壹拾', '拾');
+                        sectionResult = sectionResult.slice(1); // 直接使用拾
                     }
-                    
+
                     return sectionResult;
                 },
                 
@@ -372,54 +543,60 @@
             // 输入处理 - 添加延迟验证
             numberInput.addEventListener('input', function() {
                 const inputValue = this.value.trim();
-                
+
                 // 清除之前的计时器
                 if (inputTimer) {
                     clearTimeout(inputTimer);
                 }
-                
+
                 // 立即清空结果和错误提示，提供即时反馈
                 resultOutput.value = '';
-                errorBox.classList.add('hidden');
-                
+                errorBox.classList.remove('show');
+
                 // 如果输入为空，直接返回
                 if (inputValue === '') {
                     return;
                 }
-                
+
                 // 设置新的计时器，延迟处理
                 inputTimer = setTimeout(() => {
                     try {
                         // 执行转换并输出
                         const result = NumberConverter.convert(inputValue);
                         resultOutput.value = result;
-                        
+
                         // 视觉反馈
-                        resultOutput.classList.add('ring-primary/30');
-                        setTimeout(() => resultOutput.classList.remove('ring-primary/30'), 300);
+                        resultOutput.style.borderColor = 'var(--primary)';
+                        setTimeout(() => {
+                            resultOutput.style.borderColor = 'var(--gray-200)';
+                        }, 300);
                     } catch (error) {
                         errorMsg.textContent = error.message;
-                        // 错误提示添加淡入效果
-                        errorBox.classList.remove('hidden');
-                        errorBox.style.opacity = 0;
-                        setTimeout(() => {
-                            errorBox.style.opacity = 1;
-                        }, 10);
+                        errorBox.classList.add('show');
                     }
                 }, INPUT_DELAY);
             });
             
-            // 复制功能
+            // 复制功能 - 使用现代Clipboard API
             copyBtn.addEventListener('click', function() {
                 if (resultOutput.value) {
-                    resultOutput.select();
-                    document.execCommand('copy');
-                    
-                    copyAlert.classList.remove('hidden');
-                    setTimeout(() => copyAlert.classList.add('hidden'), 2000);
-                    
-                    copyBtn.innerHTML = '<i class="fa fa-check"></i>';
-                    setTimeout(() => copyBtn.innerHTML = '<i class="fa fa-copy"></i>', 1000);
+                    navigator.clipboard.writeText(resultOutput.value)
+                        .then(() => {
+                            copyAlert.classList.add('show');
+                            setTimeout(() => copyAlert.classList.remove('show'), 2000);
+
+                            this.innerHTML = '<i class="fas fa-check"></i>';
+                            setTimeout(() => {
+                                this.innerHTML = '<i class="fas fa-clipboard"></i>';
+                            }, 1000);
+                        })
+                        .catch(() => {
+                            // 降级方案
+                            resultOutput.select();
+                            document.execCommand('copy');
+                            copyAlert.classList.add('show');
+                            setTimeout(() => copyAlert.classList.remove('show'), 2000);
+                        });
                 }
             });
         });
