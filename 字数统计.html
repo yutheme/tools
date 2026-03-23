@@ -918,7 +918,7 @@
                 return function executedFunction(...args) {
                     const later = () => {
                         clearTimeout(timeout);
-                        func(...args);
+                        func.apply(this, args);
                     };
                     clearTimeout(timeout);
                     timeout = setTimeout(later, wait);
@@ -1049,7 +1049,7 @@
                     progressOverlay.classList.add('active');
                     progressText.classList.add('active');
                     progressBar.style.width = '0%';
-                    
+
                     // 清除任何现有的进度条定时器
                     if (window.clearProgressInterval) {
                         window.clearProgressInterval();
@@ -1074,13 +1074,6 @@
                             localInterval = null;
                         }
                     };
-                        if (width >= 20) {
-                            clearInterval(window.progressInterval);
-                        } else {
-                            width += 5;
-                            progressBar.style.width = `${width}%`;
-                        }
-                    }, 100);
                 } catch (e) {
                     // 静默失败，不显示错误
                 }
