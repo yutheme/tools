@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YAML 格式校正预览器</title>
+<title>YAML 校正预览器</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css">
 <style>
   body{background:linear-gradient(135deg,#0f172a,#334155);min-height:100vh}
   .card{background:rgba(255,255,255,.06);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1)}
-  textarea{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-  .yaml-view pre{white-space:pre-wrap;font-size:.95rem}
-  .badge{font-size:.7rem;opacity:.8}
+  textarea{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}
+  .yaml-view pre{white-space:pre-wrap;word-break:break-word;font-size:.9rem}
+  .badge{font-size:.7rem;opacity:.85}
 </style>
 </head>
 <body class="p-4">
 <div class="max-w-5xl mx-auto">
-  <h1 class="text-2xl font-bold mb-2 text-white">YAML 格式校正预览器</h1>
-  <p class="text-gray-300 mb-6">前端解析与格式化，不会上传数据</p>
+  <h1 class="text-2xl font-bold mb-2 text-white">YAML 校正预览器</h1>
+  <p class="text-gray-300 mb-6">纯前端解析与格式化，不依赖外部库，安全隐私</p>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    <div class="card rounded-xl p-4 text-white shadow-2xl">
+    <div class="card rounded-xl p-4 shadow-2xl">
       <h2 class="text-lg font-semibold mb-2">输入 YAML</h2>
-      <textarea id="input" placeholder="在此粘贴或键入 YAML...&#10;例如:&#10;name: Alice&#10;age: 30&#10;tags: [a, b]" class="w-full h-64 rounded bg-white/5 border-white/20 text-white p-3 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 resize-none" spellcheck="false"></textarea>
+      <textarea id="input" placeholder="在此粘贴或键入 YAML...&#10;示例:&#10;name: Alice&#10;age: 30&#10;tags: [a, b]" class="w-full h-64 rounded bg-white/5 border-white/20 text-white p-3 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 resize-none"></textarea>
       <div class="flex gap-3 mt-3">
         <button onclick="formatYAML()" class="bg-blue-600 hover:bg-blue-500 text-white rounded px-4 py-2 font-medium">格式化</button>
         <button onclick="validateYAML()" class="bg-emerald-600 hover:bg-emerald-500 text-white rounded px-4 py-2 font-medium">验证</button>
@@ -28,7 +28,7 @@
       </div>
       <div id="inputError" class="mt-3 text-xs text-red-400 hidden"></div>
     </div>
-    <div class="card rounded-xl p-4 text-white shadow-2xl">
+    <div class="card rounded-xl p-4 shadow-2xl">
       <h2 class="text-lg font-semibold mb-2">格式化结果</h2>
       <div class="yaml-view bg-white/5 rounded-lg p-3 h-96 overflow-auto border border-white/10">
         <pre id="output" class="text-white">尚未格式化...</pre>
@@ -42,55 +42,15 @@
       </div>
     </div>
   </div>
-  <div class="mt-6 card rounded-xl p-4 text-white shadow-2xl">
-    <h2 class="text-lg font-semibold mb-2">常见问题</h2>
+  <div class="mt-6 card rounded-xl p-4 shadow-2xl">
+    <h2 class="text-lg font-semibold mb-2">使用说明</h2>
     <ul class="text-sm text-gray-300 list-disc list-inside space-y-1">
-      <li>使用浏览器原生解析，不依赖外部服务，隐私安全。</li>
-      <li>支持基本数据类型、嵌套结构与常见标签。</li>
-      <li>无法处理复杂锚点/别名或多文档流；请拆分为单文档处理。</li>
-      <li>验证会提示错误行号与简单修正建议。</li>
+      <li>纯前端解析，浏览器本地完成，不上传数据。</li>
+      <li>支持常见映射、序列、标量与简单嵌套。</li>
+      <li>无法处理多文档流、复杂锚点/别名或特殊标签。</li>
+      <li>验证会给出错误行与简单修正建议。</li>
     </ul>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-<script>
-function formatYAML(){
-  const raw=document.getElementById('input').value.trim();
-  const out=document.getElementById('output');
-  const err=document.getElementById('inputError');
-  if(!raw){out.textContent='请输入内容';return;}
-  try{
-    const doc=YAML.parseDocument(raw);
-    // 校验：尝试重新序列化以发现潜在问题
-    const check=YAML.toString(doc);
-    out.textContent=check;
-    err.classList.add('hidden');
-    document.getElementById('yamlStats').textContent=`行数: ${raw.split('\n').length} | 键数: ${Object.keys(YAML.parse(raw)).length||'N/A'}`;
-  }catch(e){
-    err.textContent='错误: '+e.message;err.classList.remove('hidden');out.textContent='解析失败，请检查语法。';
-  }
-}
-function validateYAML(){
-  const raw=document.getElementById('input').value.trim();
-  const out=document.getElementById('output');
-  const err=document.getElementById('inputError');
-  if(!raw){out.textContent='请输入内容';return;}
-  try{
-    const parsed=YAML.parse(raw);
-    out.textContent=JSON.stringify(parsed,null,2);
-    err.classList.add('hidden');
-    document.getElementById('yamlStats').textContent='✅ 验证通过';
-  }catch(e){
-    err.textContent='验证错误: '+e.message;err.classList.remove('hidden');out.textContent='';
-  }
-}
-function copyText(id){
-  const el=document.getElementById(id);navigator.clipboard.writeText(el.textContent).then(()=>{el.style.outline='2px solid #60a5fa';setTimeout(()=>el.style.outline='',1000);});
-}
-function downloadFile(id,type){
-  const el=document.getElementById(id);const blob=new Blob([el.textContent],{type:type==='yaml'?'text/yaml':'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='output.'+type;a.click();
-}
-function clearAll(){document.getElementById('input').value='';document.getElementById('output').textContent='尚未格式化...';document.getElementById('inputError').classList.add('hidden');}
-</script>
 </body>
 </html>
