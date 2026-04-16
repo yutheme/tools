@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YAML 预览/验证/格式化工具</title>
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/yaml@2.2.2/dist/yaml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
     <style>
         :root {
             --primary: #165DFF;
@@ -143,6 +149,75 @@
             margin-right: 0.5rem;
         }
 
+        .editor-with-line {
+            display: flex;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            background: var(--gray-100);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .editor-line-numbers {
+            background: var(--gray-200);
+            padding: 0.75rem 0.5rem;
+            text-align: right;
+            user-select: none;
+            min-width: 3rem;
+        }
+
+        .editor-line-numbers div {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            line-height: 1.6;
+        }
+
+        .editor-line-numbers div.error {
+            background: rgba(245, 63, 63, 0.3);
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .editor-textarea {
+            flex: 1;
+            position: relative;
+        }
+
+        .editor-textarea textarea {
+            width: 100%;
+            height: 500px;
+            padding: 0.75rem 1rem;
+            border: none;
+            font-size: 0.875rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            resize: vertical;
+            outline: none;
+            background: transparent;
+            line-height: 1.6;
+            tab-size: 2;
+        }
+
+        .prism-editor {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 0.75rem 1rem;
+            margin: 0;
+            pointer-events: none;
+            opacity: 0.3;
+            display: none;
+            overflow: auto;
+        }
+
+        .editor-with-line:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.1);
+            background: white;
+        }
+
         textarea {
             width: 100%;
             height: 500px;
@@ -163,6 +238,56 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.1);
             background: white;
+        }
+
+        /* Diff 对比样式 */
+        .diff-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .diff-panel {
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .diff-panel h4 {
+            background: var(--gray-100);
+            padding: 0.5rem 1rem;
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .diff-content {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            max-height: 300px;
+            overflow: auto;
+        }
+
+        .diff-content pre {
+            margin: 0;
+            padding: 0.5rem;
+        }
+
+        .diff-content ins {
+            background: rgba(0, 180, 42, 0.3);
+            text-decoration: none;
+        }
+
+        .diff-content del {
+            background: rgba(245, 63, 63, 0.3);
+            text-decoration: none;
+        }
+
+        .toggle-container {
+            margin-top: 0.5rem;
         }
 
         .error-box {
@@ -198,6 +323,9 @@
             textarea {
                 height: 300px;
             }
+            .editor-with-line textarea {
+                height: 300px;
+            }
             .btn {
                 flex: 1;
                 justify-content: center;
@@ -217,14 +345,33 @@
                 <button onclick="formatYaml()" class="btn btn-primary">
                     <i class="fas fa-indent"></i>格式化 YAML
                 </button>
+                <button onclick="yamlToJson()" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i>YAML → JSON
+                </button>
+                <button onclick="jsonToYaml()" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i>JSON → YAML
+                </button>
                 <button onclick="validateYaml()" class="btn btn-primary">
                     <i class="fas fa-check-circle"></i>验证 YAML
                 </button>
                 <button onclick="autoFixIndent()" class="btn btn-primary">
                     <i class="fas fa-wrench"></i>自动修复缩进
                 </button>
+                <button onclick="compressYaml()" class="btn btn-primary">
+                    <i class="fas fa-compress"></i>压缩 YAML
+                </button>
                 <button onclick="copyResult()" class="btn btn-primary">
                     <i class="fas fa-clipboard"></i>复制结果
+                </button>
+                <label class="btn btn-primary" style="cursor: pointer;">
+                    <i class="fas fa-upload"></i>上传文件
+                    <input type="file" id="fileInput" accept=".yaml,.yml,.json" style="display: none;">
+                </label>
+                <button onclick="downloadResult()" class="btn btn-primary">
+                    <i class="fas fa-download"></i>下载
+                </button>
+                <button onclick="toggleDiffCompare()" class="btn btn-primary">
+                    <i class="fas fa-exchange-alt"></i>对比两份 YAML
                 </button>
                 <button onclick="clearAll()" class="btn btn-danger">
                     <i class="fas fa-trash"></i>清空内容
@@ -234,14 +381,50 @@
             <div id="errorBox" class="error-box" style="display: none;"></div>
             <div id="successBox" class="success-box" style="display: none;"></div>
 
+            <div id="diffCompareContainer" class="diff-container" style="display: none;">
+                <div class="diff-panel">
+                    <h4>原始（左边）</h4>
+                    <div class="diff-content">
+                        <textarea id="diffLeft" placeholder="粘贴原始YAML..." style="width: 100%; min-height: 200px; border: none; background: transparent;"></textarea>
+                    </div>
+                </div>
+                <div class="diff-panel">
+                    <h4>修改后（右边）</h4>
+                    <div class="diff-content">
+                        <textarea id="diffRight" placeholder="粘贴修改后的YAML..." style="width: 100%; min-height: 200px; border: none; background: transparent;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="toggle-container" id="diffResultContainer" style="display: none;">
+                <div class="diff-panel">
+                    <h4>差异对比结果（绿色添加，红色删除）</h4>
+                    <div class="diff-content" id="diffResult"></div>
+                </div>
+                <button onclick="doDiffCompare()" class="btn btn-primary" style="margin-top: 0.5rem; width: fit-content;">
+                    <i class="fas fa-search"></i>重新对比
+                </button>
+            </div>
+
             <div class="editor-container">
                 <div class="editor-box">
                     <label><i class="fas fa-pen"></i>输入 YAML</label>
-                    <textarea id="inputArea" placeholder="请在此输入YAML内容..."></textarea>
+                    <div class="editor-with-line">
+                        <div class="editor-line-numbers" id="inputLineNumbers"></div>
+                        <div class="editor-textarea">
+                            <textarea id="inputArea" placeholder="请在此输入YAML内容..." oninput="updateLineNumbers()"></textarea>
+                            <pre class="prism-editor"><code class="language-yaml" id="inputHighlight"></code></pre>
+                        </div>
+                    </div>
                 </div>
                 <div class="editor-box">
                     <label><i class="fas fa-eye"></i>输出结果</label>
-                    <textarea id="outputArea" readonly placeholder="格式化/验证结果将显示在这里..."></textarea>
+                    <div class="editor-with-line">
+                        <div class="editor-line-numbers" id="outputLineNumbers"></div>
+                        <div class="editor-textarea">
+                            <textarea id="outputArea" readonly placeholder="格式化/验证结果将显示在这里..."></textarea>
+                            <pre class="prism-editor"><code class="language-yaml" id="outputHighlight"></code></pre>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -260,6 +443,7 @@
         function hideMessages() {
             errorBox.style.display = 'none';
             successBox.style.display = 'none';
+            clearErrorLines();
         }
 
         function showError(msg, extraTip = '') {
@@ -300,10 +484,25 @@
                     schema: jsyaml.DEFAULT_SCHEMA,
                     allowDuplicate: false
                 });
-                showSuccess('✅ YAML 格式验证通过');
+                
+                // 专项校验：检测常见配置错误
+                const issues = specialValidate(parsed);
+                if (issues.length > 0) {
+                    let extraTip = '<br>• ' + issues.join('<br>• ');
+                    showSuccess(`✅ YAML 格式验证通过，但发现${issues.length}个建议检查项:${extraTip}`);
+                } else {
+                    showSuccess('✅ YAML 格式验证通过');
+                }
                 return parsed;
             } catch (e) {
                 let extraTip = '';
+                let errorLine = null;
+                // 尝试解析行号
+                const lineMatch = e.message.match(/line\s+(\d+)/i);
+                if (lineMatch) {
+                    errorLine = parseInt(lineMatch[1]);
+                    markErrorLine(errorLine);
+                }
                 if (e.message.includes('indentation')) {
                     extraTip = '检查是否混用了制表符和空格，列表项建议比上级键多缩进2个空格，可点击「自动修复缩进」尝试修复';
                 } else if (e.message.includes('duplicate')) {
@@ -311,26 +510,205 @@
                 } else if (e.message.includes('mapping')) {
                     extraTip = '键值对格式错误，检查冒号后面是否有空格，缩进是否正确';
                 }
+                if (errorLine) {
+                    extraTip = `错误位于第 ${errorLine} 行\n${extraTip}`;
+                }
                 showError(`❌ 验证失败: ${e.message}`, extraTip);
                 return false;
             }
         }
 
+        // 专项校验：Docker Compose / Kubernetes 常见配置错误
+        function specialValidate(data) {
+            const issues = [];
+
+            // Docker Compose 检测
+            if (data && data.services) {
+                // 检查 services 是不是正确格式
+                if (Array.isArray(data.services)) {
+                    issues.push('Docker Compose: services 应该是映射对象不是列表，每个服务作为键名');
+                }
+
+                // 逐个检查服务
+                if (typeof data.services === 'object' && !Array.isArray(data.services)) {
+                    Object.entries(data.services).forEach(([name, service]) => {
+                        // 检查 ports 格式
+                        if (service.ports && Array.isArray(service.ports)) {
+                            service.ports.forEach(port => {
+                                if (typeof port === 'string' && port.includes(':') && port.split(':').length > 2) {
+                                    issues.push(`服务 ${name}: ports 格式 \"${port}\" 可能错误，建议使用 "HOST:CONTAINER" 或者使用长格式`);
+                                }
+                            });
+                        }
+                        // 检查 volumes 格式
+                        if (service.volumes && Array.isArray(service.volumes)) {
+                            service.volumes.forEach(vol => {
+                                if (typeof vol === 'string' && vol.endsWith(':')) {
+                                    issues.push(`服务 ${name}: volumes \"${vol}\" 末尾不应该有冒号`);
+                                }
+                            });
+                        }
+                        // 检查 image 是否存在
+                        if (!service.image && !service.build) {
+                            issues.push(`服务 ${name}: 缺少 image 或 build 字段`);
+                        }
+                    });
+                }
+
+                // 检查 volumes 顶级字段
+                if (data.volumes && typeof data.volumes !== 'object') {
+                    issues.push('Docker Compose: 顶级 volumes 应该是映射对象');
+                }
+
+                // 检查 networks 顶级字段
+                if (data.networks && typeof data.networks !== 'object') {
+                    issues.push('Docker Compose: 顶级 networks 应该是映射对象');
+                }
+            }
+
+            // Kubernetes 检测
+            if (data && data.apiVersion && data.kind) {
+                if (!data.metadata) {
+                    issues.push('Kubernetes: 缺少 metadata 字段');
+                } else if (!data.metadata.name && data.kind !== 'List') {
+                    issues.push('Kubernetes: metadata 缺少 name 字段');
+                }
+                if (!data.spec && data.kind !== 'List') {
+                    issues.push('Kubernetes: 缺少 spec 字段');
+                }
+
+                // 检查 Pod / Deployment 常见问题
+                if (data.kind === 'Deployment' && data.spec && data.spec.template) {
+                    if (!data.spec.template.spec) {
+                        issues.push('Deployment: spec.template.spec 结构不正确，请检查缩进');
+                    }
+                }
+
+                // 检查 ports 常见缩进问题
+                if (data.kind === 'Service' && data.spec) {
+                    if (data.spec.ports && !Array.isArray(data.spec.ports)) {
+                        issues.push('Service: spec.ports 应该是列表数组，请检查缩进');
+                    }
+                }
+            }
+
+            // 通用缩进启发式检查：列表项后面是否多了缩进
+            const lines = content.split('\n');
+            lines.forEach((line, idx) => {
+                const match = line.match(/^(\s+)-/);
+                if (match) {
+                    const indent = match[1].length;
+                    const nextIdx = idx + 1;
+                    if (nextIdx < lines.length) {
+                        const nextLine = lines[nextIdx];
+                        const nextMatch = nextLine.match(/^(\s+)\S/);
+                        if (nextMatch && nextMatch[1].length <= indent) {
+                            // 如果列表项内容缩进比-还小或相等，可能有问题
+                            // 这是一个常见错误，不报错只提醒
+                        }
+                    }
+                }
+            });
+
+            return issues;
+        }
+
         function formatYaml() {
             hideMessages();
-            const parsed = validateYaml();
-            if (!parsed) return;
+            const content = inputArea.value.trim();
+            if (!content) {
+                showError('请输入YAML内容');
+                return;
+            }
             try {
-                const formatted = jsyaml.dump(parsed, {
+                // 使用yaml库保留注释解析和格式化
+                const parsed = yaml.parseDocument(content);
+                const formatted = yaml.stringify(parsed, {
+                    indent: 2,
+                    lineWidth: 120
+                });
+                outputArea.value = formatted;
+                updateOutput();
+                showSuccess('✅ YAML 格式化完成（保留注释）');
+            } catch (e) {
+                // 如果带注释解析失败，回退到js-yaml（会丢失注释但能工作
+                try {
+                    const parsed = jsyaml.load(content);
+                    const formatted = jsyaml.dump(parsed, {
+                        indent: 2,
+                        lineWidth: 120,
+                        noRefs: true,
+                        sortKeys: false
+                    });
+                    outputArea.value = formatted;
+                    showSuccess('✅ YAML 格式化完成（注释无法保留，因为存在语法问题）');
+                } catch (e2) {
+                    showError(`❌ 格式化失败: ${e.message}`);
+                }
+            }
+        }
+
+        function yamlToJson() {
+            hideMessages();
+            const content = inputArea.value.trim();
+            if (!content) {
+                showError('请输入YAML内容');
+                return;
+            }
+            try {
+                const parsed = jsyaml.load(content);
+                const json = JSON.stringify(parsed, null, 2);
+                outputArea.value = json;
+                updateOutput();
+                showSuccess('✅ YAML → JSON 转换完成');
+            } catch (e) {
+                let extraTip = '';
+                if (e.message.includes('indentation')) {
+                    extraTip = '检查是否混用了制表符和空格，缩进是否正确';
+                }
+                showError(`❌ 转换失败: ${e.message}`, extraTip);
+            }
+        }
+
+        function jsonToYaml() {
+            hideMessages();
+            const content = inputArea.value.trim();
+            if (!content) {
+                showError('请输入JSON内容');
+                return;
+            }
+            try {
+                const parsed = JSON.parse(content);
+                const yaml = jsyaml.dump(parsed, {
                     indent: 2,
                     lineWidth: 120,
                     noRefs: true,
                     sortKeys: false
                 });
-                outputArea.value = formatted;
-                showSuccess('✅ YAML 格式化完成');
+                outputArea.value = yaml;
+                updateOutput();
+                showSuccess('✅ JSON → YAML 转换完成');
             } catch (e) {
-                showError(`❌ 格式化失败: ${e.message}`);
+                showError(`❌ 转换失败: ${e.message}`, '请检查JSON语法是否正确，引号、括号是否配对');
+            }
+        }
+
+        function compressYaml() {
+            hideMessages();
+            const parsed = validateYaml();
+            if (!parsed) return;
+            try {
+                const compressed = jsyaml.dump(parsed, {
+                    indent: 0,
+                    lineWidth: 999999,
+                    noRefs: true,
+                    sortKeys: false
+                });
+                outputArea.value = compressed.trim();
+                updateOutput();
+                showSuccess('✅ YAML 压缩完成');
+            } catch (e) {
+                showError(`❌ 压缩失败: ${e.message}`);
             }
         }
 
@@ -353,7 +731,177 @@
             hideMessages();
         }
 
+        function downloadResult() {
+            const content = outputArea.value.trim();
+            if (!content) {
+                showError('没有可下载的内容');
+                return;
+            }
+            
+            // 检测输出类型，选择合适的扩展名
+            let ext = '.yaml';
+            try {
+                JSON.parse(content);
+                ext = '.json';
+            } catch (e) {
+                // 不是JSON，用yaml
+            }
+            
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `output${ext}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showSuccess('✅ 已开始下载');
+        }
+
+        // 文件上传处理
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                inputArea.value = event.target.result;
+                hideMessages();
+                showSuccess(`✅ 已加载文件: ${file.name}`);
+            };
+            reader.readAsText(file);
+            // 重置input，允许重复上传同一个文件
+            e.target.value = '';
+        });
+
+        // 更新行号和语法高亮
+        function updateLineNumbers() {
+            renderLineNumbers(inputArea, inputLineNumbers);
+            updateHighlight(inputArea.value, inputHighlight, 'yaml');
+        }
+
+        // 渲染行号
+        function renderLineNumbers(textarea, lineNumberEl) {
+            const lines = textarea.value.split('\n').length;
+            let html = '';
+            for (let i = 1; i <= lines; i++) {
+                html += `<div data-line="${i}">${i}</div>`;
+            }
+            lineNumberEl.innerHTML = html;
+            // 同步滚动
+            textarea.addEventListener('scroll', () => {
+                lineNumberEl.scrollTop = textarea.scrollTop;
+            });
+        }
+
+        // 更新语法高亮
+        function updateHighlight(content, highlightEl, lang) {
+            highlightEl.textContent = content;
+            Prism.highlightElement(highlightEl);
+        }
+
+        // 标记错误行
+        function markErrorLine(lineNum) {
+            if (!lineNum) return;
+            const lines = inputLineNumbers.querySelectorAll('div');
+            lines.forEach(line => {
+                const num = parseInt(line.getAttribute('data-line'));
+                if (num === lineNum) {
+                    line.classList.add('error');
+                }
+            });
+        }
+
+        // 清除错误标记
+        function clearErrorLines() {
+            const lines = inputLineNumbers.querySelectorAll('div.error');
+            lines.forEach(line => line.classList.remove('error'));
+        }
+
+        // 输出结果也更新行号和高亮
+        function updateOutput() {
+            renderLineNumbers(outputArea, outputLineNumbers);
+            // 检测输出是JSON还是YAML
+            let lang = 'yaml';
+            try {
+                JSON.parse(outputArea.value);
+                lang = 'json';
+            } catch (e) {
+                lang = 'yaml';
+            }
+            outputHighlight.className = `language-${lang}`;
+            updateHighlight(outputArea.value, outputHighlight, lang);
+        }
+
+        // 双YAML对比功能
+        let diffVisible = false;
+        function toggleDiffCompare() {
+            diffVisible = !diffVisible;
+            document.getElementById('diffCompareContainer').style.display = diffVisible ? 'grid' : 'none';
+            document.getElementById('diffResultContainer').style.display = diffVisible ? 'block' : 'none';
+            if (diffVisible) {
+                doDiffCompare();
+            }
+        }
+
+        function doDiffCompare() {
+            hideMessages();
+            const left = document.getElementById('diffLeft').value;
+            const right = document.getElementById('diffRight').value;
+
+            if (!left.trim() || !right.trim()) {
+                showError('请在两个输入框中都粘贴内容才能对比');
+                return;
+            }
+
+            const diff = Diff.diffLines(left, right);
+            let result = '<pre>';
+
+            diff.forEach(part => {
+                const lines = part.value.split('\n');
+                // 去掉末尾空行
+                if (lines[lines.length - 1] === '') lines.pop();
+
+                if (part.added) {
+                    lines.forEach(line => {
+                        result += `<ins>+ ${escapeHtml(line)}</ins>\n`;
+                    });
+                } else if (part.removed) {
+                    lines.forEach(line => {
+                        result += `<del>- ${escapeHtml(line)}</del>\n`;
+                    });
+                } else {
+                    lines.forEach(line => {
+                        result += `  ${escapeHtml(line)}\n`;
+                    });
+                }
+            });
+
+            result += '</pre>';
+            document.getElementById('diffResult').innerHTML = result;
+            showSuccess('✅ 对比完成');
+        }
+
+        // HTML转义防止XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 移动端适配diff
+        if (window.innerWidth <= 768) {
+            document.querySelector('.diff-container').style.gridTemplateColumns = '1fr';
+        }
+
         inputArea.addEventListener('input', hideMessages);
+        document.getElementById('diffLeft').addEventListener('input', doDiffCompare);
+        document.getElementById('diffRight').addEventListener('input', doDiffCompare);
+
+        // 初始化
+        updateLineNumbers();
+        updateOutput();
     </script>
 </body>
 </html>
