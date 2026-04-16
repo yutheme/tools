@@ -88,6 +88,7 @@
             font-size: 14px;
             resize: vertical;
             line-height: 1.5;
+            tab-size: 2;
         }
         textarea:focus {
             outline: none;
@@ -101,6 +102,7 @@
             border-radius: 6px;
             margin-bottom: 20px;
             display: none;
+            line-height: 1.8;
         }
         .success-box {
             background: #f0fff4;
@@ -135,6 +137,7 @@
         <div class="toolbar">
             <button onclick="formatYaml()">格式化 YAML</button>
             <button onclick="validateYaml()">验证 YAML</button>
+            <button onclick="autoFixIndent()">自动修复缩进</button>
             <button onclick="copyResult()">复制结果</button>
             <button onclick="clearAll()" class="danger">清空内容</button>
         </div>
@@ -169,8 +172,12 @@
             successBox.style.display = 'none';
         }
 
-        function showError(msg) {
-            errorBox.textContent = msg;
+        function showError(msg, extraTip = '') {
+            let fullMsg = msg;
+            if (extraTip) {
+                fullMsg += `<br><br>💡 建议：${extraTip}`;
+            }
+            errorBox.innerHTML = fullMsg;
             errorBox.style.display = 'block';
             successBox.style.display = 'none';
         }
@@ -181,6 +188,17 @@
             errorBox.style.display = 'none';
         }
 
+        function autoFixIndent() {
+            hideMessages();
+            let content = inputArea.value;
+            // 替换制表符为2个空格
+            content = content.replace(/\t/g, '  ');
+            // 修复常见的列表缩进错误
+            content = content.replace(/^(\s*)-\s+/gm, '$1  - ');
+            inputArea.value = content;
+            showSuccess('✅ 已自动替换制表符为空格，尝试修复缩进');
+        }
+
         function validateYaml() {
             hideMessages();
             const content = inputArea.value.trim();
@@ -189,11 +207,23 @@
                 return false;
             }
             try {
-                const parsed = jsyaml.load(content);
+                const parsed = jsyaml.load(content, {
+                    strict: false,
+                    schema: jsyaml.DEFAULT_SCHEMA,
+                    allowDuplicate: false
+                });
                 showSuccess('✅ YAML 格式验证通过');
                 return parsed;
             } catch (e) {
-                showError(`❌ 验证失败: ${e.message}`);
+                let extraTip = '';
+                if (e.message.includes('indentation')) {
+                    extraTip = '检查是否混用了制表符和空格，列表项建议比上级键多缩进2个空格，可点击「自动修复缩进」尝试修复';
+                } else if (e.message.includes('duplicate')) {
+                    extraTip = 'YAML中不允许重复的键，请检查是否有重复定义的字段';
+                } else if (e.message.includes('mapping')) {
+                    extraTip = '键值对格式错误，检查冒号后面是否有空格，缩进是否正确';
+                }
+                showError(`❌ 验证失败: ${e.message}`, extraTip);
                 return false;
             }
         }
@@ -206,7 +236,8 @@
                 const formatted = jsyaml.dump(parsed, {
                     indent: 2,
                     lineWidth: 120,
-                    noRefs: true
+                    noRefs: true,
+                    sortKeys: false
                 });
                 outputArea.value = formatted;
                 showSuccess('✅ YAML 格式化完成');
