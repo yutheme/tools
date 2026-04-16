@@ -1196,6 +1196,39 @@
             // 初始化
             updateUI(analyzeText(''));
         }
+
+        // 添加返回首页样式
+        const style = document.createElement('style');
+        style.textContent = `
+            .back-home {
+                margin: 2rem auto;
+                text-align: center;
+                max-width: 1000px;
+                padding: 1rem;
+                border-top: 1px solid #e2e8f0;
+            }
+            .back-home a {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: #3B82F6;
+                text-decoration: none;
+                font-size: 0.875rem;
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+            }
+            .back-home a:hover {
+                background-color: rgba(59, 130, 246, 0.05);
+            }
+        `;
+        document.head.appendChild(style);
     </script>
+
+    <div class="back-home">
+        <a href="index.html">
+            <i class="fa fa-arrow-left"></i>返回工具列表
+        </a>
+    </div>
 </body>
 </html>
