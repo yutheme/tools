@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YAML 预览/验证/格式化工具</title>
+    <title>YAML 预览/验证/格式化工具 - YAML JSON互转对比</title>
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/yaml@2.2.2/dist/yaml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js"></script>
@@ -128,6 +133,28 @@
         .btn-danger:hover {
             background-color: #D93636;
             transform: translateY(-1px);
+        }
+
+        /* 返回首页导航 */
+        .back-home {
+            padding: 1rem 1.5rem;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+        .back-home a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        .back-home a:hover {
+            background-color: var(--primary-light);
         }
 
         .editor-container {
