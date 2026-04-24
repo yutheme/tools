@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>密钥生成器 - API Key / UUID 生成工具</title>
+    <link rel="icon" type="image/png" href="icons/key-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/svg+xml" href="icons/key.svg">
+    <link rel="shortcut icon" href="icons/key-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/key-apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+        :root {
+            --primary: #F97316;
+            --primary-dark: #EA580C;
+            --primary-light: rgba(249, 115, 22, 0.05);
+            --success: #10B981;
+            --danger: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .header h1 i {
+            margin-right: 0.5rem;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        @media (min-width: 768px) {
+            .content {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+            .full-width {
+                grid-column: 1 / -1;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+            width: 1rem;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+
+        .key-type-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .key-type-btn {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-200);
+            background: white;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .key-type-btn i {
+            font-size: 1.25rem;
+            color: var(--gray-500);
+        }
+
+        .key-type-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .key-type-btn.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .key-type-btn.active i {
+            color: var(--primary);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            accent-color: var(--primary);
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+            width: 100%;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--gray-300);
+            transform: translateY(-1px);
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+        }
+
+        .result-container {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: monospace;
+            resize: vertical;
+            transition: var(--transition);
+            outline: none;
+            background: var(--gray-100);
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .back-home {
+            padding: 1rem 1.5rem;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+
+        .back-home a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+
+        .back-home a:hover {
+            background-color: var(--primary-light);
+        }
+
+        .prefix-input {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .prefix-tag {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .history-container {
+            margin-top: 0.5rem;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            background: var(--gray-100);
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+
+        .history-key {
+            color: var(--gray-800);
+            cursor: pointer;
+            flex: 1;
+            margin-right: 0.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-key:hover {
+            color: var(--primary);
+        }
+
+        .key-type-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+
+        .btn-history-copy {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.7rem;
+            border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .info-box {
+            padding: 0.75rem;
+            background: var(--primary-light);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .info-box i {
+            margin-top: 0.1rem;
+        }
+
+        @media (max-width: 480px) {
+            .key-type-group {
+                grid-template-columns: 1fr;
+            }
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            .input-group {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-key"></i>密钥生成器</h1>
+            <p>前端本地生成，不会上传，支持多种密钥格式</p>
+        </div>
+
+        <div class="content">
+            <div class="form-group full-width">
+                <label><i class="fas fa-list-ul"></i>密钥类型</label>
+                <div class="key-type-group">
+                    <button class="key-type-btn active" data-type="api" onclick="setKeyType('api')">
+                        <i class="fas fa-server"></i>
+                        <span>API Key</span>
+                    </button>
+                    <button class="key-type-btn" data-type="uuid" onclick="setKeyType('uuid')">
+                        <i class="fas fa-fingerprint"></i>
+                        <span>UUID v4</span>
+                    </button>
+                    <button class="key-type-btn" data-type="base62" onclick="setKeyType('base62')">
+                        <i class="fas fa-code"></i>
+                        <span>Base62</span>
+                    </button>
+                    <button class="key-type-btn" data-type="hex" onclick="setKeyType('hex')">
+                        <i class="fas fa-hashtag"></i>
+                        <span>十六进制</span>
+                    </button>
+                    <button class="key-type-btn" data-type="jwt" onclick="setKeyType('jwt')">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>JWT Secret</span>
+                    </button>
+                    <button class="key-type-btn" data-type="custom" onclick="setKeyType('custom')">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>自定义格式</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-ruler-horizontal"></i>密钥长度</label>
+                <input type="number" id="keyLength" min="8" max="512" value="32" onchange="generate()">
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-sort-numeric-up"></i>生成数量</label>
+                <input type="number" id="keyCount" min="1" max="50" value="1" onchange="generate()">
+            </div>
+
+            <div class="form-group" id="prefixGroup">
+                <label><i class="fas fa-tag"></i>前缀</label>
+                <div class="prefix-input">
+                    <span class="prefix-tag">sk_</span>
+                    <input type="text" id="keyPrefix" placeholder="例如: sk_" value="" oninput="generate()">
+                </div>
+            </div>
+
+            <div class="form-group full-width" id="customOptions" style="display: none;">
+                <label><i class="fas fa-check-square"></i>字符集选项</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="incLower" checked onchange="generate()">小写字母
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="incUpper" checked onchange="generate()">大写字母
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="incDigit" checked onchange="generate()">数字
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="incSymb" onchange="generate()">特殊符号
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="excludeAmbiguous" checked onchange="generate()">排除易混淆字符
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <div class="input-group">
+                    <button onclick="generate()" class="btn btn-primary" style="flex: 1;">
+                        <i class="fas fa-magic"></i>生成密钥
+                    </button>
+                    <button onclick="clearAll()" class="btn btn-secondary">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <label><i class="fas fa-clipboard-list"></i>生成结果</label>
+                <div class="result-container">
+                    <textarea id="result" readonly placeholder="生成的密钥将显示在这里"></textarea>
+                    <button onclick="copyToClipboard()" class="copy-btn">
+                        <i class="fas fa-clipboard"></i>复制
+                    </button>
+                </div>
+                <div class="history-container" id="historyContainer" style="display: none;">
+                    <label style="font-size: 0.8rem; color: var(--gray-500); display: flex; justify-content: space-between; align-items: center;">
+                        最近生成记录（最多20条）
+                        <button onclick="clearHistory()" class="btn btn-sm btn-secondary">清空</button>
+                    </label>
+                    <div class="history-list" id="historyList"></div>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>提示：</strong>
+                        <span id="typeDescription">API Key 格式：适用于大多数 REST API 接口认证，32 位 Base62 编码字符串。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentKeyType = 'api';
+        const descriptions = {
+            api: 'API Key 格式：适用于大多数 REST API 接口认证，Base62 编码字符串。',
+            uuid: 'UUID v4 格式：标准的 128 位唯一标识符，格式为 8-4-4-4-12。',
+            base62: 'Base62 编码：仅包含大小写字母和数字，适合 URL 和文件名。',
+            hex: '十六进制格式：仅包含 0-9 和 a-f，常用于加密密钥。',
+            jwt: 'JWT Secret：推荐 64 位以上的高强度随机密钥，用于 HS256/HS512 签名。',
+            custom: '自定义格式：根据您选择的字符集生成个性化密钥。'
+        };
+
+        const charSets = {
+            lower: 'abcdefghijklmnopqrstuvwxyz',
+            upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            digit: '0123456789',
+            symb: '-_.~'
+        };
+
+        const ambiguousChars = new Set(['0', 'O', 'o', '1', 'l', 'I', '2', 'Z', '5', 'S']);
+
+        function setKeyType(type) {
+            currentKeyType = type;
+            document.querySelectorAll('.key-type-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.type === type);
+            });
+            document.getElementById('typeDescription').textContent = descriptions[type];
+
+            const customOptions = document.getElementById('customOptions');
+            customOptions.style.display = type === 'custom' ? 'block' : 'none';
+
+            const prefixGroup = document.getElementById('prefixGroup');
+            prefixGroup.style.display = type === 'uuid' ? 'none' : 'block';
+
+            if (type === 'jwt') {
+                document.getElementById('keyLength').value = 64;
+            } else if (type === 'uuid') {
+                document.getElementById('keyLength').value = 36;
+            }
+
+            generate();
+        }
+
+        function generateUUID() {
+            const randomValues = new Uint8Array(16);
+            crypto.getRandomValues(randomValues);
+
+            randomValues[6] = (randomValues[6] & 0x0f) | 0x40;
+            randomValues[8] = (randomValues[8] & 0x3f) | 0x80;
+
+            const hex = Array.from(randomValues, b => b.toString(16).padStart(2, '0')).join('');
+            return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
+        }
+
+        function generateBase62(length) {
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            let result = '';
+            const randomValues = new Uint8Array(length);
+            crypto.getRandomValues(randomValues);
+            for (let i = 0; i < length; i++) {
+                result += chars[randomValues[i] % 62];
+            }
+            return result;
+        }
+
+        function generateHex(length) {
+            const randomValues = new Uint8Array(Math.ceil(length / 2));
+            crypto.getRandomValues(randomValues);
+            return Array.from(randomValues, b => b.toString(16).padStart(2, '0')).join('').slice(0, length);
+        }
+
+        function generateCustom(length) {
+            let pool = '';
+            const incLower = document.getElementById('incLower').checked;
+            const incUpper = document.getElementById('incUpper').checked;
+            const incDigit = document.getElementById('incDigit').checked;
+            const incSymb = document.getElementById('incSymb').checked;
+            const excludeAmbiguous = document.getElementById('excludeAmbiguous').checked;
+
+            if (incLower) pool += charSets.lower;
+            if (incUpper) pool += charSets.upper;
+            if (incDigit) pool += charSets.digit;
+            if (incSymb) pool += charSets.symb;
+
+            if (excludeAmbiguous) {
+                pool = Array.from(pool).filter(c => !ambiguousChars.has(c)).join('');
+            }
+
+            if (!pool) return '请至少选择一种字符集';
+
+            let result = '';
+            const randomValues = new Uint8Array(length);
+            crypto.getRandomValues(randomValues);
+            for (let i = 0; i < length; i++) {
+                result += pool[randomValues[i] % pool.length];
+            }
+            return result;
+        }
+
+        function generate() {
+            const length = Math.max(8, Math.min(512, parseInt(document.getElementById('keyLength').value || '32', 10)));
+            const count = Math.max(1, Math.min(50, parseInt(document.getElementById('keyCount').value || '1', 10)));
+            const prefix = document.getElementById('keyPrefix').value || '';
+
+            let output = '';
+            const keys = [];
+
+            for (let i = 0; i < count; i++) {
+                let key;
+                switch (currentKeyType) {
+                    case 'api':
+                        key = generateBase62(length);
+                        break;
+                    case 'uuid':
+                        key = generateUUID();
+                        break;
+                    case 'base62':
+                        key = generateBase62(length);
+                        break;
+                    case 'hex':
+                        key = generateHex(length);
+                        break;
+                    case 'jwt':
+                        key = generateBase62(Math.max(64, length));
+                        break;
+                    case 'custom':
+                        key = generateCustom(length);
+                        break;
+                    default:
+                        key = generateBase62(length);
+                }
+
+                if (currentKeyType !== 'uuid' && prefix) {
+                    key = prefix + key;
+                }
+
+                keys.push(key);
+                output += key + (count > 1 ? '\n' : '');
+            }
+
+            document.getElementById('result').value = output.trim();
+
+            keys.forEach(key => {
+                if (key && key !== '请至少选择一种字符集') {
+                    saveToHistory(key, currentKeyType);
+                }
+            });
+
+            renderHistory();
+        }
+
+        function saveToHistory(key, type) {
+            const history = getHistory();
+            const index = history.findIndex(h => h.key === key);
+            if (index > -1) {
+                history.splice(index, 1);
+            }
+            history.unshift({ key, type, time: Date.now() });
+            if (history.length > 20) {
+                history.pop();
+            }
+            localStorage.setItem('key_generator_history', JSON.stringify(history));
+        }
+
+        function getHistory() {
+            try {
+                const data = localStorage.getItem('key_generator_history');
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function renderHistory() {
+            const history = getHistory();
+            const container = document.getElementById('historyContainer');
+            const listEl = document.getElementById('historyList');
+
+            if (history.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            listEl.innerHTML = '';
+
+            const typeLabels = {
+                api: 'API',
+                uuid: 'UUID',
+                base62: 'B62',
+                hex: 'HEX',
+                jwt: 'JWT',
+                custom: 'CUS'
+            };
+
+            history.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center; flex: 1; min-width: 0;">
+                        <span class="key-type-badge">${typeLabels[item.type] || 'KEY'}</span>
+                        <span class="history-key" onclick="copyHistoryKey('${item.key.replace(/'/g, '\\\'')}')" title="${item.key}">${item.key}</span>
+                    </div>
+                    <button class="btn-history-copy" onclick="copyHistoryKey('${item.key.replace(/'/g, '\\\'')}')">复制</button>
+                `;
+                listEl.appendChild(div);
+            });
+        }
+
+        function copyHistoryKey(key) {
+            document.getElementById('result').value = key;
+            navigator.clipboard?.writeText(key);
+            navigator.vibrate && navigator.vibrate(30);
+        }
+
+        function copyToClipboard() {
+            const el = document.getElementById('result');
+            el.select();
+            document.execCommand('copy');
+            navigator.vibrate && navigator.vibrate(30);
+        }
+
+        function clearAll() {
+            document.getElementById('result').value = '';
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('key_generator_history');
+            renderHistory();
+        }
+
+        document.getElementById('keyLength').addEventListener('input', generate);
+        document.getElementById('keyCount').addEventListener('input', generate);
+
+        renderHistory();
+        generate();
+    </script>
+
+    <div class="back-home">
+        <a href="index.html">
+            <i class="fas fa-arrow-left"></i>返回工具列表
+        </a>
+    </div>
+</body>
+</html>

@@ -294,6 +294,18 @@
             background-color: rgba(139, 92, 246, 0.2);
         }
 
+        .tool-key .tool-icon {
+            background-color: rgba(249, 115, 22, 0.1);
+        }
+
+        .tool-key .tool-action {
+            color: #F97316;
+        }
+
+        .tool-key:hover .tool-icon {
+            background-color: rgba(249, 115, 22, 0.2);
+        }
+
         .tool-card:hover .tool-action i {
             transform: translateX(6px);
         }
@@ -457,6 +469,31 @@
                     <div class="tool-card-footer">
                         <i class="fa fa-check-circle"></i>
                         本地存储 · 安全隐私
+                    </div>
+                </a>
+            </div>
+
+            <!-- 密钥生成器 -->
+            <div class="tool-card tool-key">
+                <a href="key-generator.html" class="card-link" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
+                            <i class="fa fa-key" style="color: #F97316;"></i>
+                        </div>
+                        <h2>密钥生成器</h2>
+                        <div class="tool-description">
+                            生成 API Key、UUID、Base62、十六进制等多种格式密钥，支持自定义前缀和批量生成，完全本地运行。
+                        </div>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fa fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-card-footer">
+                        <i class="fa fa-check-circle"></i>
+                        本地生成 · 支持多种格式
                     </div>
                 </a>
             </div>
