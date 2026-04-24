@@ -282,6 +282,18 @@
             background-color: rgba(20, 184, 166, 0.2);
         }
 
+        .tool-clipboard .tool-icon {
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+
+        .tool-clipboard .tool-action {
+            color: #8B5CF6;
+        }
+
+        .tool-clipboard:hover .tool-icon {
+            background-color: rgba(139, 92, 246, 0.2);
+        }
+
         .tool-card:hover .tool-action i {
             transform: translateX(6px);
         }
@@ -420,6 +432,31 @@
                     <div class="tool-card-footer">
                         <i class="fa fa-check-circle"></i>
                         双向转换 · 差异对比
+                    </div>
+                </a>
+            </div>
+
+            <!-- 剪贴板历史记录 -->
+            <div class="tool-card tool-clipboard">
+                <a href="剪贴板历史.html" class="card-link" target="_blank" rel="noopener noreferrer">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
+                            <i class="fa fa-clipboard" style="color: #8B5CF6;"></i>
+                        </div>
+                        <h2>剪贴板历史</h2>
+                        <div class="tool-description">
+                            记录复制粘贴历史，一键找回之前复制的内容，支持搜索和快速复用。
+                        </div>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fa fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-card-footer">
+                        <i class="fa fa-check-circle"></i>
+                        本地存储 · 安全隐私
                     </div>
                 </a>
             </div>

@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剪贴板历史 - 复制粘贴记录管理</title>
+    <link rel="icon" type="image/png" href="icons/clipboard-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/svg+xml" href="icons/clipboard.svg">
+    <link rel="shortcut icon" href="icons/clipboard-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/clipboard-apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+        :root {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --primary-light: rgba(139, 92, 246, 0.05);
+            --secondary: #10B981;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .header h1 i {
+            margin-right: 0.5rem;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 22px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-300, #D1D5DB);
+            transition: var(--transition);
+            border-radius: 22px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(18px);
+        }
+
+        .btn {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #DC2626;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .stats-bar span {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .stats-bar i {
+            color: var(--primary);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 3px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: var(--gray-300, #D1D5DB);
+            border-radius: 3px;
+        }
+
+        .history-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        .history-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        .item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-text {
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-all;
+        }
+
+        .item-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--gray-400);
+        }
+
+        .item-meta i {
+            margin-right: 0.25rem;
+        }
+
+        .item-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .btn-icon:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-icon.btn-delete:hover {
+            background: var(--danger);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-400);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 0.875rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--gray-800);
+            color: white;
+            padding: 0.875rem 1.5rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .back-home {
+            padding: 1rem 1.5rem;
+            background-color: var(--gray-50);
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .back-home a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+        }
+
+        .back-home a:hover {
+            background-color: var(--primary-light);
+        }
+
+        @media (max-width: 640px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toggle-container {
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-clipboard-list"></i>剪贴板历史记录</h1>
+            <p>自动记录复制的文本内容，一键找回历史记录</p>
+        </div>
+        <div class="content">
+            <div class="toolbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="搜索历史记录..." oninput="renderHistory()">
+                </div>
+                <div class="toggle-container">
+                    <span>监控系统剪贴板</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="monitorToggle" onchange="toggleMonitor()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <button class="btn btn-danger" id="clearBtn" onclick="clearAll()" disabled>
+                    <i class="fas fa-trash"></i>清空全部
+                </button>
+            </div>
+            <div class="stats-bar">
+                <span><i class="fas fa-list"></i>共 <strong id="totalCount">0</strong> 条记录</span>
+                <span><i class="fas fa-database"></i>本地存储，隐私安全</span>
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="empty-state">
+                    <i class="fas fa-clipboard"></i>
+                    <p>暂无剪贴板记录</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.75rem;">复制任意文本后将自动记录</p>
+                </div>
+            </div>
+        </div>
+        <div class="back-home">
+            <a href="index.html">
+                <i class="fas fa-arrow-left"></i>返回工具列表
+            </a>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const STORAGE_KEY = 'clipboard_history';
+        const MAX_HISTORY = 50;
+        let monitorEnabled = false;
+
+        function getHistory() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY);
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveHistory(history) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        }
+
+        function addToHistory(text) {
+            if (!text || !text.trim()) return;
+
+            const trimmed = text.trim();
+            const history = getHistory();
+
+            const filtered = history.filter(item => item.text !== trimmed);
+            filtered.unshift({ text: trimmed, timestamp: Date.now() });
+
+            if (filtered.length > MAX_HISTORY) {
+                filtered.pop();
+            }
+
+            saveHistory(filtered);
+            renderHistory();
+        }
+
+        function deleteItem(index) {
+            const history = getHistory();
+            history.splice(index, 1);
+            saveHistory(history);
+            renderHistory();
+            showToast('已删除');
+        }
+
+        function clearAll() {
+            if (!confirm('确定要清空所有历史记录吗？')) return;
+            localStorage.removeItem(STORAGE_KEY);
+            renderHistory();
+            showToast('已清空所有记录');
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('已复制到剪贴板');
+            } catch (e) {
+                showToast('复制失败');
+            }
+        }
+
+        function formatTime(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (diff < 60000) return '刚刚';
+            if (minutes < 60) return `${minutes}分钟前`;
+            if (hours < 24) return `${hours}小时前`;
+            if (days < 7) return `${days}天前`;
+
+            const date = new Date(timestamp);
+            return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+
+        function renderHistory() {
+            const history = getHistory();
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const container = document.getElementById('historyList');
+            const clearBtn = document.getElementById('clearBtn');
+
+            const filtered = history.filter(item =>
+                item.text.toLowerCase().includes(searchTerm)
+            );
+
+            document.getElementById('totalCount').textContent = filtered.length;
+            clearBtn.disabled = history.length === 0;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard"></i>
+                        <p>${history.length === 0 ? '暂无剪贴板记录' : '未找到匹配的记录'}</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.75rem;">${history.length === 0 ? '复制任意文本后将自动记录' : '试试其他关键词'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map((item, index) => `
+                <div class="history-item">
+                    <div class="item-content">
+                        <div class="item-text">${escapeHtml(item.text)}</div>
+                        <div class="item-meta">
+                            <span><i class="far fa-clock"></i>${formatTime(item.timestamp)}</span>
+                            <span><i class="far fa-file-alt"></i>${item.text.length} 字符</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-icon" title="复制" onclick="copyToClipboard('${escapeHtml(item.text.replace(/'/g, "\\'"))}')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="btn-icon btn-delete" title="删除" onclick="deleteItem(${history.indexOf(item)})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        document.addEventListener('copy', () => {
+            setTimeout(() => {
+                const text = window.getSelection().toString();
+                if (text && text.trim()) {
+                    addToHistory(text.trim());
+                }
+            }, 10);
+        });
+
+        async function handleClipboardChange() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text && text.trim()) {
+                    addToHistory(text.trim());
+                }
+            } catch (e) {
+            }
+        }
+
+        async function toggleMonitor() {
+            const toggle = document.getElementById('monitorToggle');
+            if (toggle.checked) {
+                try {
+                    await navigator.clipboard.readText();
+                    if (navigator.clipboard.addEventListener) {
+                        navigator.clipboard.addEventListener('clipboardchange', handleClipboardChange);
+                        monitorEnabled = true;
+                        showToast('系统剪贴板监控已开启');
+                    } else {
+                        showToast('当前浏览器不支持系统剪贴板监控');
+                        toggle.checked = false;
+                    }
+                } catch (e) {
+                    showToast('权限被拒绝，无法监控系统剪贴板');
+                    toggle.checked = false;
+                }
+            } else {
+                if (navigator.clipboard.removeEventListener) {
+                    navigator.clipboard.removeEventListener('clipboardchange', handleClipboardChange);
+                }
+                monitorEnabled = false;
+                showToast('系统剪贴板监控已关闭');
+            }
+        }
+
+        renderHistory();
+    </script>
+</body>
+</html>
