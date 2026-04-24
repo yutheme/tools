@@ -1,23 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
   <defs>
     <linearGradient id="keyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#F97316;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#FB923C;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#EA580C;stop-opacity:1" />
     </linearGradient>
   </defs>
-
-  <!-- 背景圆形 -->
-  <circle cx="90" cy="90" r="85" fill="url(#keyGrad)" opacity="0.1" />
-
+  <circle cx="90" cy="90" r="85" fill="url(#keyGrad)" opacity="0.08" />
   <!-- 钥匙环 -->
-  <circle cx="55" cy="55" r="28" fill="none" stroke="url(#keyGrad)" stroke-width="12" />
-  <circle cx="55" cy="55" r="18" fill="white" opacity="0.9" />
-
+  <circle cx="54" cy="63" r="40" fill="none" stroke="url(#keyGrad)" stroke-width="14" stroke-linecap="round"/>
   <!-- 钥匙柄 -->
-  <rect x="72" y="48" width="80" height="14" rx="7" fill="url(#keyGrad)" />
-
+  <rect x="81" y="50" width="72" height="14" rx="7" fill="url(#keyGrad)" />
   <!-- 钥匙齿 -->
-  <rect x="125" y="62" width="12" height="20" rx="3" fill="url(#keyGrad)" />
-  <rect x="145" y="62" width="12" height="14" rx="3" fill="url(#keyGrad)" />
-  <rect x="105" y="62" width="12" height="24" rx="3" fill="url(#keyGrad)" />
+  <rect x="112" y="64" width="11" height="27" rx="3" fill="url(#keyGrad)" />
+  <rect x="130" y="64" width="11" height="22" rx="3" fill="url(#keyGrad)" />
+  <rect x="144" y="64" width="11" height="32" rx="3" fill="url(#keyGrad)" />
 </svg>
