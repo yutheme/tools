@@ -41,19 +41,19 @@
             min-height: 100vh;
             font-family: system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, rgba(22, 93, 255, 0.05) 0%, rgba(54, 207, 201, 0.05) 100%);
-            padding: 2rem 0;
+            padding: 1.5rem 0;
         }
 
         .container {
-            max-width: 1280px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 1rem;
         }
-        
+
         /* 标题样式 */
         .page-title {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
         
         .page-title h1 {
@@ -77,19 +77,26 @@
         .tools-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 3rem;
+            gap: 1.5rem;
             grid-auto-rows: 1fr;
         }
-        
+
         @media (min-width: 640px) {
             .tools-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
-        
+
         @media (min-width: 1024px) {
             .tools-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .tools-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.25rem;
             }
         }
         
@@ -118,57 +125,50 @@
         
         /* 内容容器 */
         .tool-card-content {
-            padding: 1.5rem;
+            padding: 1.25rem 1rem;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
-        
+
         /* 图标区域 */
         .tool-icon {
-            width: 3.5rem;
-            height: 3.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
             border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1.25rem;
+            margin-bottom: 0.75rem;
             transition: background-color 0.2s ease;
         }
 
         /* 图标尺寸为1.8rem */
         .tool-icon i {
-            font-size: 1.8rem !important;
+            font-size: 1.25rem !important;
         }
 
         /* 标题区域 */
         .tool-card h2 {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: bold;
             color: var(--color-text-dark);
-            margin-bottom: 0.75rem;
-            height: 2rem;
+            margin-bottom: 0.5rem;
+            height: auto;
+            line-height: 1.4;
         }
 
         /* 描述文本区域 */
         .tool-description {
             color: var(--color-text-gray);
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-            height: 72px;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            font-size: 0.875rem;
+            height: auto;
             overflow: hidden;
-            position: relative;
-        }
-
-        .tool-description:after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 24px;
-            background: linear-gradient(to top, white, transparent);
-            pointer-events: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
         }
         
         /* 按钮容器 */
@@ -190,12 +190,12 @@
         
         /* 底部特点区域 */
         .tool-card-footer {
-            padding: 1rem 1.5rem;
+            padding: 0.625rem 1rem;
             background-color: var(--color-bg-light);
             border-top: 1px solid rgba(0, 0, 0, 0.08);
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             color: var(--color-text-gray);
-            height: 48px;
+            height: auto;
             display: flex;
             align-items: center;
         }
@@ -207,7 +207,8 @@
         
         /* 链接样式 */
         .card-link {
-            display: block;
+            display: flex;
+            flex-direction: column;
             height: 100%;
             width: 100%;
             text-decoration: none;
