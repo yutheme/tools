@@ -140,7 +140,7 @@
         }
 
         .content {
-            padding: 1rem;
+            padding: 0.75rem 1rem;
             flex: 1;
             min-height: 0;
             display: flex;
@@ -150,22 +150,46 @@
         .info-box {
             background: var(--primary-light);
             border-left: 4px solid var(--primary);
-            padding: 1rem;
+            padding: 0.5rem 1rem;
             border-radius: var(--radius);
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .info-box h3 {
-            font-size: 1rem;
+            font-size: 0.875rem;
             color: var(--primary);
-            margin-bottom: 0.5rem;
+            margin: 0;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .info-box h3 i.toggle-icon {
+            margin-left: auto;
+            font-size: 0.75rem;
+            transition: transform 0.2s;
+        }
+
+        .info-box.collapsed h3 i.toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .info-box-body {
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.2s ease;
+            max-height: 200px;
+            opacity: 1;
+        }
+
+        .info-box.collapsed .info-box-body {
+            max-height: 0;
+            opacity: 0;
         }
 
         .info-box ul {
-            margin: 0;
+            margin: 0.5rem 0 0;
             padding-left: 1.5rem;
             font-size: 0.875rem;
             color: var(--gray-700);
@@ -248,14 +272,16 @@
         </div>
 
         <div class="content">
-            <div class="info-box">
-                <h3><i class="fas fa-info-circle"></i>关于这个工具</h3>
-                <ul>
-                    <li><strong>适用场景：</strong>Meta Quest VR浏览器、移动端设备缺少中文输入法时应急使用</li>
-                    <li><strong>技术原理：</strong>RIME 输入法核心编译为 WebAssembly，完全在浏览器本地运行</li>
-                    <li><strong>支持方案：</strong>拼音、双拼、五笔，可在设置中切换</li>
-                    <li><strong>隐私说明：</strong>所有输入都在本地处理，不上传到服务器</li>
-                </ul>
+            <div class="info-box collapsed">
+                <h3><i class="fas fa-info-circle"></i>关于这个工具<i class="fas fa-chevron-down toggle-icon"></i></h3>
+                <div class="info-box-body">
+                    <ul>
+                        <li><strong>适用场景：</strong>Meta Quest VR浏览器、移动端设备缺少中文输入法时应急使用</li>
+                        <li><strong>技术原理：</strong>RIME 输入法核心编译为 WebAssembly，完全在浏览器本地运行</li>
+                        <li><strong>支持方案：</strong>拼音、双拼、五笔，可在设置中切换</li>
+                        <li><strong>隐私说明：</strong>所有输入都在本地处理，不上传到服务器</li>
+                    </ul>
+                </div>
             </div>
 
             <div class="iframe-container">
@@ -269,5 +295,10 @@
             </a>
         </div>
     </div>
+    <script>
+        document.querySelector('.info-box h3').addEventListener('click', () => {
+            document.querySelector('.info-box').classList.toggle('collapsed');
+        });
+    </script>
 </body>
 </html>
