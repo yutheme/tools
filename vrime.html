@@ -54,11 +54,7 @@
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            overflow: hidden;
             transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 2rem);
         }
 
         .header {
@@ -141,10 +137,6 @@
 
         .content {
             padding: 0.75rem 1rem;
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
         }
 
         .info-box {
@@ -201,8 +193,8 @@
 
         .iframe-container {
             width: 100%;
-            flex: 1;
-            min-height: 300px;
+            height: 85vh;
+            min-height: 600px;
             border: 1px solid var(--gray-200);
             border-radius: var(--radius);
             overflow: hidden;
@@ -244,7 +236,8 @@
                 align-items: flex-start;
             }
             .iframe-container {
-                min-height: 250px;
+                height: 80vh;
+                min-height: 450px;
             }
         }
     </style>
