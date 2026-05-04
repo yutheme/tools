@@ -19,6 +19,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            --color-primary: var(--color-tool-wordcount);
+            --color-primary-dark: var(--color-tool-wordcount-dark);
+            --color-primary-light: var(--color-tool-wordcount-light);
+            --color-primary-ring: var(--color-tool-wordcount-ring);
+        }
+        :root {
             --color-primary: #3B82F6;
             --color-primary-light: #DBEAFE;
             --color-primary-dark: #2563EB;
@@ -75,7 +81,7 @@
             transform: translateX(-50%);
             width: 60px;
             height: 3px;
-            background: var(--color-tool-wordcount);
+            background: var(--color-primary);
             border-radius: 2px;
         }
         
@@ -84,7 +90,7 @@
             font-weight: 700;
             color: var(--dark);
             margin-bottom: 5px;
-            background: linear-gradient(90deg, var(--color-tool-wordcount), var(--color-tool-wordcount-dark));
+            background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -169,7 +175,7 @@
         }
         
         .upload-btn:hover {
-            background-color: var(--color-tool-wordcount-dark);
+            background-color: var(--color-primary-dark);
             transform: translateY(-1px);
             box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
         }
@@ -379,7 +385,7 @@
         }
         
         .copy-btn:hover {
-            background-color: var(--color-tool-wordcount-dark);
+            background-color: var(--color-primary-dark);
             transform: translateY(-1px);
             box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
         }

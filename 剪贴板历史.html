@@ -13,6 +13,12 @@
     <link rel="stylesheet" href="css/shared.css">
     <style>
         :root {
+            --color-primary: var(--color-tool-clipboard);
+            --color-primary-dark: var(--color-tool-clipboard-dark);
+            --color-primary-light: var(--color-tool-clipboard-light);
+            --color-primary-ring: var(--color-tool-clipboard-ring);
+        }
+        :root {
             --color-primary: #8B5CF6;
             --color-primary-dark: #7C3AED;
             --color-primary-light: rgba(139, 92, 246, 0.05);
@@ -64,7 +70,7 @@
         }
 
         .header {
-            background: var(--color-tool-clipboard);
+            background: var(--color-primary);
             color: white;
             padding: 1.5rem;
         }
@@ -318,7 +324,7 @@
         }
 
         .btn-icon:hover {
-            background: var(--color-tool-clipboard);
+            background: var(--color-primary);
             color: white;
         }
 

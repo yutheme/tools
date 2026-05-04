@@ -20,6 +20,12 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
     <style>
         :root {
+            --color-primary: var(--color-tool-yaml);
+            --color-primary-dark: var(--color-tool-yaml-dark);
+            --color-primary-light: var(--color-tool-yaml-light);
+            --color-primary-ring: var(--color-tool-yaml-ring);
+        }
+        :root {
             --color-primary: #3B82F6;
             --color-primary-dark: #2563EB;
             --color-primary-light: rgba(59, 130, 246, 0.05);
@@ -68,7 +74,7 @@
         }
 
         .header {
-            background: var(--color-tool-yaml);
+            background: var(--color-primary);
             color: white;
             padding: 1.5rem;
         }
@@ -122,7 +128,7 @@
         }
 
         .btn-primary:hover {
-            background-color: var(--color-tool-yaml-dark);
+            background-color: var(--color-primary-dark);
             transform: translateY(-1px);
         }
 
@@ -250,7 +256,7 @@
 
         .editor-with-line:focus-within {
             border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+            box-shadow: 0 0 0 3px var(--color-primary-ring);
             background: white;
         }
 
@@ -272,7 +278,7 @@
 
         textarea:focus {
             border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+            box-shadow: 0 0 0 3px var(--color-primary-ring);
             background: white;
         }
 
