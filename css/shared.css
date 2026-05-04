@@ -17,6 +17,47 @@
   --color-danger: #F53F3F;
   --color-info: #86909C;
   
+  /* 各工具专属颜色 */
+  --color-tool-number: #165DFF;
+  --color-tool-number-dark: #0E42D2;
+  --color-tool-number-light: rgba(22, 93, 255, 0.05);
+  --color-tool-number-ring: rgba(22, 93, 255, 0.1);
+  
+  --color-tool-password: #F59E0B;
+  --color-tool-password-dark: #D97706;
+  --color-tool-password-light: rgba(245, 158, 11, 0.08);
+  --color-tool-password-ring: rgba(245, 158, 11, 0.15);
+  
+  --color-tool-key: #F97316;
+  --color-tool-key-dark: #EA580C;
+  --color-tool-key-light: rgba(249, 115, 22, 0.08);
+  --color-tool-key-ring: rgba(249, 115, 22, 0.15);
+  
+  --color-tool-wordcount: #36CFC9;
+  --color-tool-wordcount-dark: #2AA7A2;
+  --color-tool-wordcount-light: rgba(54, 207, 201, 0.08);
+  --color-tool-wordcount-ring: rgba(54, 207, 201, 0.15);
+  
+  --color-tool-yaml: #14B8A6;
+  --color-tool-yaml-dark: #0D9488;
+  --color-tool-yaml-light: rgba(20, 184, 166, 0.08);
+  --color-tool-yaml-ring: rgba(20, 184, 166, 0.15);
+  
+  --color-tool-translate: #8B5CF6;
+  --color-tool-translate-dark: #7C3AED;
+  --color-tool-translate-light: rgba(139, 92, 246, 0.08);
+  --color-tool-translate-ring: rgba(139, 92, 246, 0.15);
+  
+  --color-tool-clipboard: #A855F7;
+  --color-tool-clipboard-dark: #9333EA;
+  --color-tool-clipboard-light: rgba(168, 85, 247, 0.08);
+  --color-tool-clipboard-ring: rgba(168, 85, 247, 0.15);
+  
+  --color-tool-vrime: #EC4899;
+  --color-tool-vrime-dark: #DB2777;
+  --color-tool-vrime-light: rgba(236, 72, 153, 0.08);
+  --color-tool-vrime-ring: rgba(236, 72, 153, 0.15);
+  
   /* 中性色 */
   --color-gray-50: #F7F8FA;
   --color-gray-100: #F2F3F5;

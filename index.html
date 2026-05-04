@@ -205,89 +205,133 @@
             font-size: 0.875rem;
         }
         
-        /* 工具特定颜色 */
+        /* 工具特定颜色 - 使用共享 CSS 变量 */
         .tool-number .tool-icon {
-            background-color: rgba(22, 93, 255, 0.1);
+            background-color: var(--color-tool-number-light);
         }
 
         .tool-number .tool-action {
-            color: var(--color-primary);
+            color: var(--color-tool-number);
         }
 
         .tool-number:hover .tool-icon {
-            background-color: rgba(22, 93, 255, 0.2);
+            background-color: var(--color-tool-number-ring);
+        }
+
+        .tool-number .tool-icon i {
+            color: var(--color-tool-number);
         }
 
         .tool-wordcount .tool-icon {
-            background-color: rgba(54, 207, 201, 0.1);
+            background-color: var(--color-tool-wordcount-light);
         }
 
         .tool-wordcount .tool-action {
-            color: var(--color-secondary);
+            color: var(--color-tool-wordcount);
         }
 
         .tool-wordcount:hover .tool-icon {
-            background-color: rgba(54, 207, 201, 0.2);
+            background-color: var(--color-tool-wordcount-ring);
+        }
+
+        .tool-wordcount .tool-icon i {
+            color: var(--color-tool-wordcount);
         }
 
         .tool-translate .tool-icon {
-            background-color: rgba(139, 92, 246, 0.1);
+            background-color: var(--color-tool-translate-light);
         }
 
         .tool-translate .tool-action {
-            color: var(--color-tertiary);
+            color: var(--color-tool-translate);
         }
 
         .tool-translate:hover .tool-icon {
-            background-color: rgba(139, 92, 246, 0.2);
+            background-color: var(--color-tool-translate-ring);
+        }
+
+        .tool-translate .tool-icon i {
+            color: var(--color-tool-translate);
         }
 
         .tool-password .tool-icon {
-            background-color: rgba(245, 158, 11, 0.1);
+            background-color: var(--color-tool-password-light);
         }
 
         .tool-password .tool-action {
-            color: #f59e0b;
+            color: var(--color-tool-password);
         }
 
         .tool-password:hover .tool-icon {
-            background-color: rgba(245, 158, 11, 0.2);
+            background-color: var(--color-tool-password-ring);
+        }
+
+        .tool-password .tool-icon i {
+            color: var(--color-tool-password);
         }
 
         .tool-yaml .tool-icon {
-            background-color: rgba(20, 184, 166, 0.1);
+            background-color: var(--color-tool-yaml-light);
         }
 
         .tool-yaml .tool-action {
-            color: #14b8a6;
+            color: var(--color-tool-yaml);
         }
 
         .tool-yaml:hover .tool-icon {
-            background-color: rgba(20, 184, 166, 0.2);
+            background-color: var(--color-tool-yaml-ring);
+        }
+
+        .tool-yaml .tool-icon i {
+            color: var(--color-tool-yaml);
         }
 
         .tool-clipboard .tool-icon {
-            background-color: rgba(139, 92, 246, 0.1);
+            background-color: var(--color-tool-clipboard-light);
         }
 
         .tool-clipboard .tool-action {
-            color: #8B5CF6;
+            color: var(--color-tool-clipboard);
         }
 
         .tool-clipboard:hover .tool-icon {
-            background-color: rgba(139, 92, 246, 0.2);
+            background-color: var(--color-tool-clipboard-ring);
+        }
+
+        .tool-clipboard .tool-icon i {
+            color: var(--color-tool-clipboard);
         }
 
         .tool-key .tool-icon {
-            background-color: rgba(249, 115, 22, 0.1);
+            background-color: var(--color-tool-key-light);
         }
 
         .tool-key .tool-action {
-            color: #F97316;
+            color: var(--color-tool-key);
         }
 
         .tool-key:hover .tool-icon {
-            background-color: rgba(249, 115, 22, 0.2);
+            background-color: var(--color-tool-key-ring);
+        }
+
+        .tool-key .tool-icon i {
+            color: var(--color-tool-key);
+        }
+
+        .tool-vrime .tool-icon {
+            background-color: var(--color-tool-vrime-light);
+        }
+
+        .tool-vrime .tool-action {
+            color: var(--color-tool-vrime);
+        }
+
+        .tool-vrime:hover .tool-icon {
+            background-color: var(--color-tool-vrime-ring);
+        }
+
+        .tool-vrime .tool-icon i {
+            color: var(--color-tool-vrime);
         }
 
         .tool-card:hover .tool-action i {
@@ -312,7 +356,7 @@
                 <a href="数字大写转换.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-exchange" style="color: #165DFF;"></i>
+                            <i class="fa fa-exchange"></i>
                         </div>
                         <h2>数字大写转换</h2>
                         <div class="tool-description">
@@ -337,7 +381,7 @@
                 <a href="字数统计.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-file-text-o" style="color: #36CFC9;"></i>
+                            <i class="fa fa-file-text-o"></i>
                         </div>
                         <h2>字数统计工具</h2>
                         <div class="tool-description">
@@ -362,7 +406,7 @@
                 <a href="实时翻译工具.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-language" style="color: #8B5CF6;"></i>
+                            <i class="fa fa-language"></i>
                         </div>
                         <h2>智能翻译工具</h2>
                         <div class="tool-description">
@@ -387,7 +431,7 @@
                 <a href="password-generator.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-lock" style="color: #f59e0b;"></i>
+                            <i class="fa fa-lock"></i>
                         </div>
                         <h2>密码生成器</h2>
                         <div class="tool-description">
@@ -412,7 +456,7 @@
                 <a href="yaml-previewer.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-file-text" style="color: #14b8a6;"></i>
+                            <i class="fa fa-file-text"></i>
                         </div>
                         <h2>YAML 工具</h2>
                         <div class="tool-description">
@@ -437,7 +481,7 @@
                 <a href="剪贴板历史.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-clipboard" style="color: #8B5CF6;"></i>
+                            <i class="fa fa-clipboard"></i>
                         </div>
                         <h2>剪贴板历史</h2>
                         <div class="tool-description">
@@ -462,7 +506,7 @@
                 <a href="key-generator.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon">
-                            <i class="fa fa-key" style="color: #F97316;"></i>
+                            <i class="fa fa-key"></i>
                         </div>
                         <h2>密钥生成器</h2>
                         <div class="tool-description">
@@ -483,18 +527,18 @@
             </div>
 
             <!-- 在线中文输入法 -->
-            <div class="tool-card" style="--color-input: #06B6D4;">
+            <div class="tool-card tool-vrime">
                 <a href="vrime.html" class="card-link" target="_blank" rel="noopener noreferrer">
                     <div class="tool-card-content">
                         <div class="tool-icon" style="background-color: rgba(6, 182, 212, 0.1);">
-                            <i class="fa fa-keyboard-o" style="color: #06B6D4;"></i>
+                            <i class="fa fa-keyboard-o"></i>
                         </div>
                         <h2>在线中文输入法</h2>
                         <div class="tool-description">
                             基于RIME的网页中文输入法，适合Meta Quest VR浏览器使用，支持拼音、五笔、双拼，完全本地运行。
                         </div>
                         <div class="tool-action-container">
-                            <div class="tool-action" style="color: #06B6D4;">
+                            <div class="tool-action">
                                 立即使用
                                 <i class="fa fa-arrow-right"></i>
                             </div>
