@@ -751,6 +751,7 @@
 
         // 当前正在选择的语言类型 ('from' 或 'to')
         let selectingLangType = null;
+        let googleDisabledUntil = 0;
 
         // 初始化
         function initialize() {
@@ -823,14 +824,24 @@
         }
 
         async function translateText(text, from, to) {
-            try {
-                return await googleTranslate(text, from, to);
-            } catch (googleError) {
+            let googleError = null;
+
+            if (Date.now() >= googleDisabledUntil) {
                 try {
-                    return await fallbackTranslate(text, from, to);
-                } catch (fallbackError) {
-                    throw new Error(`${googleError.message}; ${fallbackError.message}`);
+                    return await googleTranslate(text, from, to);
+                } catch (error) {
+                    googleError = error;
+                    if ((error.message || '').includes('429')) {
+                        googleDisabledUntil = Date.now() + 10 * 60 * 1000;
+                    }
                 }
+            }
+
+            try {
+                return await fallbackTranslate(text, from, to);
+            } catch (fallbackError) {
+                const googleMessage = googleError ? `${googleError.message}; ` : '';
+                throw new Error(`${googleMessage}${fallbackError.message}`);
             }
         }
 
@@ -1111,7 +1122,7 @@
                     updateLanguageDisplay(true);
                 }
 
-                showNotification(result.provider === 'mymemory' ? '翻译完成（备用服务）' : '翻译完成');
+                showNotification(result.provider === 'mymemory' ? '翻译完成（Google 限流，已用备用服务）' : '翻译完成');
             } catch (error) {
                 handleTranslationError(error);
             } finally {
