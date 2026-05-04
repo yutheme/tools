@@ -730,13 +730,33 @@
             history.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'history-item';
-                div.innerHTML = `
-                    <div style="display: flex; align-items: center; flex: 1; min-width: 0;">
-                        <span class="key-type-badge">${typeLabels[item.type] || 'KEY'}</span>
-                        <span class="history-key" onclick="copyHistoryKey('${item.key.replace(/'/g, '\\\'')}')" title="${item.key}">${item.key}</span>
-                    </div>
-                    <button class="btn-history-copy" onclick="copyHistoryKey('${item.key.replace(/'/g, '\\\'')}')">复制</button>
-                `;
+
+                const content = document.createElement('div');
+                content.style.display = 'flex';
+                content.style.alignItems = 'center';
+                content.style.flex = '1';
+                content.style.minWidth = '0';
+
+                const badge = document.createElement('span');
+                badge.className = 'key-type-badge';
+                badge.textContent = typeLabels[item.type] || 'KEY';
+
+                const keyEl = document.createElement('span');
+                keyEl.className = 'history-key';
+                keyEl.title = item.key;
+                keyEl.textContent = item.key;
+                keyEl.addEventListener('click', () => copyHistoryKey(item.key));
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'btn-history-copy';
+                copyBtn.type = 'button';
+                copyBtn.textContent = '复制';
+                copyBtn.addEventListener('click', () => copyHistoryKey(item.key));
+
+                content.appendChild(badge);
+                content.appendChild(keyEl);
+                div.appendChild(content);
+                div.appendChild(copyBtn);
                 listEl.appendChild(div);
             });
         }

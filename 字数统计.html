@@ -869,7 +869,7 @@
                 try {
                     const chinese = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
                     const numbers = (content.match(/[0-9]/g) || []).length;
-                    const punctuation = (content.match(/[,。!?;:"'''()、【】《》!?-...,\.!?;:"'\(\)\{\}\[\]~\-]/g) || []).length;
+                    const punctuation = (content.match(/[^\w\s\u4e00-\u9fa5]/g) || []).length;
 
                     // 统计英文字母
                     const letters = (content.match(/[A-Za-z]/g) || []).length;
