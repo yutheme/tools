@@ -8,10 +8,6 @@
       <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0"/>
     </linearGradient>
   </defs>
-  <!-- 文档/文件图标 - FA风格 -->
-  <rect x="72" y="60" width="112" height="136" rx="8" fill="white" opacity="0.95"/>
-  <path d="M152 60 L152 92 L184 92" fill="#36CFC9" opacity="0.5"/>
-  <rect x="92" y="116" width="64" height="8" rx="4" fill="#36CFC9" opacity="0.6"/>
-  <rect x="92" y="136" width="56" height="8" rx="4" fill="#36CFC9" opacity="0.4"/>
-  <rect x="92" y="156" width="48" height="8" rx="4" fill="#36CFC9" opacity="0.4"/>
+  <!-- fa-file-text 标准图标路径 -->
+  <path d="M196 64 L108 64 L108 12 L228 12 L228 140 L196 140 Z M196 92 L196 108 L212 108 L212 92 Z M196 124 L196 140 L212 140 L212 124 Z M124 92 L124 108 L180 108 L180 92 Z M124 124 L124 140 L180 140 L180 124 Z M124 68 L124 84 L180 84 L180 68 Z M28 156 L28 188 L148 188 L148 156 Z M28 124 L28 140 L148 140 L148 124 Z M28 92 L28 108 L148 108 L148 92 Z" fill="white" transform="translate(20, 28)"/>
 </svg>
