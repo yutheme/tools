@@ -8,8 +8,7 @@
       <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0"/>
     </linearGradient>
   </defs>
-  <!-- 数字转换图标 -->
-  <path d="M76 80 L116 80 L116 104 L92 104 L92 120 L108 120 L108 144 L92 144 L92 176 L116 176 L116 200 L76 200 Z" fill="white" opacity="0.95"/>
-  <path d="M140 80 L180 80 L180 104 L156 104 L156 128 L172 128 L172 152 L156 152 L156 176 L180 176 L180 200 L140 200 Z" fill="white" opacity="0.85"/>
-  <path d="M84 152 L108 152 L108 176 L84 176 Z" fill="#165DFF" opacity="0.6"/>
+  <!-- 数字/钱符号 - FA风格 -->
+  <path d="M96 68 L160 68 L160 92 L120 92 L120 116 L144 116 L144 140 L120 140 L120 188 L160 188 L160 188 L96 188 Z" fill="white" opacity="0.95"/>
+  <path d="M108 156 L132 156 L132 172 L108 172 Z" fill="#165DFF" opacity="0.6"/>
 </svg>

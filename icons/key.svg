@@ -8,10 +8,8 @@
       <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0"/>
     </linearGradient>
   </defs>
-  <!-- 密钥图标 -->
-  <rect x="72" y="68" width="112" height="32" rx="16" fill="white" opacity="0.95"/>
-  <circle cx="168" cy="84" r="12" fill="#F97316" opacity="0.6"/>
-  <path d="M116 84 L116 180" stroke="white" stroke-width="28" stroke-linecap="round" opacity="0.9"/>
-  <circle cx="116" cy="116" r="10" fill="#F97316" opacity="0.5"/>
-  <circle cx="116" cy="148" r="10" fill="#F97316" opacity="0.5"/>
+  <!-- 钥匙图标 - 简化FA风格 -->
+  <circle cx="88" cy="108" r="28" fill="white" opacity="0.95"/>
+  <circle cx="88" cy="108" r="12" fill="#F97316" opacity="0.6"/>
+  <path d="M108 108 L180 108 L180 148 L164 148 L164 128 L148 128 L148 148 L128 148 L128 128 L108 128 Z" fill="white" opacity="0.95"/>
 </svg>

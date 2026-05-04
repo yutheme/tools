@@ -8,13 +8,9 @@
       <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0"/>
     </linearGradient>
   </defs>
-  <!-- 翻译语言图标 -->
-  <path d="M56 76 L200 76 A12 12 0 0 1 212 88 L212 140 A12 12 0 0 1 200 152 L144 152 L112 176 L120 152 L56 152 A12 12 0 0 1 44 140 L44 88 A12 12 0 0 1 56 76 Z" fill="white" opacity="0.95"/>
-  <rect x="68" y="100" width="60" height="8" rx="4" fill="#8B5CF6" opacity="0.7"/>
-  <rect x="68" y="120" width="48" height="8" rx="4" fill="#8B5CF6" opacity="0.5"/>
-  <rect x="136" y="100" width="52" height="8" rx="4" fill="#8B5CF6" opacity="0.6"/>
-  <rect x="136" y="120" width="40" height="8" rx="4" fill="#8B5CF6" opacity="0.4"/>
-  <circle cx="188" cy="188" r="28" fill="white" opacity="0.85"/>
-  <path d="M176 180 L200 180" stroke="#8B5CF6" stroke-width="5" stroke-linecap="round"/>
-  <path d="M188 172 L188 196" stroke="#8B5CF6" stroke-width="5" stroke-linecap="round"/>
+  <!-- 语言/字母A图标 - FA风格 -->
+  <path d="M128 60 L172 172 L152 172 L140 140 L116 140 L104 172 L84 172 L128 60 Z" fill="white" opacity="0.95"/>
+  <rect x="112" y="104" width="32" height="12" rx="4" fill="#8B5CF6" opacity="0.5"/>
+  <path d="M56 60 L56 84 L116 84 L116 60 L86 60 Z" fill="white" opacity="0.7"/>
+  <path d="M140 60 L140 84 L200 84 L200 60 L170 60 Z" fill="white" opacity="0.7"/>
 </svg>

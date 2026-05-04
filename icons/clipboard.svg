@@ -8,14 +8,11 @@
       <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0"/>
     </linearGradient>
   </defs>
-  <!-- 剪贴板历史图标 -->
-  <rect x="88" y="60" width="80" height="136" rx="12" fill="white" opacity="0.95"/>
-  <rect x="104" y="44" width="48" height="24" rx="6" fill="#A855F7" opacity="0.6"/>
-  <rect x="108" y="92" width="40" height="6" rx="3" fill="#A855F7" opacity="0.5"/>
-  <rect x="108" y="108" width="40" height="6" rx="3" fill="#A855F7" opacity="0.4"/>
-  <rect x="108" y="124" width="40" height="6" rx="3" fill="#A855F7" opacity="0.4"/>
-  <rect x="108" y="140" width="32" height="6" rx="3" fill="#A855F7" opacity="0.4"/>
-  <rect x="108" y="156" width="36" height="6" rx="3" fill="#A855F7" opacity="0.4"/>
-  <circle cx="160" cy="204" r="20" fill="white" opacity="0.85"/>
-  <path d="M152 204 L168 204 M160 196 L160 212" stroke="#A855F7" stroke-width="4" stroke-linecap="round"/>
+  <!-- 剪贴板图标 - FA风格 -->
+  <rect x="76" y="68" width="104" height="120" rx="8" fill="white" opacity="0.95"/>
+  <rect x="92" y="52" width="72" height="24" rx="6" fill="#A855F7" opacity="0.6"/>
+  <rect x="96" y="96" width="64" height="8" rx="4" fill="#A855F7" opacity="0.5"/>
+  <rect x="96" y="116" width="56" height="8" rx="4" fill="#A855F7" opacity="0.4"/>
+  <rect x="96" y="136" width="48" height="8" rx="4" fill="#A855F7" opacity="0.4"/>
+  <rect x="96" y="156" width="40" height="8" rx="4" fill="#A855F7" opacity="0.4"/>
 </svg>
