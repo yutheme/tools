@@ -9,9 +9,7 @@
     <link rel="shortcut icon" href="icons/wordcount-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/wordcount-apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/shared.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="css/shared.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.29.3/docxtemplater.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -20,17 +18,10 @@
     <style>
         :root {
             --color-primary: var(--color-tool-wordcount);
-            --color-primary-dark: var(--color-tool-wordcount-dark);
             --color-primary-light: var(--color-tool-wordcount-light);
-            --color-primary-ring: var(--color-tool-wordcount-ring);
-        }
-        :root {
-            --color-primary: #3B82F6;
-            --color-primary-light: #DBEAFE;
-            --color-primary-dark: #2563EB;
-            --primary-border: rgba(59, 130, 246, 0.5);
+            --color-primary-dark: var(--color-tool-wordcount-dark);
+            --primary-border: var(--color-tool-wordcount-ring);
             --color-info: #10B981;
-            --color-primary: #8B5CF6;
             --color-warning: #F59E0B;
             --color-danger: #EF4444;
             --dark: #1E293B;
@@ -40,7 +31,7 @@
             --white: #FFFFFF;
             --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
-            --card-shadow-hover: 0 5px 15px rgba(59, 130, 246, 0.15);
+            --card-shadow-hover: 0 5px 15px var(--color-primary-ring);
             --radius-md: 10px;
             --transition-normal: all 0.3s ease;
         }

@@ -17,11 +17,6 @@
             --color-primary-dark: var(--color-tool-vrime-dark);
             --color-primary-light: var(--color-tool-vrime-light);
             --color-primary-ring: var(--color-tool-vrime-ring);
-        }
-        :root {
-            --color-primary: #3B82F6;
-            --color-primary-dark: #2563EB;
-            --color-primary-light: rgba(59, 130, 246, 0.05);
             --color-success: #10B981;
             --color-danger: #EF4444;
             --color-warning: #F59E0B;
@@ -65,8 +60,10 @@
         }
 
         .header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
             padding: 1.5rem;
-            border-bottom: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -95,12 +92,13 @@
         .title h1 {
             font-size: 1.5rem;
             font-weight: 600;
-            color: var(--color-gray-800);
+            color: white;
         }
 
         .title p {
             font-size: 0.875rem;
-            color: var(--color-gray-500);
+            opacity: 0.85;
+            color: white;
         }
 
         .header-right {
