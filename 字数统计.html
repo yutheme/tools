@@ -35,87 +35,78 @@
             --radius-md: 10px;
             --transition-normal: all 0.3s ease;
         }
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #F8FAFC;
             color: var(--dark);
             line-height: 1.5;
-            padding: 10px;
+            padding: 1rem;
             min-height: 100vh;
         }
-        
+
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 15px;
+            background: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
-        
+
         header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
             text-align: center;
-            margin-bottom: 15px;
+            padding: 1.5rem;
+            margin-bottom: 0;
             position: relative;
-            padding-bottom: 10px;
         }
-        
-        header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: var(--color-primary);
-            border-radius: 2px;
-        }
-        
+
         h1 {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--dark);
+            color: white;
             margin-bottom: 5px;
-            background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
-        
+
+        h1 i {
+            color: white;
+        }
+
         .subtitle {
-            color: var(--color-gray-1);
+            color: rgba(255, 255, 255, 0.85);
             font-size: 0.85rem;
             font-weight: 400;
         }
-        
+
         .card {
             background: var(--white);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow);
             padding: 15px;
-            margin-bottom: 15px;
+            margin: 0 15px 15px 15px;
             transition: var(--transition-normal);
             position: relative;
         }
-        
+
         .card:hover {
             box-shadow: var(--shadow-hover);
             transform: translateY(-1px);
         }
-        
+
         .input-section {
             margin-bottom: 15px;
             position: relative;
         }
-        
+
         .input-actions {
             display: flex;
             justify-content: space-between;
@@ -123,7 +114,7 @@
             align-items: center;
             gap: 8px;
         }
-        
+
         textarea {
             width: 100%;
             min-height: 160px;
@@ -138,17 +129,17 @@
             line-height: 1.5;
             margin-bottom: 5px;
         }
-        
+
         textarea:focus {
             outline: none;
             border-color: var(--color-primary);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-        
+
         textarea::placeholder {
             color: var(--color-gray-1);
         }
-        
+
         .upload-btn {
             display: inline-flex;
             align-items: center;
@@ -164,24 +155,24 @@
             cursor: pointer;
             transition: var(--transition-normal);
         }
-        
+
         .upload-btn:hover {
             background-color: var(--color-primary-dark);
             transform: translateY(-1px);
             box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
         }
-        
+
         .file-input {
             display: none;
         }
-        
+
         .file-info {
             font-size: 0.75rem;
             color: var(--color-gray-1);
             margin-top: 5px;
             margin-bottom: 5px;
         }
-        
+
         .progress-overlay {
             position: absolute;
             top: 0;
@@ -194,18 +185,18 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        
+
         .progress-overlay.active {
             opacity: 1;
         }
-        
+
         .progress-bar {
             height: 100%;
             background-color: var(--color-primary);
             width: 0%;
             transition: width 0.4s ease;
         }
-        
+
         .progress-text {
             position: absolute;
             top: 50%;
@@ -222,23 +213,23 @@
             transition: opacity 0.3s ease;
             z-index: 6;
         }
-        
+
         .progress-text.active {
             opacity: 1;
         }
-        
+
         .stats-container {
             overflow: visible;
             margin-bottom: 10px;
             padding-top: 5px;
         }
-        
+
         .stats-grid {
             display: flex;
             gap: 8px;
             width: 100%;
         }
-        
+
         .stat-card {
             background: var(--white);
             border-radius: var(--radius-md);
@@ -252,14 +243,14 @@
             overflow: visible;
             z-index: 1;
         }
-        
+
         .stat-card:hover {
             transform: translateY(-5px);
             border-color: var(--primary-border);
             box-shadow: var(--card-shadow-hover);
             z-index: 10;
         }
-        
+
         .stat-value {
             font-size: 1.2rem;
             font-weight: 700;
@@ -270,11 +261,11 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .stat-card:hover .stat-value {
             color: var(--color-primary-dark);
         }
-        
+
         .stat-label {
             font-size: 0.75rem;
             color: var(--color-gray-1);
@@ -283,13 +274,13 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .stat-percent {
             font-size: 0.7rem;
             color: var(--color-info);
             margin-top: 2px;
         }
-        
+
         .distribution-section {
             margin-bottom: 10px;
             position: relative;
@@ -297,14 +288,14 @@
             background-color: var(--color-gray-3);
             border-radius: var(--radius-md);
         }
-        
+
         .distribution-title {
             font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 8px;
             color: var(--dark);
         }
-        
+
         .distribution-bar {
             height: 28px;
             background-color: var(--white);
@@ -314,7 +305,7 @@
             display: flex;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        
+
         .distribution-segment {
             height: 100%;
             display: flex;
@@ -327,26 +318,26 @@
             position: relative;
             cursor: pointer;
         }
-        
+
         .distribution-segment:hover {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 2;
         }
-        
+
         .segment-chinese { background-color: var(--color-primary); }
         .segment-number { background-color: var(--color-info); }
         .segment-punctuation { background-color: var(--color-warning); }
         .segment-letter { background-color: var(--color-danger); }
         .segment-space { background-color: var(--color-gray-1); }
         .segment-other { background-color: var(--color-primary); }
-        
+
         .actions {
             display: flex;
             justify-content: center;
             gap: 10px;
             margin-bottom: 5px;
         }
-        
+
         .action-btn {
             padding: 8px 16px;
             border-radius: var(--radius-md);
@@ -359,28 +350,28 @@
             align-items: center;
             gap: 5px;
         }
-        
+
         .clear-btn {
             background-color: var(--color-gray-3);
             color: var(--dark);
         }
-        
+
         .clear-btn:hover {
             background-color: var(--color-gray-2);
             transform: translateY(-1px);
         }
-        
+
         .copy-btn {
             background-color: var(--color-primary);
             color: white;
         }
-        
+
         .copy-btn:hover {
             background-color: var(--color-primary-dark);
             transform: translateY(-1px);
             box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
         }
-        
+
         .tooltip {
             position: absolute;
             background-color: rgba(30, 41, 59, 0.95);
@@ -397,7 +388,7 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
             transform: translateY(-5px);
         }
-        
+
         .tooltip::after {
             content: '';
             position: absolute;
@@ -408,13 +399,13 @@
             border-style: solid;
             border-color: rgba(30, 41, 59, 0.95) transparent transparent transparent;
         }
-        
+
         .tooltip-visible {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
         }
-        
+
         .notification {
             position: fixed;
             bottom: 15px;
@@ -430,12 +421,12 @@
             z-index: 1000;
             font-size: 0.85rem;
         }
-        
+
         .notification.show {
             transform: translateY(0);
             opacity: 1;
         }
-        
+
         .footer {
             text-align: center;
             font-size: 0.75rem;
@@ -444,45 +435,45 @@
             margin-top: 5px;
             border-top: 1px solid var(--color-gray-3);
         }
-        
+
         @media (max-width: 768px) {
             .stat-card {
                 padding: 8px 5px;
             }
-            
+
             .stat-value {
                 font-size: 1.1rem;
             }
-            
+
             .stat-label {
                 font-size: 0.7rem;
             }
         }
-        
+
         @media (max-width: 480px) {
             .stats-grid {
                 flex-wrap: wrap;
             }
-            
+
             .stat-card {
                 flex: 1 0 45%;
                 margin-bottom: 8px;
             }
-            
+
             .actions {
                 flex-direction: column;
             }
-            
+
             .action-btn {
                 width: 100%;
                 justify-content: center;
             }
-            
+
             .input-actions {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
+
             .upload-btn {
                 width: 100%;
             }
@@ -498,13 +489,13 @@
             </h1>
             <p class="subtitle">快速统计文本中的汉字、数字、字母等各类字符数量</p>
         </header>
-        
+
         <div class="card input-section">
             <div class="progress-overlay" id="progressOverlay">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
             <div class="progress-text" id="progressText">正在处理文件...</div>
-            
+
             <div class="input-actions">
                 <button class="upload-btn" id="fileTrigger">
                     <i class="fas fa-cloud-arrow-up"></i>
@@ -519,10 +510,10 @@
             </div>
             <p class="file-info">支持TXT、DOCX、PDF、PPTX格式</p>
             <textarea id="textInput" placeholder="请输入或粘贴需要统计的文本内容..."></textarea>
-            
+
             <input type="file" id="fileInput" class="file-input" accept=".txt,.docx,.pdf,.pptx">
         </div>
-        
+
         <div class="card">
             <div class="stats-container">
                 <div class="stats-grid">
@@ -568,21 +559,21 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="distribution-section">
                 <div class="distribution-title">字符分布比例</div>
                 <div class="distribution-bar" id="summaryBar">
                     <div class="distribution-segment segment-chinese" id="chineseSegment"></div>
                     <div class="distribution-segment segment-number" id="numberSegment"></div>
                     <div class="distribution-segment segment-letter" id="letterSegment"></div>
-                    <div class="distribution-segment segment-punctuation" id="punctuationSegment"></div>                    
+                    <div class="distribution-segment segment-punctuation" id="punctuationSegment"></div>
                     <div class="distribution-segment segment-space" id="spaceSegment"></div>
                     <div class="distribution-segment segment-other" id="otherSegment"></div>
                 </div>
-                
+
                 <div class="tooltip" id="tooltip"></div>
             </div>
-            
+
             <div class="actions">
                 <button id="copyButton" class="action-btn copy-btn">
                     <i class="fas fa-clipboard"></i>
@@ -590,12 +581,12 @@
                 </button>
             </div>
         </div>
-        
+
         <div class="footer">
             © 2026 字数统计工具 | 简洁高效的文本分析助手
         </div>
     </div>
-    
+
     <div class="notification" id="notification"></div>
 
     <script>
@@ -617,7 +608,7 @@
                 }
             };
         })();
-        
+
         function initApp() {
             const textInput = document.getElementById('textInput');
             const fileInput = document.getElementById('fileInput');
@@ -629,7 +620,7 @@
             const clearButton = document.getElementById('clearButton');
             const copyButton = document.getElementById('copyButton');
             const notification = document.getElementById('notification');
-            
+
             // 字符分布段元素
             const segmentElements = {
                 chinese: document.getElementById('chineseSegment'),
@@ -639,7 +630,7 @@
                 spaces: document.getElementById('spaceSegment'),
                 other: document.getElementById('otherSegment')
             };
-            
+
             // 段名映射
             const segmentNames = {
                 chinese: "汉字",
@@ -649,24 +640,24 @@
                 spaces: "空格",
                 other: "其他字符"
             };
-            
-            // 配置PDF.js worker，使用CDN版本避免跨域问题
+
+            // 配置PDF.js worker,使用CDN版本避免跨域问题
             if (typeof pdfjsLib !== 'undefined') {
-                pdfjsLib.GlobalWorkerOptions.workerSrc = 
+                pdfjsLib.GlobalWorkerOptions.workerSrc =
                     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';
             }
-            
+
             // 文件选择触发器 - 简化错误处理
             fileTrigger.addEventListener('click', () => {
                 fileInput.click();
             });
-            
+
             // 文本输入事件监听 - 简化错误处理
             textInput.addEventListener('input', debounce(() => {
                 const stats = analyzeText(textInput.value);
                 updateUI(stats);
             }, 300));
-            
+
             // 添加鼠标事件处理进度条悬停 - 简化错误处理
             Object.keys(segmentElements).forEach(key => {
                 const segment = segmentElements[key];
@@ -680,42 +671,42 @@
                         positionTooltip(e);
                     }
                 });
-                
+
                 segment.addEventListener('mouseout', () => {
                     tooltip.classList.remove('tooltip-visible');
                 });
-                
-                // 移动时更新位置，确保提示框跟随
+
+                // 移动时更新位置,确保提示框跟随
                 segment.addEventListener('mousemove', positionTooltip);
             });
-            
+
             // 提示框定位函数
             function positionTooltip(e) {
                 if (!tooltip.classList.contains('tooltip-visible')) return;
-                
+
                 const distributionSectionRect = document.querySelector('.distribution-section').getBoundingClientRect();
                 const tooltipWidth = tooltip.offsetWidth;
-                
+
                 // 获取鼠标在分布区域内的相对X坐标
                 const relativeX = e.clientX - distributionSectionRect.left;
-                
-                // 计算提示框左侧位置，使其水平居中于鼠标
+
+                // 计算提示框左侧位置,使其水平居中于鼠标
                 let leftPos = relativeX - tooltipWidth / 2;
-                
+
                 // 边界检查 - 确保提示框不会超出分布区域
                 if (leftPos < 10) {
                     leftPos = 10; // 左侧留出一点边距
                 } else if (leftPos + tooltipWidth > distributionSectionRect.width - 10) {
                     leftPos = distributionSectionRect.width - tooltipWidth - 10; // 右侧留出一点边距
                 }
-                
-                // 计算提示框顶部位置，使其位于鼠标上方
+
+                // 计算提示框顶部位置,使其位于鼠标上方
                 const topPos = (e.clientY - distributionSectionRect.top) - tooltip.offsetHeight - 10;
-                
+
                 tooltip.style.left = `${leftPos}px`;
                 tooltip.style.top = `${topPos}px`;
             }
-            
+
             // 文件处理函数
             const fileHandlers = {
                 async txt(file) {
@@ -733,12 +724,12 @@
                         reader.readAsText(file, 'utf-8');
                     });
                 },
-                
+
                 async docx(file) {
                     if (typeof JSZip === 'undefined') {
                         return '';
                     }
-                    
+
                     showProcessing();
                     const reader = new FileReader();
                     return new Promise(resolve => {
@@ -747,7 +738,7 @@
                                 const content = new Uint8Array(e.target.result);
                                 const zip = new JSZip();
                                 const zipContent = await zip.loadAsync(content);
-                                
+
                                 if (zipContent.files['word/document.xml']) {
                                     const xml = await zipContent.file('word/document.xml').async('string');
                                     // 更完善的XML清理
@@ -774,12 +765,12 @@
                         reader.readAsArrayBuffer(file);
                     });
                 },
-                
+
                 async pdf(file) {
                     if (typeof pdfjsLib === 'undefined') {
                         return '';
                     }
-                    
+
                     showProcessing();
                     try {
                         const arrayBuffer = await file.arrayBuffer();
@@ -788,17 +779,17 @@
                             cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/cmaps/',
                             cMapPacked: true
                         }).promise;
-                        
+
                         let textContent = '';
                         for (let i = 1; i <= pdf.numPages; i++) {
                             // 更新进度
                             updateProgress(Math.round((i / pdf.numPages) * 80) + 10);
-                            
+
                             const page = await pdf.getPage(i);
                             const text = await page.getTextContent();
                             textContent += text.items.map(item => item.str).join(' ') + ' ';
                         }
-                        
+
                         return textContent;
                     } catch (e) {
                         return '';
@@ -806,12 +797,12 @@
                         hideProcessing();
                     }
                 },
-                
+
                 async pptx(file) {
                     if (typeof JSZip === 'undefined') {
                         return '';
                     }
-                    
+
                     showProcessing();
                     const reader = new FileReader();
                     return new Promise(resolve => {
@@ -820,15 +811,15 @@
                                 const arrayBuffer = e.target.result;
                                 const zip = new JSZip();
                                 await zip.loadAsync(arrayBuffer);
-                                
+
                                 let text = '';
-                                const slideFiles = Object.keys(zip.files).filter(name => 
+                                const slideFiles = Object.keys(zip.files).filter(name =>
                                     name.startsWith('ppt/slides/') && name.endsWith('.xml')
                                 );
-                                
+
                                 // 更新进度
                                 updateProgress(30);
-                                
+
                                 for (let i = 0; i < slideFiles.length; i++) {
                                     const slideFile = slideFiles[i];
                                     const content = await zip.file(slideFile).async('string');
@@ -839,11 +830,11 @@
                                         .replace(/&gt;/g, '>')
                                         .replace(/&quot;/g, '"');
                                     text += slideText + ' ';
-                                    
+
                                     // 更新进度
                                     updateProgress(30 + Math.round((i / slideFiles.length) * 50));
                                 }
-                                
+
                                 resolve(text);
                             } catch (e) {
                                 resolve('');
@@ -859,7 +850,7 @@
                     });
                 }
             };
-            
+
             // 核心统计函数
             function analyzeText(content) {
                 if (typeof content !== 'string') {
@@ -874,24 +865,24 @@
                         total: 0
                     };
                 }
-                
+
                 try {
                     const chinese = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
                     const numbers = (content.match(/[0-9]/g) || []).length;
-                    const punctuation = (content.match(/[，。！？；："'‘’（）、【】《》！？—…,\.!?;:"'\(\)\{\}\[\]~\-]/g) || []).length;
-                    
+                    const punctuation = (content.match(/[,。!?;:"'''()、【】《》!?-...,\.!?;:"'\(\)\{\}\[\]~\-]/g) || []).length;
+
                     // 统计英文字母
                     const letters = (content.match(/[A-Za-z]/g) || []).length;
-                    
+
                     // 统计英文单词
                     const words = (content.match(/\b[a-zA-Z]+\b/g) || []).length;
-                    
+
                     const spaces = (content.match(/\s/g) || []).length;
                     const total = content.length;
-                    
+
                     // 计算其他字符
                     const other = total - (chinese + numbers + punctuation + letters + spaces);
-                    
+
                     return {
                         chinese,
                         numbers,
@@ -915,7 +906,7 @@
                     };
                 }
             }
-            
+
             // 防抖动函数
             function debounce(func, wait) {
                 let timeout;
@@ -928,12 +919,12 @@
                     timeout = setTimeout(later, wait);
                 };
             }
-            
+
             // UI更新函数
             function updateUI(stats) {
                 try {
                     const total = stats.total > 0 ? stats.total : 1;
-                    
+
                     // 更新数值
                     document.getElementById('chineseCharCount').textContent = stats.chinese;
                     document.getElementById('numberCount').textContent = stats.numbers;
@@ -943,7 +934,7 @@
                     document.getElementById('spaceCount').textContent = stats.spaces;
                     document.getElementById('otherCount').textContent = stats.other;
                     document.getElementById('totalCharCount').textContent = stats.total;
-                    
+
                     // 更新百分比
                     document.getElementById('chinesePercent').textContent = `${Math.round((stats.chinese / total) * 100)}%`;
                     document.getElementById('numberPercent').textContent = `${Math.round((stats.numbers / total) * 100)}%`;
@@ -953,7 +944,7 @@
                     document.getElementById('spacePercent').textContent = `${Math.round((stats.spaces / total) * 100)}%`;
                     document.getElementById('otherPercent').textContent = `${Math.round((stats.other / total) * 100)}%`;
                     document.getElementById('totalPercent').textContent = "100%";
-                    
+
                     // 更新进度条
                     updateSegment('chinese', stats.chinese, total);
                     updateSegment('numbers', stats.numbers, total);
@@ -962,21 +953,21 @@
                     updateSegment('spaces', stats.spaces, total);
                     updateSegment('other', stats.other, total);
                 } catch (e) {
-                    // 静默失败，不显示错误
+                    // 静默失败,不显示错误
                 }
             }
-            
+
             function updateSegment(type, value, total) {
                 try {
                     const percentage = Math.round((value / total) * 100);
                     const segment = segmentElements[type];
                     const segmentName = segmentNames[type];
-                    
+
                     segment.style.width = `${percentage}%`;
-                    
-                    // 设置工具提示内容，包含种类、数量和百分比
+
+                    // 设置工具提示内容,包含种类、数量和百分比
                     segment.dataset.tooltip = `${segmentName}: ${value}个 (${percentage}%)`;
-                    
+
                     // 调整显示文本的规则
                     if (percentage > 7 && value > 0) {
                         // 占比较大的部分显示完整类型名称和百分比
@@ -986,15 +977,15 @@
                         const shortName = getShortName(segmentName);
                         segment.textContent = `${shortName} ${percentage}%`;
                     } else {
-                        // 占比较小的部分不直接显示文字，但悬停时仍有提示
+                        // 占比较小的部分不直接显示文字,但悬停时仍有提示
                         segment.textContent = '';
                     }
                 } catch (e) {
-                    // 静默失败，不显示错误
+                    // 静默失败,不显示错误
                 }
             }
-            
-            // 获取字符类型的短名称，用于空间有限的情况
+
+            // 获取字符类型的短名称,用于空间有限的情况
             function getShortName(fullName) {
                 const shortNames = {
                     "汉字": "汉",
@@ -1006,47 +997,47 @@
                 };
                 return shortNames[fullName] || fullName;
             }
-            
+
             // 文件上传处理
             async function handleFileUpload(event) {
                 try {
                     const file = event.target.files[0];
                     if (!file) return;
-                    
+
                     const extension = file.name.split('.').pop().toLowerCase();
                     let content = '';
-                    
+
                     if (fileHandlers[extension]) {
                         content = await fileHandlers[extension](file);
                     } else {
                         return;
                     }
-                    
+
                     textInput.value = content;
                     const stats = analyzeText(content);
                     updateUI(stats);
                     showNotification(`已成功加载 ${file.name}`);
                 } catch (e) {
-                    // 静默失败，不显示错误
+                    // 静默失败,不显示错误
                 } finally {
-                    // 重置文件输入，允许重复上传同一文件
+                    // 重置文件输入,允许重复上传同一文件
                     fileInput.value = '';
                 }
             }
-            
+
             // 显示通知 - 只保留成功通知
             function showNotification(message) {
                 notification.textContent = message;
                 notification.className = 'notification';
                 notification.style.backgroundColor = 'var(--color-info)';
-                
+
                 notification.classList.add('show');
-                
+
                 setTimeout(() => {
                     notification.classList.remove('show');
                 }, 3000);
             }
-            
+
             // 显示处理状态
             function showProcessing() {
                 try {
@@ -1079,10 +1070,10 @@
                         }
                     };
                 } catch (e) {
-                    // 静默失败，不显示错误
+                    // 静默失败,不显示错误
                 }
             }
-            
+
             // 更新进度
             function updateProgress(percent) {
                 try {
@@ -1090,10 +1081,10 @@
                         progressBar.style.width = `${percent}%`;
                     }
                 } catch (e) {
-                    // 静默失败，不显示错误
+                    // 静默失败,不显示错误
                 }
             }
-            
+
             // 隐藏处理状态
             function hideProcessing() {
                 try {
@@ -1101,10 +1092,10 @@
                     if (window.clearProgressInterval) {
                         window.clearProgressInterval();
                     }
-                    
+
                     // 完成进度条动画
                     progressBar.style.width = '100%';
-                    
+
                     // 延迟隐藏进度显示
                     setTimeout(() => {
                         progressOverlay.classList.remove('active');
@@ -1112,10 +1103,10 @@
                         progressBar.style.width = '0%';
                     }, 500);
                 } catch (e) {
-                    // 静默失败，不显示错误
+                    // 静默失败,不显示错误
                 }
             }
-            
+
             // 清空按钮功能
             function clearContent() {
                 try {
@@ -1123,7 +1114,7 @@
                     const stats = analyzeText('');
                     updateUI(stats);
                     showNotification('内容已清空');
-                    
+
                     // 添加动画效果
                     const cards = document.querySelectorAll('.stat-card');
                     cards.forEach((card, index) => {
@@ -1135,21 +1126,21 @@
                         }, index * 50);
                     });
                 } catch (e) {
-                    // 静默失败，不显示错误
+                    // 静默失败,不显示错误
                 }
             }
-            
+
             // 复制结果功能
             function copyResults() {
                 try {
                     const stats = analyzeText(textInput.value);
                     const total = stats.total;
-                    
+
                     // 检查是否有可复制的内容
                     if (total === 0) {
                         return;
                     }
-                    
+
                     let resultText = "字数统计结果:\n";
                     resultText += `总字符数: ${stats.total}\n`;
                     resultText += `汉字: ${stats.chinese} (${Math.round((stats.chinese / total) * 100)}%)\n`;
@@ -1159,8 +1150,8 @@
                     resultText += `标点符号: ${stats.punctuation} (${Math.round((stats.punctuation / total) * 100)}%)\n`;
                     resultText += `空格: ${stats.spaces} (${Math.round((stats.spaces / total) * 100)}%)\n`;
                     resultText += `其他字符: ${stats.other} (${Math.round((stats.other / total) * 100)}%)\n`;
-                    
-                    // 使用Clipboard API进行复制，提高兼容性
+
+                    // 使用Clipboard API进行复制,提高兼容性
                     navigator.clipboard.writeText(resultText).then(() => {
                         // 显示复制成功反馈
                         const originalText = copyButton.innerHTML;
@@ -1168,11 +1159,11 @@
                             <i class="fas fa-check"></i>
                             复制成功
                         `;
-                        
+
                         setTimeout(() => {
                             copyButton.innerHTML = originalText;
                         }, 2000);
-                        
+
                         showNotification('统计结果已复制到剪贴板');
                     }).catch(err => {
                         // 备用复制方法
@@ -1184,19 +1175,19 @@
                         textArea.select();
                         document.execCommand('copy');
                         document.body.removeChild(textArea);
-                        
+
                         showNotification('统计结果已复制到剪贴板');
                     });
                 } catch (err) {
-                    // 静默失败，不显示错误
+                    // 静默失败,不显示错误
                 }
             }
-            
+
             // 绑定事件处理函数
             fileInput.addEventListener('change', handleFileUpload);
             clearButton.addEventListener('click', clearContent);
             copyButton.addEventListener('click', copyResults);
-            
+
             // 初始化
             updateUI(analyzeText(''));
         }
@@ -1215,7 +1206,7 @@
                 display: inline-flex;
                 align-items: center;
                 gap: 0.5rem;
-                color: #3B82F6;
+                color: var(--color-primary);
                 text-decoration: none;
                 font-size: 0.875rem;
                 padding: 0.5rem 1rem;
@@ -1223,7 +1214,7 @@
                 transition: all 0.3s ease;
             }
             .back-home a:hover {
-                background-color: rgba(59, 130, 246, 0.05);
+                background-color: var(--color-primary-light);
             }
         `;
         document.head.appendChild(style);
