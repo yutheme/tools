@@ -1,15 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
-  <rect width="96" height="96" rx="20" fill="#165DFF"/>
-  <!-- 计算器图标 -->
-  <rect x="20" y="24" width="56" height="52" rx="4" fill="white" opacity="0.95"/>
-  <rect x="26" y="30" width="10" height="8" rx="1" fill="#165DFF"/>
-  <rect x="40" y="30" width="10" height="8" rx="1" fill="#165DFF"/>
-  <rect x="54" y="30" width="10" height="8" rx="1" fill="#165DFF"/>
-  <rect x="26" y="42" width="10" height="8" rx="1" fill="#165DFF"/>
-  <rect x="40" y="42" width="10" height="8" rx="1" fill="#165DFF"/>
-  <rect x="54" y="42" width="10" height="8" rx="1" fill="#165DFF"/>
-  <rect x="26" y="54" width="10" height="8" rx="1" fill="#165DFF"/>
-  <rect x="40" y="54" width="10" height="8" rx="1" fill="#165DFF"/>
-  <rect x="54" y="54" width="10" height="8" rx="1" fill="#165DFF"/>
-  <rect x="26" y="62" width="38" height="8" rx="1" fill="#165DFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- 蓝色背景 #165DFF -->
+  <rect width="256" height="256" rx="52" fill="#165DFF"/>
+  <rect width="256" height="256" rx="52" fill="url(#grad)" opacity="0.3"/>
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+  <!-- 数字转换图标 -->
+  <path d="M76 80 L116 80 L116 104 L92 104 L92 120 L108 120 L108 144 L92 144 L92 176 L116 176 L116 200 L76 200 Z" fill="white" opacity="0.95"/>
+  <path d="M140 80 L180 80 L180 104 L156 104 L156 128 L172 128 L172 152 L156 152 L156 176 L180 176 L180 200 L140 200 Z" fill="white" opacity="0.85"/>
+  <path d="M84 152 L108 152 L108 176 L84 176 Z" fill="#165DFF" opacity="0.6"/>
 </svg>
