@@ -205,9 +205,10 @@
 
         .editor-line-numbers div {
             font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.75rem;
+            font-size: 0.875rem;
             color: var(--color-gray-500);
-            line-height: 1.6;
+            height: 1.4rem;
+            line-height: 1.4rem;
         }
 
         .editor-line-numbers div.error {
@@ -231,7 +232,7 @@
             resize: vertical;
             outline: none;
             background: transparent;
-            line-height: 1.6;
+            line-height: 1.4rem;
             tab-size: 2;
         }
 
@@ -247,6 +248,7 @@
             opacity: 0.3;
             display: none;
             overflow: auto;
+            line-height: 1.4rem;
         }
 
         .editor-with-line:focus-within {
@@ -448,7 +450,7 @@
                     <div class="editor-with-line">
                         <div class="editor-line-numbers" id="inputLineNumbers"></div>
                         <div class="editor-textarea">
-                            <textarea id="inputArea" placeholder="请在此输入YAML内容..." oninput="updateLineNumbers()"></textarea>
+                            <textarea id="inputArea" placeholder="请在此输入YAML内容..." oninput="updateLineNumbers()" wrap="off"></textarea>
                             <pre class="prism-editor"><code class="language-yaml" id="inputHighlight"></code></pre>
                         </div>
                     </div>
@@ -458,7 +460,7 @@
                     <div class="editor-with-line">
                         <div class="editor-line-numbers" id="outputLineNumbers"></div>
                         <div class="editor-textarea">
-                            <textarea id="outputArea" readonly placeholder="格式化/验证结果将显示在这里..."></textarea>
+                            <textarea id="outputArea" readonly placeholder="格式化/验证结果将显示在这里..." wrap="off"></textarea>
                             <pre class="prism-editor"><code class="language-yaml" id="outputHighlight"></code></pre>
                         </div>
                     </div>

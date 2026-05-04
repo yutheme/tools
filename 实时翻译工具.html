@@ -761,30 +761,76 @@
 
         // Google Translate 翻译函数（使用免费的translate.googleapis.com）
         async function googleTranslate(text, from, to) {
+            // Google Translate 免费 API 端点
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`Google Translate HTTP错误: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // 提取翻译结果
+            let translatedText = '';
+            if (data && data[0]) {
+                translatedText = data[0].map(item => item[0]).join('');
+            }
+
+            return {
+                translatedText: translatedText,
+                detectedLang: data[2] || from,
+                provider: 'google'
+            };
+        }
+
+        // 备用翻译服务。Google 免费端点被限流时，使用 MyMemory 做降级。
+        async function fallbackTranslate(text, from, to) {
+            const sourceLang = from === 'auto' ? detectLanguage(text) : from;
+            const langPair = `${normalizeMyMemoryLang(sourceLang)}|${normalizeMyMemoryLang(to)}`;
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${encodeURIComponent(langPair)}`;
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`备用翻译服务 HTTP错误: ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (data.responseStatus && data.responseStatus !== 200) {
+                throw new Error(data.responseDetails || '备用翻译服务不可用');
+            }
+
+            const translatedText = data.responseData?.translatedText || '';
+            if (!translatedText) {
+                throw new Error('备用翻译服务未返回结果');
+            }
+
+            return {
+                translatedText,
+                detectedLang: sourceLang,
+                provider: 'mymemory'
+            };
+        }
+
+        function normalizeMyMemoryLang(lang) {
+            const map = {
+                zh: 'zh-CN',
+                'zh-TW': 'zh-TW',
+                'zh-CN': 'zh-CN'
+            };
+            return map[lang] || lang;
+        }
+
+        async function translateText(text, from, to) {
             try {
-                // Google Translate 免费 API 端点
-                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
-
-                const response = await fetch(url);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP错误: ${response.status}`);
+                return await googleTranslate(text, from, to);
+            } catch (googleError) {
+                try {
+                    return await fallbackTranslate(text, from, to);
+                } catch (fallbackError) {
+                    throw new Error(`${googleError.message}; ${fallbackError.message}`);
                 }
-
-                const data = await response.json();
-
-                // 提取翻译结果
-                let translatedText = '';
-                if (data && data[0]) {
-                    translatedText = data[0].map(item => item[0]).join('');
-                }
-
-                return {
-                    translatedText: translatedText,
-                    detectedLang: data[2] || from
-                };
-            } catch (error) {
-                throw error;
             }
         }
 
@@ -1054,8 +1100,7 @@
             const toLang = translationState.to;
 
             try {
-                // 调用 Google Translate 翻译
-                const result = await googleTranslate(textToTranslate, fromLang, toLang);
+                const result = await translateText(textToTranslate, fromLang, toLang);
 
                 // 显示翻译结果
                 elements.resultText.textContent = result.translatedText;
@@ -1066,7 +1111,7 @@
                     updateLanguageDisplay(true);
                 }
 
-                showNotification('翻译完成');
+                showNotification(result.provider === 'mymemory' ? '翻译完成（备用服务）' : '翻译完成');
             } catch (error) {
                 handleTranslationError(error);
             } finally {
