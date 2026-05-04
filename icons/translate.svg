@@ -1,7 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- 紫色背景 -->
   <rect width="64" height="64" rx="12" fill="#8B5CF6"/>
-  <!-- 翻译 - 字母A  -->
-  <path d="M32 14 L44 50 L40 50 L36 40 L28 40 L24 50 L20 50 L32 14 Z M30 34 L34 34" fill="white"/>
-  <path d="M14 18 L14 24 L44 24 L44 18 L29 18" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <!-- 语言/翻译 - 简单A -->
+  <path d="M32 18 L42 46 L38 46 L35 38 L29 38 L26 46 L22 46 L32 18 Z M30 32 L34 32" fill="white"/>
 </svg>

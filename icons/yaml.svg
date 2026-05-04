@@ -1,7 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- 翡翠绿背景 -->
-  <rect width="64" height="64" rx="12" fill="#14B8A6"/>
-  <!-- 代码括号 -->
-  <path d="M26 32 L34 24 L26 16" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M38 32 L30 24 L38 16" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- 翡翠绿背景 #14B8A6 -->
+  <rect width="256" height="256" rx="52" fill="#14B8A6"/>
+  <rect width="256" height="256" rx="52" fill="url(#grad)" opacity="0.3"/>
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+  <!-- 代码/括号图标 - FA风格 -->
+  <rect x="56" y="76" width="144" height="104" rx="12" fill="white" opacity="0.95"/>
+  <path d="M88 128 L104 112 L88 96" fill="none" stroke="#14B8A6" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+  <path d="M168 128 L152 112 L168 96" fill="none" stroke="#14B8A6" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+  <circle cx="128" cy="116" r="6" fill="#14B8A6" opacity="0.6"/>
+  <circle cx="128" cy="132" r="6" fill="#14B8A6" opacity="0.5"/>
+  <circle cx="128" cy="148" r="6" fill="#14B8A6" opacity="0.4"/>
 </svg>
