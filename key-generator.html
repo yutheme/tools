@@ -14,25 +14,26 @@
     <link rel="apple-touch-icon" sizes="180x180" href="icons/key-apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/shared.css">
     <style>
         :root {
-            --primary: #F97316;
-            --primary-dark: #EA580C;
-            --primary-light: rgba(249, 115, 22, 0.05);
-            --success: #10B981;
-            --danger: #EF4444;
-            --gray-50: #F9FAFB;
-            --gray-100: #F3F4F6;
-            --gray-200: #E5E7EB;
-            --gray-400: #9CA3AF;
-            --gray-500: #6B7280;
-            --gray-700: #374151;
-            --gray-800: #1F2937;
-            --radius: 8px;
+            --color-primary: #F97316;
+            --color-primary-dark: #EA580C;
+            --color-primary-light: rgba(249, 115, 22, 0.05);
+            --color-success: #10B981;
+            --color-danger: #EF4444;
+            --color-gray-50: #F9FAFB;
+            --color-gray-100: #F3F4F6;
+            --color-gray-200: #E5E7EB;
+            --color-gray-400: #9CA3AF;
+            --color-gray-500: #6B7280;
+            --color-gray-700: #374151;
+            --color-gray-800: #1F2937;
+            --radius-md: 8px;
             --radius-lg: 12px;
             --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
-            --transition: all 0.3s ease;
+            --transition-normal: all 0.3s ease;
         }
 
         * {
@@ -43,8 +44,8 @@
 
         body {
             font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--gray-50);
-            color: var(--gray-800);
+            background-color: var(--color-gray-50);
+            color: var(--color-gray-800);
             line-height: 1.5;
             min-height: 100vh;
             display: flex;
@@ -61,11 +62,11 @@
             width: 100%;
             max-width: 900px;
             overflow: hidden;
-            transition: var(--transition);
+            transition: var(--transition-normal);
         }
 
         .header {
-            background: var(--primary);
+            background: var(--color-primary);
             color: white;
             padding: 1.5rem;
         }
@@ -114,13 +115,13 @@
         .form-group label {
             font-size: 0.875rem;
             font-weight: 500;
-            color: var(--gray-800);
+            color: var(--color-gray-800);
             display: flex;
             align-items: center;
         }
 
         .form-group label i {
-            color: var(--primary);
+            color: var(--color-primary);
             width: 1rem;
             text-align: center;
             margin-right: 0.5rem;
@@ -134,12 +135,12 @@
 
         .key-type-btn {
             padding: 0.75rem 1rem;
-            border: 1px solid var(--gray-200);
+            border: 1px solid var(--color-gray-200);
             background: white;
             border-radius: 8px;
             font-size: 0.8rem;
             cursor: pointer;
-            transition: var(--transition);
+            transition: var(--transition-normal);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -148,22 +149,22 @@
 
         .key-type-btn i {
             font-size: 1.25rem;
-            color: var(--gray-500);
+            color: var(--color-gray-500);
         }
 
         .key-type-btn:hover {
-            border-color: var(--primary);
-            background: var(--primary-light);
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
         }
 
         .key-type-btn.active {
-            border-color: var(--primary);
-            background: var(--primary-light);
-            color: var(--primary-dark);
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+            color: var(--color-primary-dark);
         }
 
         .key-type-btn.active i {
-            color: var(--primary);
+            color: var(--color-primary);
         }
 
         .checkbox-group {
@@ -180,17 +181,17 @@
         }
 
         .checkbox-item input[type="checkbox"] {
-            accent-color: var(--primary);
+            accent-color: var(--color-primary);
         }
 
         input[type="number"],
         input[type="text"],
         select {
             padding: 0.75rem 1rem;
-            border: 1px solid var(--gray-200);
+            border: 1px solid var(--color-gray-200);
             border-radius: 8px;
             font-size: 1rem;
-            transition: var(--transition);
+            transition: var(--transition-normal);
             outline: none;
             width: 100%;
         }
@@ -198,7 +199,7 @@
         input[type="number"]:focus,
         input[type="text"]:focus,
         select:focus {
-            border-color: var(--primary);
+            border-color: var(--color-primary);
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
 
@@ -213,7 +214,7 @@
             font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
-            transition: var(--transition);
+            transition: var(--transition-normal);
             border: none;
             display: inline-flex;
             align-items: center;
@@ -221,22 +222,22 @@
         }
 
         .btn-primary {
-            background-color: var(--primary);
+            background-color: var(--color-primary);
             color: white;
         }
 
         .btn-primary:hover {
-            background-color: var(--primary-dark);
+            background-color: var(--color-primary-dark);
             transform: translateY(-1px);
         }
 
         .btn-secondary {
-            background-color: var(--gray-200);
-            color: var(--gray-700);
+            background-color: var(--color-gray-200);
+            color: var(--color-gray-700);
         }
 
         .btn-secondary:hover {
-            background-color: var(--gray-300);
+            background-color: var(--color-gray-300);
             transform: translateY(-1px);
         }
 
@@ -253,18 +254,18 @@
             width: 100%;
             min-height: 120px;
             padding: 0.75rem 1rem;
-            border: 1px solid var(--gray-200);
+            border: 1px solid var(--color-gray-200);
             border-radius: 8px;
             font-size: 1rem;
             font-family: monospace;
             resize: vertical;
-            transition: var(--transition);
+            transition: var(--transition-normal);
             outline: none;
-            background: var(--gray-100);
+            background: var(--color-gray-100);
         }
 
         textarea:focus {
-            border-color: var(--primary);
+            border-color: var(--color-primary);
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
 
@@ -273,41 +274,41 @@
             top: 0.5rem;
             right: 0.5rem;
             padding: 0.5rem 1rem;
-            background: var(--primary);
+            background: var(--color-primary);
             color: white;
             border: none;
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 500;
             cursor: pointer;
-            transition: var(--transition);
+            transition: var(--transition-normal);
         }
 
         .copy-btn:hover {
-            background-color: var(--primary-dark);
+            background-color: var(--color-primary-dark);
         }
 
         .back-home {
             padding: 1rem 1.5rem;
             text-align: center;
-            border-top: 1px solid var(--gray-200);
-            background: var(--gray-50);
+            border-top: 1px solid var(--color-gray-200);
+            background: var(--color-gray-50);
         }
 
         .back-home a {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            color: var(--primary);
+            color: var(--color-primary);
             text-decoration: none;
             font-size: 0.875rem;
             padding: 0.5rem 1rem;
-            border-radius: var(--radius);
-            transition: var(--transition);
+            border-radius: var(--radius-md);
+            transition: var(--transition-normal);
         }
 
         .back-home a:hover {
-            background-color: var(--primary-light);
+            background-color: var(--color-primary-light);
         }
 
         .prefix-input {
@@ -317,8 +318,8 @@
         }
 
         .prefix-tag {
-            background: var(--primary-light);
-            color: var(--primary-dark);
+            background: var(--color-primary-light);
+            color: var(--color-primary-dark);
             padding: 0.5rem 0.75rem;
             border-radius: 6px;
             font-size: 0.8rem;
@@ -344,14 +345,14 @@
             align-items: center;
             justify-content: space-between;
             padding: 0.5rem 0.75rem;
-            background: var(--gray-100);
+            background: var(--color-gray-100);
             border-radius: 6px;
             font-family: monospace;
             font-size: 0.8rem;
         }
 
         .history-key {
-            color: var(--gray-800);
+            color: var(--color-gray-800);
             cursor: pointer;
             flex: 1;
             margin-right: 0.5rem;
@@ -360,14 +361,14 @@
         }
 
         .history-key:hover {
-            color: var(--primary);
+            color: var(--color-primary);
         }
 
         .key-type-badge {
             font-size: 0.65rem;
             padding: 0.15rem 0.4rem;
-            background: var(--primary-light);
-            color: var(--primary);
+            background: var(--color-primary-light);
+            color: var(--color-primary);
             border-radius: 4px;
             margin-right: 0.5rem;
         }
@@ -376,7 +377,7 @@
             padding: 0.25rem 0.5rem;
             font-size: 0.7rem;
             border: none;
-            background: var(--primary);
+            background: var(--color-primary);
             color: white;
             border-radius: 4px;
             cursor: pointer;
@@ -384,10 +385,10 @@
 
         .info-box {
             padding: 0.75rem;
-            background: var(--primary-light);
+            background: var(--color-primary-light);
             border-radius: 8px;
             font-size: 0.8rem;
-            color: var(--primary-dark);
+            color: var(--color-primary-dark);
             display: flex;
             align-items: flex-start;
             gap: 0.5rem;
@@ -511,7 +512,7 @@
                     </button>
                 </div>
                 <div class="history-container" id="historyContainer" style="display: none;">
-                    <label style="font-size: 0.8rem; color: var(--gray-500); display: flex; justify-content: space-between; align-items: center;">
+                    <label style="font-size: 0.8rem; color: var(--color-gray-500); display: flex; justify-content: space-between; align-items: center;">
                         最近生成记录（最多20条）
                         <button onclick="clearHistory()" class="btn btn-sm btn-secondary">清空</button>
                     </label>

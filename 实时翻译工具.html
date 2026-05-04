@@ -11,27 +11,28 @@
     <link rel="manifest" href="site.webmanifest">
     <!-- 引入外部资源 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/shared.css">
 
     <style>
         /* 统一使用CSS变量管理主题 */
         :root {
-            --primary: #3B82F6;
-            --primary-dark: #2563EB;
-            --primary-light: rgba(59, 130, 246, 0.05);
-            --gray-50: #F9FAFB;
-            --gray-100: #F3F4F6;
-            --gray-200: #E5E7EB;
-            --gray-400: #9CA3AF;
-            --gray-500: #6B7280;
-            --gray-700: #374151;
-            --gray-800: #1F2937;
-            --danger: #EF4444;
-            --danger-light: #FEF2F2;
-            --danger-border: #FEE2E2;
+            --color-primary: #3B82F6;
+            --color-primary-dark: #2563EB;
+            --color-primary-light: rgba(59, 130, 246, 0.05);
+            --color-gray-50: #F9FAFB;
+            --color-gray-100: #F3F4F6;
+            --color-gray-200: #E5E7EB;
+            --color-gray-400: #9CA3AF;
+            --color-gray-500: #6B7280;
+            --color-gray-700: #374151;
+            --color-gray-800: #1F2937;
+            --color-danger: #EF4444;
+            --color-danger-light: #FEF2F2;
+            --color-danger-border: #FEE2E2;
             --white: #FFFFFF;
             --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
-            --radius: 8px;
+            --radius-md: 8px;
             --radius-lg: 12px;
         }
 
@@ -47,8 +48,8 @@
 
         body {
             font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--gray-50);
-            color: var(--gray-800);
+            background-color: var(--color-gray-50);
+            color: var(--color-gray-800);
             line-height: 1.5;
             padding: 1.5rem 1rem;
         }
@@ -66,7 +67,7 @@
         .header h1 {
             font-size: 1.5rem;
             font-weight: bold;
-            color: var(--gray-800);
+            color: var(--color-gray-800);
             margin-bottom: 0.25rem;
             display: flex;
             align-items: center;
@@ -75,7 +76,7 @@
         }
 
         .header p {
-            color: var(--gray-500);
+            color: var(--color-gray-500);
             font-size: 0.875rem;
         }
 
@@ -91,7 +92,7 @@
         }
 
         .card-section.border-bottom {
-            border-bottom: 1px solid var(--gray-100);
+            border-bottom: 1px solid var(--color-gray-100);
         }
 
         .input-header {
@@ -104,7 +105,7 @@
         .input-header label {
             font-size: 0.875rem;
             font-weight: 500;
-            color: var(--gray-700);
+            color: var(--color-gray-700);
         }
 
         .lang-selector {
@@ -116,7 +117,7 @@
 
         .lang-label {
             font-weight: 500;
-            color: var(--gray-700);
+            color: var(--color-gray-700);
             padding: 2px 5px;
             border-radius: 4px;
             cursor: pointer;
@@ -124,7 +125,7 @@
         }
 
         .lang-label:hover {
-            background-color: var(--gray-100);
+            background-color: var(--color-gray-100);
         }
 
         .lang-label.lang-update {
@@ -137,7 +138,7 @@
         }
 
         .swap-btn {
-            color: var(--primary);
+            color: var(--color-primary);
             background: none;
             border: none;
             padding: 0.25rem;
@@ -148,14 +149,14 @@
 
         .swap-btn:hover {
             background-color: rgba(59, 130, 246, 0.05);
-            color: var(--primary-dark);
+            color: var(--color-primary-dark);
         }
 
         textarea {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-md);
             font-family: inherit;
             font-size: 1rem;
             resize: none;
@@ -164,16 +165,16 @@
         }
 
         textarea:focus {
-            border-color: var(--primary);
+            border-color: var(--color-primary);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         textarea::placeholder {
-            color: var(--gray-400);
+            color: var(--color-gray-400);
         }
 
         textarea.error-highlight {
-            border-color: var(--danger) !important;
+            border-color: var(--color-danger) !important;
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
         }
 
@@ -187,7 +188,7 @@
 
         .char-count {
             font-size: 0.875rem;
-            color: var(--gray-500);
+            color: var(--color-gray-500);
             display: flex;
             align-items: center;
             position: absolute;
@@ -214,12 +215,12 @@
         }
 
         .btn-primary {
-            background-color: var(--primary);
+            background-color: var(--color-primary);
             color: white;
         }
 
         .btn-primary:hover:not(:disabled) {
-            background-color: var(--primary-dark);
+            background-color: var(--color-primary-dark);
             transform: translateY(-1px);
             box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
         }
@@ -235,13 +236,13 @@
 
         .btn-ghost {
             background: none;
-            color: var(--gray-500);
+            color: var(--color-gray-500);
             padding: 0.5rem;
         }
 
         .btn-ghost:hover {
-            color: var(--gray-700);
-            background-color: var(--gray-100);
+            color: var(--color-gray-700);
+            background-color: var(--color-gray-100);
         }
 
         .result-container {
@@ -251,13 +252,13 @@
         }
 
         .result-placeholder {
-            color: var(--gray-400);
+            color: var(--color-gray-400);
             text-align: center;
             padding: 1.25rem 0;
         }
 
         .result-loading {
-            color: var(--gray-400);
+            color: var(--color-gray-400);
             text-align: center;
             padding: 1.25rem 0;
             display: flex;
@@ -267,14 +268,14 @@
         }
 
         .result-error {
-            color: var(--danger);
+            color: var(--color-danger);
             text-align: center;
             padding: 1.25rem 0;
         }
 
         .copy-btn {
             margin-top: 0.75rem;
-            color: var(--primary);
+            color: var(--color-primary);
             background: none;
             border: none;
             font-size: 0.875rem;
@@ -287,14 +288,14 @@
         }
 
         .copy-btn:hover {
-            color: var(--primary-dark);
+            color: var(--color-primary-dark);
         }
 
         .error-panel {
             margin-top: 1rem;
-            background: var(--danger-light);
-            border: 1px solid var(--danger-border);
-            border-radius: var(--radius);
+            background: var(--color-danger-light);
+            border: 1px solid var(--color-danger-border);
+            border-radius: var(--radius-md);
             padding: 1rem;
             display: none;
         }
@@ -310,7 +311,7 @@
         }
 
         .error-icon {
-            color: var(--danger);
+            color: var(--color-danger);
             font-size: 1.125rem;
             flex-shrink: 0;
         }
@@ -347,7 +348,7 @@
         .help-title {
             font-size: 0.875rem;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--color-gray-800);
             margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
@@ -360,7 +361,7 @@
 
         .help-list li {
             font-size: 0.875rem;
-            color: var(--gray-500);
+            color: var(--color-gray-500);
             padding: 0.25rem 0;
             display: flex;
             align-items: flex-start;
@@ -372,7 +373,7 @@
             display: inline-block;
             width: 4px;
             height: 4px;
-            background-color: var(--primary);
+            background-color: var(--color-primary);
             border-radius: 50%;
             margin-top: 6px;
             flex-shrink: 0;
@@ -390,7 +391,7 @@
 
         .loader-gray {
             border-color: rgba(156, 163, 175, 0.3);
-            border-top-color: var(--gray-500);
+            border-top-color: var(--color-gray-500);
             width: 20px;
             height: 20px;
         }
@@ -429,7 +430,7 @@
         .lang-panel-header {
             font-size: 1.125rem;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--color-gray-800);
             margin-bottom: 1rem;
         }
 
@@ -441,9 +442,9 @@
 
         .lang-option {
             padding: 0.5rem 0.75rem;
-            border-radius: var(--radius);
+            border-radius: var(--radius-md);
             text-align: left;
-            color: var(--gray-800);
+            color: var(--color-gray-800);
             font-size: 0.875rem;
             background: none;
             border: none;
@@ -458,7 +459,7 @@
         .lang-panel-footer {
             margin-top: 1rem;
             padding-top: 1rem;
-            border-top: 1px solid var(--gray-100);
+            border-top: 1px solid var(--color-gray-100);
             text-align: right;
         }
 
@@ -467,10 +468,10 @@
             position: fixed;
             bottom: 1.25rem;
             right: 1.25rem;
-            background: var(--gray-800);
+            background: var(--color-gray-800);
             color: white;
             padding: 0.5rem 1rem;
-            border-radius: var(--radius);
+            border-radius: var(--radius-md);
             box-shadow: var(--shadow-md);
             transform: translateY(5rem);
             opacity: 0;
@@ -488,7 +489,7 @@
         }
 
         .notification.error {
-            background: var(--danger);
+            background: var(--color-danger);
         }
 
         @media (max-width: 640px) {
@@ -521,7 +522,7 @@
         <!-- 标题区域 -->
         <header class="header">
             <h1>
-                <i class="fas fa-language" style="color: var(--primary);"></i>
+                <i class="fas fa-language" style="color: var(--color-primary);"></i>
                 智能翻译工具
             </h1>
             <p>精准识别，高效翻译</p>
@@ -603,7 +604,7 @@
         <!-- 帮助信息 -->
         <div class="help-card">
             <h3 class="help-title">
-                <i class="fas fa-circle-question" style="color: var(--primary);"></i>
+                <i class="fas fa-circle-question" style="color: var(--color-primary);"></i>
                 使用帮助
             </h3>
             <ul class="help-list">
@@ -1097,14 +1098,14 @@
         document.addEventListener('DOMContentLoaded', initialize);
     </script>
 
-    <div class="back-home" style="margin: 2rem auto; text-align: center; max-width: 896px; padding: 1rem; border-top: 1px solid var(--gray-200);">
-        <a href="index.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--primary); text-decoration: none; font-size: 0.875rem; padding: 0.5rem 1rem; border-radius: var(--radius); transition: var(--transition);">
+    <div class="back-home" style="margin: 2rem auto; text-align: center; max-width: 896px; padding: 1rem; border-top: 1px solid var(--color-gray-200);">
+        <a href="index.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--color-primary); text-decoration: none; font-size: 0.875rem; padding: 0.5rem 1rem; border-radius: var(--radius-md); transition: var(--transition-normal);">
             <i class="fas fa-arrow-left"></i>返回工具列表
         </a>
     </div>
     <style>
         .back-home a:hover {
-            background-color: var(--primary-light);
+            background-color: var(--color-primary-light);
         }
     </style>
 </body>

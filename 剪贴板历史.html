@@ -10,27 +10,28 @@
     <link rel="apple-touch-icon" sizes="180x180" href="icons/clipboard-apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/shared.css">
     <style>
         :root {
-            --primary: #8B5CF6;
-            --primary-dark: #7C3AED;
-            --primary-light: rgba(139, 92, 246, 0.05);
-            --secondary: #10B981;
-            --success: #10B981;
-            --danger: #EF4444;
-            --warning: #F59E0B;
-            --gray-50: #F9FAFB;
-            --gray-100: #F3F4F6;
-            --gray-200: #E5E7EB;
-            --gray-400: #9CA3AF;
-            --gray-500: #6B7280;
-            --gray-700: #374151;
-            --gray-800: #1F2937;
-            --radius: 8px;
+            --color-primary: #8B5CF6;
+            --color-primary-dark: #7C3AED;
+            --color-primary-light: rgba(139, 92, 246, 0.05);
+            --color-info: #10B981;
+            --color-success: #10B981;
+            --color-danger: #EF4444;
+            --color-warning: #F59E0B;
+            --color-gray-50: #F9FAFB;
+            --color-gray-100: #F3F4F6;
+            --color-gray-200: #E5E7EB;
+            --color-gray-400: #9CA3AF;
+            --color-gray-500: #6B7280;
+            --color-gray-700: #374151;
+            --color-gray-800: #1F2937;
+            --radius-md: 8px;
             --radius-lg: 12px;
             --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
-            --transition: all 0.3s ease;
+            --transition-normal: all 0.3s ease;
         }
 
         * {
@@ -41,8 +42,8 @@
 
         body {
             font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--gray-50);
-            color: var(--gray-800);
+            background-color: var(--color-gray-50);
+            color: var(--color-gray-800);
             line-height: 1.5;
             min-height: 100vh;
             display: flex;
@@ -59,11 +60,11 @@
             width: 100%;
             max-width: 900px;
             overflow: hidden;
-            transition: var(--transition);
+            transition: var(--transition-normal);
         }
 
         .header {
-            background: var(--primary);
+            background: var(--color-primary);
             color: white;
             padding: 1.5rem;
         }
@@ -110,22 +111,22 @@
             left: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--gray-400);
+            color: var(--color-gray-400);
         }
 
         .search-box input {
             width: 100%;
             padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-md);
             font-size: 0.875rem;
-            transition: var(--transition);
+            transition: var(--transition-normal);
         }
 
         .search-box input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-primary-light);
         }
 
         .toggle-container {
@@ -133,8 +134,8 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem 0.75rem;
-            background: var(--gray-50);
-            border-radius: var(--radius);
+            background: var(--color-gray-50);
+            border-radius: var(--radius-md);
             font-size: 0.875rem;
         }
 
@@ -157,8 +158,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: var(--gray-300, #D1D5DB);
-            transition: var(--transition);
+            background-color: var(--color-gray-300, #D1D5DB);
+            transition: var(--transition-normal);
             border-radius: 22px;
         }
 
@@ -170,12 +171,12 @@
             left: 3px;
             bottom: 3px;
             background-color: white;
-            transition: var(--transition);
+            transition: var(--transition-normal);
             border-radius: 50%;
         }
 
         input:checked + .toggle-slider {
-            background-color: var(--primary);
+            background-color: var(--color-primary);
         }
 
         input:checked + .toggle-slider:before {
@@ -184,19 +185,19 @@
 
         .btn {
             padding: 0.75rem 1rem;
-            border-radius: var(--radius);
+            border-radius: var(--radius-md);
             font-weight: 500;
             font-size: 0.875rem;
             border: none;
             cursor: pointer;
-            transition: var(--transition);
+            transition: var(--transition-normal);
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
         }
 
         .btn-danger {
-            background-color: var(--danger);
+            background-color: var(--color-danger);
             color: white;
         }
 
@@ -213,9 +214,9 @@
             display: flex;
             gap: 1.5rem;
             font-size: 0.875rem;
-            color: var(--gray-500);
+            color: var(--color-gray-500);
             padding-bottom: 1rem;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--color-gray-200);
         }
 
         .stats-bar span {
@@ -225,7 +226,7 @@
         }
 
         .stats-bar i {
-            color: var(--primary);
+            color: var(--color-primary);
         }
 
         .history-list {
@@ -242,12 +243,12 @@
         }
 
         .history-list::-webkit-scrollbar-track {
-            background: var(--gray-100);
+            background: var(--color-gray-100);
             border-radius: 3px;
         }
 
         .history-list::-webkit-scrollbar-thumb {
-            background: var(--gray-300, #D1D5DB);
+            background: var(--color-gray-300, #D1D5DB);
             border-radius: 3px;
         }
 
@@ -255,15 +256,15 @@
             display: flex;
             gap: 0.75rem;
             padding: 1rem;
-            background: var(--gray-50);
-            border-radius: var(--radius);
-            border: 1px solid var(--gray-200);
-            transition: var(--transition);
+            background: var(--color-gray-50);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-gray-200);
+            transition: var(--transition-normal);
         }
 
         .history-item:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px var(--primary-light);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px var(--color-primary-light);
         }
 
         .item-content {
@@ -273,7 +274,7 @@
 
         .item-text {
             font-size: 0.875rem;
-            color: var(--gray-700);
+            color: var(--color-gray-700);
             line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 3;
@@ -288,7 +289,7 @@
             gap: 1rem;
             margin-top: 0.5rem;
             font-size: 0.75rem;
-            color: var(--gray-400);
+            color: var(--color-gray-400);
         }
 
         .item-meta i {
@@ -308,27 +309,27 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--radius);
+            border-radius: var(--radius-md);
             border: none;
             cursor: pointer;
-            transition: var(--transition);
-            background: var(--gray-100);
-            color: var(--gray-600);
+            transition: var(--transition-normal);
+            background: var(--color-gray-100);
+            color: var(--color-gray-600);
         }
 
         .btn-icon:hover {
-            background: var(--primary);
+            background: var(--color-primary);
             color: white;
         }
 
         .btn-icon.btn-delete:hover {
-            background: var(--danger);
+            background: var(--color-danger);
         }
 
         .empty-state {
             text-align: center;
             padding: 3rem 1rem;
-            color: var(--gray-400);
+            color: var(--color-gray-400);
         }
 
         .empty-state i {
@@ -346,13 +347,13 @@
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: var(--gray-800);
+            background: var(--color-gray-800);
             color: white;
             padding: 0.875rem 1.5rem;
-            border-radius: var(--radius);
+            border-radius: var(--radius-md);
             font-size: 0.875rem;
             opacity: 0;
-            transition: var(--transition);
+            transition: var(--transition-normal);
             z-index: 1000;
         }
 
@@ -363,24 +364,24 @@
 
         .back-home {
             padding: 1rem 1.5rem;
-            background-color: var(--gray-50);
-            border-top: 1px solid var(--gray-200);
+            background-color: var(--color-gray-50);
+            border-top: 1px solid var(--color-gray-200);
         }
 
         .back-home a {
-            color: var(--primary);
+            color: var(--color-primary);
             text-decoration: none;
             font-size: 0.875rem;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            transition: var(--transition);
+            transition: var(--transition-normal);
             padding: 0.5rem 0.75rem;
-            border-radius: var(--radius);
+            border-radius: var(--radius-md);
         }
 
         .back-home a:hover {
-            background-color: var(--primary-light);
+            background-color: var(--color-primary-light);
         }
 
         @media (max-width: 640px) {
