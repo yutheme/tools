@@ -1,26 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <!-- 粉色背景 #EC4899 -->
-  <rect width="256" height="256" rx="52" fill="#EC4899"/>
-  <rect width="256" height="256" rx="52" fill="url(#grad)" opacity="0.3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="ime icon">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.4"/>
-      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0"/>
+    <linearGradient id="bg" x1="20" y1="16" x2="160" y2="164" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#06B6D4"/>
+      <stop offset="1" stop-color="#0891B2"/>
     </linearGradient>
   </defs>
-  <!-- 键盘图标 -->
-  <rect x="48" y="80" width="160" height="96" rx="12" fill="white" opacity="0.95"/>
-  <rect x="64" y="100" width="12" height="12" rx="3" fill="#EC4899" opacity="0.6"/>
-  <rect x="88" y="100" width="12" height="12" rx="3" fill="#EC4899" opacity="0.5"/>
-  <rect x="112" y="100" width="12" height="12" rx="3" fill="#EC4899" opacity="0.5"/>
-  <rect x="136" y="100" width="12" height="12" rx="3" fill="#EC4899" opacity="0.5"/>
-  <rect x="160" y="100" width="12" height="12" rx="3" fill="#EC4899" opacity="0.6"/>
-  <rect x="184" y="100" width="12" height="12" rx="3" fill="#EC4899" opacity="0.4"/>
-  <rect x="64" y="124" width="12" height="12" rx="3" fill="#EC4899" opacity="0.4"/>
-  <rect x="88" y="124" width="12" height="12" rx="3" fill="#EC4899" opacity="0.6"/>
-  <rect x="112" y="124" width="12" height="12" rx="3" fill="#EC4899" opacity="0.5"/>
-  <rect x="136" y="124" width="12" height="12" rx="3" fill="#EC4899" opacity="0.5"/>
-  <rect x="160" y="124" width="12" height="12" rx="3" fill="#EC4899" opacity="0.6"/>
-  <rect x="184" y="124" width="12" height="12" rx="3" fill="#EC4899" opacity="0.4"/>
-  <rect x="76" y="148" width="104" height="12" rx="6" fill="#EC4899" opacity="0.5"/>
+  <rect width="180" height="180" rx="40" fill="url(#bg)"/>
+  <path d="M24 28c30-18 82-21 132 2v40C112 48 65 51 24 70V28z" fill="white" opacity=".16"/>
+  <circle cx="142" cy="42" r="8" fill="white" opacity=".18"/>
+  
+      <rect x="34" y="64" width="112" height="74" rx="16" fill="white"/>
+      <path d="M56 84h10M80 84h10M104 84h10M128 84h10M56 104h10M80 104h10M104 104h10M128 104h10" stroke="#0891B2" stroke-width="8" stroke-linecap="round"/>
+      <path d="M66 124h48" stroke="#06B6D4" stroke-width="10" stroke-linecap="round"/>
+      <path d="M112 36h32a12 12 0 0 1 12 12v26l-15-10h-29a12 12 0 0 1-12-12v-4a12 12 0 0 1 12-12z" fill="#D9F8FF"/>
+      <path d="M119 51h20" stroke="#0891B2" stroke-width="7" stroke-linecap="round"/>
 </svg>

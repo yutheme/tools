@@ -1,8 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#36CFC9"/>
-  <!-- 文档 - 极简 -->
-  <rect x="18" y="14" width="28" height="36" rx="3" fill="white"/>
-  <rect x="24" y="24" width="16" height="3" rx="1.5" fill="#36CFC9"/>
-  <rect x="24" y="32" width="14" height="3" rx="1.5" fill="#36CFC9"/>
-  <rect x="24" y="40" width="12" height="3" rx="1.5" fill="#36CFC9"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="wordcount icon">
+  <defs>
+    <linearGradient id="bg" x1="20" y1="16" x2="160" y2="164" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#36CFC9"/>
+      <stop offset="1" stop-color="#229B96"/>
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="40" fill="url(#bg)"/>
+  <path d="M24 28c30-18 82-21 132 2v40C112 48 65 51 24 70V28z" fill="white" opacity=".16"/>
+  <circle cx="142" cy="42" r="8" fill="white" opacity=".18"/>
+  
+      <path d="M54 38h54l26 26v78a8 8 0 0 1-8 8H54a8 8 0 0 1-8-8V46a8 8 0 0 1 8-8z" fill="white"/>
+      <path d="M108 38v24a6 6 0 0 0 6 6h20" fill="#D9FBF8"/>
+      <path d="M68 82h44M68 104h34M68 126h54" stroke="#229B96" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="124" cy="119" r="22" fill="#36CFC9"/>
+      <path d="M117 111h14M117 119h14M117 127h14" stroke="white" stroke-width="6" stroke-linecap="round"/>
 </svg>

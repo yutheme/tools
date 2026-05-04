@@ -2,6 +2,9 @@
 CLAUDE.md
 .claude/
 
+# Codex 本地配置
+AGENTS.md
+
 # 系统文件
 .DS_Store
 Thumbs.db
