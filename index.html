@@ -110,7 +110,7 @@
             flex-direction: column;
         }
 
-        /* 图标区域 - 渐变背景 + hover 放大效果 */
+        /* 图标区域 - hover 放大效果 */
         .tool-icon {
             width: 2.5rem;
             height: 2.5rem;
@@ -120,15 +120,10 @@
             justify-content: center;
             margin-bottom: 0.75rem;
             transition: all var(--transition-normal);
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
         }
 
         .tool-card:hover .tool-icon {
             transform: scale(1.1);
-        }
-
-        .tool-icon i {
-            color: white;
         }
 
         /* 图标尺寸为1.8rem */
@@ -179,7 +174,7 @@
         /* 底部特点区域 */
         .tool-card-footer {
             padding: 0.625rem 1rem;
-            background-color: var(--color-bg-light);
+            background-color: var(--color-gray-50);
             border-top: 1px solid rgba(0, 0, 0, 0.08);
             font-size: 0.75rem;
             color: var(--color-gray-500);
