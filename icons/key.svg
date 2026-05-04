@@ -1,13 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <!-- 深橙背景 #F97316 -->
-  <rect width="256" height="256" rx="52" fill="#F97316"/>
-  <rect width="256" height="256" rx="52" fill="url(#grad)" opacity="0.3"/>
-  <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.4"/>
-      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0"/>
-    </linearGradient>
-  </defs>
-  <!-- fa-key 标准图标路径 -->
-  <path d="M112 64 C85.5 64 64 85.5 64 112 C64 138.5 85.5 160 112 160 C122.3 160 131.8 156.8 139.3 151.3 L152 164 L180 164 L180 136 L196 120 L196 96 L172 96 L156 112 L144.7 100.7 C150.2 93.2 153.3 83.8 153.3 73.3 C153.3 68.2 152.5 64 148.3 64 L112 64 Z M112 128 C103.2 128 96 120.8 96 112 C96 103.2 103.2 96 112 96 C120.8 96 128 103.2 128 112 C128 120.8 120.8 128 112 128 Z" fill="white" transform="translate(16, 8)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 深橙背景 -->
+  <rect width="64" height="64" rx="12" fill="#F97316"/>
+  <!-- 钥匙 - 极简造型 -->
+  <circle cx="24" cy="26" r="10" fill="none" stroke="white" stroke-width="4"/>
+  <rect x="30" y="22" width="24" height="8" rx="2" fill="white"/>
+  <rect x="42" y="30" width="6" height="12" rx="2" fill="white"/>
 </svg>
