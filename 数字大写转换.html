@@ -610,7 +610,7 @@
             // 复制功能 - 使用共享复制工具，包含 Clipboard API 和降级方案
             copyBtn.addEventListener('click', async function() {
                 const copied = await window.copyToClipboard(resultOutput.value, {
-                    successMsg: '转换结果已复制 ✓',
+                    successMsg: '转换结果已复制',
                     errorMsg: '复制失败，请手动复制'
                 });
 

@@ -38,7 +38,7 @@ async function copyToClipboard(text, options = {}) {
   const {
     toast = true,
     vibrate = true,
-    successMsg = '已复制 ✓',
+    successMsg = '已复制',
     errorMsg = '复制失败，请手动复制'
   } = options;
 
@@ -98,7 +98,7 @@ function copyToClipboardFallback(text, options = {}) {
   const {
     toast = true,
     vibrate = true,
-    successMsg = '已复制 ✓',
+    successMsg = '已复制',
     errorMsg = '复制失败，请手动复制'
   } = options;
 

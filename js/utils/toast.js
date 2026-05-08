@@ -2,7 +2,7 @@
  * 全局Toast通知系统
  * 
  * 使用示例：
- * Toast.success('已复制 ✓')
+ * Toast.success('已复制')
  * Toast.error('操作失败')
  * Toast.warning('请注意')
  * Toast.info('提示信息')
