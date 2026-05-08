@@ -47,9 +47,11 @@ async function copyToClipboard(text, options = {}) {
     text = String(text);
   }
 
+  const toastApi = getToastApi();
+
   if (!text) {
-    if (toast && typeof Toast !== 'undefined') {
-      Toast.warning('没有内容可复制');
+    if (toast && toastApi) {
+      toastApi.warning('没有内容可复制');
     }
     return false;
   }
@@ -61,8 +63,8 @@ async function copyToClipboard(text, options = {}) {
         await navigator.clipboard.writeText(text);
         
         // 成功反馈
-        if (toast && typeof Toast !== 'undefined') {
-          Toast.success(successMsg);
+        if (toast && toastApi) {
+          toastApi.success(successMsg);
         }
         if (vibrate && navigator.vibrate) {
           navigator.vibrate(30);
@@ -80,8 +82,8 @@ async function copyToClipboard(text, options = {}) {
     }
   } catch (err) {
     console.error('复制失败:', err);
-    if (toast && typeof Toast !== 'undefined') {
-      Toast.error(errorMsg);
+    if (toast && toastApi) {
+      toastApi.error(errorMsg);
     }
     return false;
   }
@@ -99,6 +101,8 @@ function copyToClipboardFallback(text, options = {}) {
     successMsg = '已复制 ✓',
     errorMsg = '复制失败，请手动复制'
   } = options;
+
+  const toastApi = getToastApi();
 
   try {
     // 创建临时textarea
@@ -129,8 +133,8 @@ function copyToClipboardFallback(text, options = {}) {
 
     if (successful) {
       // 成功反馈
-      if (toast && typeof Toast !== 'undefined') {
-        Toast.success(successMsg);
+      if (toast && toastApi) {
+        toastApi.success(successMsg);
       }
       if (vibrate && navigator.vibrate) {
         navigator.vibrate(30);
@@ -141,11 +145,26 @@ function copyToClipboardFallback(text, options = {}) {
     }
   } catch (err) {
     console.error('降级方案复制失败:', err);
-    if (toast && typeof Toast !== 'undefined') {
-      Toast.error(errorMsg);
+    if (toast && toastApi) {
+      toastApi.error(errorMsg);
     }
     return false;
   }
+}
+
+/**
+ * 获取全局 Toast API。
+ * 优先从 window.Toast 读取，避免不同浏览器对跨 script 顶层 const 的解析差异。
+ * @returns {Object|null}
+ */
+function getToastApi() {
+  if (typeof window !== 'undefined' && window.Toast) {
+    return window.Toast;
+  }
+  if (typeof Toast !== 'undefined') {
+    return Toast;
+  }
+  return null;
 }
 
 /**
