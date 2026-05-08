@@ -4,59 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>在线中文输入法 - VRIME 集成</title>
-        <link rel="icon" type="image/png" href="icons/ime-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="icons/ime-96x96.png" sizes="96x96">
     <link rel="icon" type="image/svg+xml" href="icons/ime.svg">
     <link rel="shortcut icon" href="icons/ime-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/ime-apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
+
+    <!-- 主题闪烁防护 -->
+    <script>
+        (function(){
+            var t=localStorage.getItem('theme');
+            if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+            document.documentElement.setAttribute('data-theme',t);
+        })();
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/loading.css">
+
     <style>
         :root {
             --color-primary: var(--color-tool-vrime);
             --color-primary-dark: var(--color-tool-vrime-dark);
             --color-primary-light: var(--color-tool-vrime-light);
             --color-primary-ring: var(--color-tool-vrime-ring);
-            --color-success: #10B981;
-            --color-danger: #EF4444;
-            --color-warning: #F59E0B;
-            --color-gray-50: #F9FAFB;
-            --color-gray-100: #F3F4F6;
-            --color-gray-200: #E5E7EB;
-            --color-gray-400: #9CA3AF;
-            --color-gray-500: #6B7280;
-            --color-gray-700: #374151;
-            --color-gray-800: #1F2937;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
-            --transition-normal: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
             background-color: var(--color-gray-50);
-            color: var(--color-gray-800);
-            line-height: 1.5;
+            color: var(--color-gray-700);
             min-height: 100vh;
+        }
+
+        .page-content {
             padding: 1rem;
         }
 
         .container {
-            background: white;
+            background: var(--color-white);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            transition: var(--transition-normal);
         }
 
         .header {
@@ -116,7 +109,7 @@
             font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: all 0.2s ease;
             text-decoration: none;
         }
 
@@ -212,29 +205,6 @@
             display: block;
         }
 
-        .back-home {
-            padding: 1rem 1.5rem;
-            text-align: center;
-            border-top: 1px solid var(--color-gray-200);
-            background: var(--color-gray-50);
-        }
-
-        .back-home a {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--color-primary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-md);
-            transition: var(--transition-normal);
-        }
-
-        .back-home a:hover {
-            background-color: var(--color-primary-light);
-        }
-
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -248,6 +218,7 @@
     </style>
 </head>
 <body>
+    <div class="page-content">
     <div class="container">
         <div class="header">
             <div class="header-left">
@@ -292,15 +263,20 @@
                 ></iframe>
             </div>
         </div>
-
-        <div class="back-home">
-            <a href="index.html">
-                <i class="fas fa-arrow-left"></i>返回工具列表
-            </a>
-        </div>
     </div>
+    </div>
+
+    <!-- 共享 JS -->
+    <script src="js/utils/toast.js"></script>
+    <script src="js/utils/debounce.js"></script>
+    <script src="js/utils/copy.js"></script>
+    <script src="js/utils/storage.js"></script>
+    <script src="js/utils/theme.js"></script>
+    <script src="js/utils/loading.js"></script>
+    <script src="js/components/navbar.js"></script>
+
     <script>
-        document.querySelector('.info-box h3').addEventListener('click', () => {
+        document.querySelector('.info-box h3').addEventListener('click', function() {
             document.querySelector('.info-box').classList.toggle('collapsed');
         });
     </script>

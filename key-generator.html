@@ -13,8 +13,22 @@
     <link rel="shortcut icon" href="icons/key-32x32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/key-apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
+
+    <!-- 主题闪烁防护 -->
+    <script>
+        (function(){
+            var t=localStorage.getItem('theme');
+            if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+            document.documentElement.setAttribute('data-theme',t);
+        })();
+    </script>
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/loading.css">
+
     <style>
         :root {
             --color-primary: var(--color-tool-key);
@@ -23,47 +37,30 @@
             --color-primary-ring: var(--color-tool-key-ring);
             --color-success: #10B981;
             --color-danger: #EF4444;
-            --color-gray-50: #F9FAFB;
-            --color-gray-100: #F3F4F6;
-            --color-gray-200: #E5E7EB;
-            --color-gray-400: #9CA3AF;
-            --color-gray-500: #6B7280;
-            --color-gray-700: #374151;
-            --color-gray-800: #1F2937;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
-            --transition-normal: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
             background-color: var(--color-gray-50);
-            color: var(--color-gray-800);
-            line-height: 1.5;
+            color: var(--color-gray-700);
             min-height: 100vh;
+        }
+
+        .page-content {
+            padding: 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
+            min-height: calc(100vh - 56px);
         }
 
         .container {
-            background: white;
+            background: var(--color-white);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
             width: 100%;
             max-width: 900px;
             overflow: hidden;
-            transition: var(--transition-normal);
         }
 
         .header {
@@ -116,7 +113,7 @@
         .form-group label {
             font-size: 0.875rem;
             font-weight: 500;
-            color: var(--color-gray-800);
+            color: var(--color-gray-700);
             display: flex;
             align-items: center;
         }
@@ -137,11 +134,11 @@
         .key-type-btn {
             padding: 0.75rem 1rem;
             border: 1px solid var(--color-gray-200);
-            background: white;
-            border-radius: 8px;
+            background: var(--color-white);
+            border-radius: var(--radius-md);
             font-size: 0.8rem;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -150,7 +147,7 @@
 
         .key-type-btn i {
             font-size: 1.25rem;
-            color: var(--color-gray-500);
+            color: var(--color-gray-400);
         }
 
         .key-type-btn:hover {
@@ -190,9 +187,9 @@
         select {
             padding: 0.75rem 1rem;
             border: 1px solid var(--color-gray-200);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-size: 1rem;
-            transition: var(--transition-normal);
+            transition: all 0.3s ease;
             outline: none;
             width: 100%;
         }
@@ -201,7 +198,7 @@
         input[type="text"]:focus,
         select:focus {
             border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            box-shadow: 0 0 0 3px var(--color-primary-ring);
         }
 
         .input-group {
@@ -211,11 +208,11 @@
 
         .btn {
             padding: 0.75rem 1.5rem;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: all 0.3s ease;
             border: none;
             display: inline-flex;
             align-items: center;
@@ -256,18 +253,19 @@
             min-height: 120px;
             padding: 0.75rem 1rem;
             border: 1px solid var(--color-gray-200);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-size: 1rem;
-            font-family: monospace;
+            font-family: var(--font-family-mono);
             resize: vertical;
-            transition: var(--transition-normal);
+            transition: all 0.3s ease;
             outline: none;
             background: var(--color-gray-100);
+            color: var(--color-gray-700);
         }
 
         textarea:focus {
             border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            box-shadow: 0 0 0 3px var(--color-primary-ring);
         }
 
         .copy-btn {
@@ -278,38 +276,15 @@
             background: var(--color-primary);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
             font-size: 0.75rem;
             font-weight: 500;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: all 0.3s ease;
         }
 
         .copy-btn:hover {
             background-color: var(--color-primary-dark);
-        }
-
-        .back-home {
-            padding: 1rem 1.5rem;
-            text-align: center;
-            border-top: 1px solid var(--color-gray-200);
-            background: var(--color-gray-50);
-        }
-
-        .back-home a {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--color-primary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-md);
-            transition: var(--transition-normal);
-        }
-
-        .back-home a:hover {
-            background-color: var(--color-primary-light);
         }
 
         .prefix-input {
@@ -322,7 +297,7 @@
             background: var(--color-primary-light);
             color: var(--color-primary-dark);
             padding: 0.5rem 0.75rem;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
             font-size: 0.8rem;
             font-weight: 500;
             white-space: nowrap;
@@ -347,13 +322,13 @@
             justify-content: space-between;
             padding: 0.5rem 0.75rem;
             background: var(--color-gray-100);
-            border-radius: 6px;
-            font-family: monospace;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-family-mono);
             font-size: 0.8rem;
         }
 
         .history-key {
-            color: var(--color-gray-800);
+            color: var(--color-gray-700);
             cursor: pointer;
             flex: 1;
             margin-right: 0.5rem;
@@ -387,7 +362,7 @@
         .info-box {
             padding: 0.75rem;
             background: var(--color-primary-light);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-size: 0.8rem;
             color: var(--color-primary-dark);
             display: flex;
@@ -400,6 +375,10 @@
         }
 
         @media (max-width: 480px) {
+            .page-content {
+                padding: 0.5rem;
+            }
+
             .key-type-group {
                 grid-template-columns: 1fr;
             }
@@ -414,9 +393,38 @@
                 justify-content: center;
             }
         }
+
+        /* 深色模式 */
+        [data-theme="dark"] .key-type-btn {
+            background: var(--color-gray-600);
+            border-color: var(--color-gray-400);
+        }
+
+        [data-theme="dark"] .key-type-btn.active {
+            background: var(--color-primary-light);
+        }
+
+        [data-theme="dark"] textarea {
+            background: var(--color-gray-600);
+            color: var(--color-gray-100);
+            border-color: var(--color-gray-400);
+        }
+
+        [data-theme="dark"] .history-item {
+            background: var(--color-gray-600);
+        }
+
+        [data-theme="dark"] .history-key {
+            color: var(--color-gray-200);
+        }
+
+        [data-theme="dark"] .info-box {
+            background: rgba(249, 115, 22, 0.1);
+        }
     </style>
 </head>
 <body>
+    <div class="page-content">
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-key"></i>密钥生成器</h1>
@@ -513,7 +521,7 @@
                     </button>
                 </div>
                 <div class="history-container" id="historyContainer" style="display: none;">
-                    <label style="font-size: 0.8rem; color: var(--color-gray-500); display: flex; justify-content: space-between; align-items: center;">
+                    <label style="font-size: 0.8rem; color: var(--color-gray-400); display: flex; justify-content: space-between; align-items: center;">
                         最近生成记录（最多20条）
                         <button onclick="clearHistory()" class="btn btn-sm btn-secondary">清空</button>
                     </label>
@@ -532,12 +540,20 @@
             </div>
         </div>
     </div>
+    </div>
 
+    <!-- 共享 JS -->
     <script src="js/utils/toast.js"></script>
+    <script src="js/utils/debounce.js"></script>
     <script src="js/utils/copy.js"></script>
+    <script src="js/utils/storage.js"></script>
+    <script src="js/utils/theme.js"></script>
+    <script src="js/utils/loading.js"></script>
+    <script src="js/components/navbar.js"></script>
+
     <script>
-        let currentKeyType = 'api';
-        const descriptions = {
+        var currentKeyType = 'api';
+        var descriptions = {
             api: 'API Key 格式：适用于大多数 REST API 接口认证，Base62 编码字符串。',
             uuid: 'UUID v4 格式：标准的 128 位唯一标识符，格式为 8-4-4-4-12。',
             base62: 'Base62 编码：仅包含大小写字母和数字，适合 URL 和文件名。',
@@ -546,26 +562,26 @@
             custom: '自定义格式：根据您选择的字符集生成个性化密钥。'
         };
 
-        const charSets = {
+        var charSets = {
             lower: 'abcdefghijklmnopqrstuvwxyz',
             upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
             digit: '0123456789',
             symb: '-_.~'
         };
 
-        const ambiguousChars = new Set(['0', 'O', 'o', '1', 'l', 'I', '2', 'Z', '5', 'S']);
+        var ambiguousChars = new Set(['0', 'O', 'o', '1', 'l', 'I', '2', 'Z', '5', 'S']);
 
         function setKeyType(type) {
             currentKeyType = type;
-            document.querySelectorAll('.key-type-btn').forEach(btn => {
+            document.querySelectorAll('.key-type-btn').forEach(function(btn) {
                 btn.classList.toggle('active', btn.dataset.type === type);
             });
             document.getElementById('typeDescription').textContent = descriptions[type];
 
-            const customOptions = document.getElementById('customOptions');
+            var customOptions = document.getElementById('customOptions');
             customOptions.style.display = type === 'custom' ? 'block' : 'none';
 
-            const prefixGroup = document.getElementById('prefixGroup');
+            var prefixGroup = document.getElementById('prefixGroup');
             prefixGroup.style.display = type === 'uuid' ? 'none' : 'block';
 
             if (type === 'jwt') {
@@ -578,40 +594,40 @@
         }
 
         function generateUUID() {
-            const randomValues = new Uint8Array(16);
+            var randomValues = new Uint8Array(16);
             crypto.getRandomValues(randomValues);
 
             randomValues[6] = (randomValues[6] & 0x0f) | 0x40;
             randomValues[8] = (randomValues[8] & 0x3f) | 0x80;
 
-            const hex = Array.from(randomValues, b => b.toString(16).padStart(2, '0')).join('');
-            return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
+            var hex = Array.from(randomValues, function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+            return hex.slice(0, 8) + '-' + hex.slice(8, 12) + '-' + hex.slice(12, 16) + '-' + hex.slice(16, 20) + '-' + hex.slice(20, 32);
         }
 
         function generateBase62(length) {
-            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-            let result = '';
-            const randomValues = new Uint8Array(length);
+            var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            var result = '';
+            var randomValues = new Uint8Array(length);
             crypto.getRandomValues(randomValues);
-            for (let i = 0; i < length; i++) {
+            for (var i = 0; i < length; i++) {
                 result += chars[randomValues[i] % 62];
             }
             return result;
         }
 
         function generateHex(length) {
-            const randomValues = new Uint8Array(Math.ceil(length / 2));
+            var randomValues = new Uint8Array(Math.ceil(length / 2));
             crypto.getRandomValues(randomValues);
-            return Array.from(randomValues, b => b.toString(16).padStart(2, '0')).join('').slice(0, length);
+            return Array.from(randomValues, function(b) { return b.toString(16).padStart(2, '0'); }).join('').slice(0, length);
         }
 
         function generateCustom(length) {
-            let pool = '';
-            const incLower = document.getElementById('incLower').checked;
-            const incUpper = document.getElementById('incUpper').checked;
-            const incDigit = document.getElementById('incDigit').checked;
-            const incSymb = document.getElementById('incSymb').checked;
-            const excludeAmbiguous = document.getElementById('excludeAmbiguous').checked;
+            var pool = '';
+            var incLower = document.getElementById('incLower').checked;
+            var incUpper = document.getElementById('incUpper').checked;
+            var incDigit = document.getElementById('incDigit').checked;
+            var incSymb = document.getElementById('incSymb').checked;
+            var excludeAmbiguous = document.getElementById('excludeAmbiguous').checked;
 
             if (incLower) pool += charSets.lower;
             if (incUpper) pool += charSets.upper;
@@ -619,51 +635,38 @@
             if (incSymb) pool += charSets.symb;
 
             if (excludeAmbiguous) {
-                pool = Array.from(pool).filter(c => !ambiguousChars.has(c)).join('');
+                pool = Array.from(pool).filter(function(c) { return !ambiguousChars.has(c); }).join('');
             }
 
             if (!pool) return '请至少选择一种字符集';
 
-            let result = '';
-            const randomValues = new Uint8Array(length);
+            var result = '';
+            var randomValues = new Uint8Array(length);
             crypto.getRandomValues(randomValues);
-            for (let i = 0; i < length; i++) {
+            for (var i = 0; i < length; i++) {
                 result += pool[randomValues[i] % pool.length];
             }
             return result;
         }
 
         function generate() {
-            const length = Math.max(8, Math.min(512, parseInt(document.getElementById('keyLength').value || '32', 10)));
-            const count = Math.max(1, Math.min(50, parseInt(document.getElementById('keyCount').value || '1', 10)));
-            const prefix = document.getElementById('keyPrefix').value || '';
+            var length = Math.max(8, Math.min(512, parseInt(document.getElementById('keyLength').value || '32', 10)));
+            var count = Math.max(1, Math.min(50, parseInt(document.getElementById('keyCount').value || '1', 10)));
+            var prefix = document.getElementById('keyPrefix').value || '';
 
-            let output = '';
-            const keys = [];
+            var output = '';
+            var keys = [];
 
-            for (let i = 0; i < count; i++) {
-                let key;
+            for (var i = 0; i < count; i++) {
+                var key;
                 switch (currentKeyType) {
-                    case 'api':
-                        key = generateBase62(length);
-                        break;
-                    case 'uuid':
-                        key = generateUUID();
-                        break;
-                    case 'base62':
-                        key = generateBase62(length);
-                        break;
-                    case 'hex':
-                        key = generateHex(length);
-                        break;
-                    case 'jwt':
-                        key = generateBase62(Math.max(64, length));
-                        break;
-                    case 'custom':
-                        key = generateCustom(length);
-                        break;
-                    default:
-                        key = generateBase62(length);
+                    case 'api': key = generateBase62(length); break;
+                    case 'uuid': key = generateUUID(); break;
+                    case 'base62': key = generateBase62(length); break;
+                    case 'hex': key = generateHex(length); break;
+                    case 'jwt': key = generateBase62(Math.max(64, length)); break;
+                    case 'custom': key = generateCustom(length); break;
+                    default: key = generateBase62(length);
                 }
 
                 if (currentKeyType !== 'uuid' && prefix) {
@@ -676,7 +679,7 @@
 
             document.getElementById('result').value = output.trim();
 
-            keys.forEach(key => {
+            keys.forEach(function(key) {
                 if (key && key !== '请至少选择一种字符集') {
                     saveToHistory(key, currentKeyType);
                 }
@@ -686,12 +689,12 @@
         }
 
         function saveToHistory(key, type) {
-            const history = getHistory();
-            const index = history.findIndex(h => h.key === key);
+            var history = getHistory();
+            var index = history.findIndex(function(h) { return h.key === key; });
             if (index > -1) {
                 history.splice(index, 1);
             }
-            history.unshift({ key, type, time: Date.now() });
+            history.unshift({ key: key, type: type, time: Date.now() });
             if (history.length > 20) {
                 history.pop();
             }
@@ -700,7 +703,7 @@
 
         function getHistory() {
             try {
-                const data = localStorage.getItem('key_generator_history');
+                var data = localStorage.getItem('key_generator_history');
                 return data ? JSON.parse(data) : [];
             } catch (e) {
                 return [];
@@ -708,9 +711,9 @@
         }
 
         function renderHistory() {
-            const history = getHistory();
-            const container = document.getElementById('historyContainer');
-            const listEl = document.getElementById('historyList');
+            var history = getHistory();
+            var container = document.getElementById('historyContainer');
+            var listEl = document.getElementById('historyList');
 
             if (history.length === 0) {
                 container.style.display = 'none';
@@ -720,40 +723,35 @@
             container.style.display = 'block';
             listEl.innerHTML = '';
 
-            const typeLabels = {
-                api: 'API',
-                uuid: 'UUID',
-                base62: 'B62',
-                hex: 'HEX',
-                jwt: 'JWT',
-                custom: 'CUS'
+            var typeLabels = {
+                api: 'API', uuid: 'UUID', base62: 'B62', hex: 'HEX', jwt: 'JWT', custom: 'CUS'
             };
 
-            history.forEach(item => {
-                const div = document.createElement('div');
+            history.forEach(function(item) {
+                var div = document.createElement('div');
                 div.className = 'history-item';
 
-                const content = document.createElement('div');
+                var content = document.createElement('div');
                 content.style.display = 'flex';
                 content.style.alignItems = 'center';
                 content.style.flex = '1';
                 content.style.minWidth = '0';
 
-                const badge = document.createElement('span');
+                var badge = document.createElement('span');
                 badge.className = 'key-type-badge';
                 badge.textContent = typeLabels[item.type] || 'KEY';
 
-                const keyEl = document.createElement('span');
+                var keyEl = document.createElement('span');
                 keyEl.className = 'history-key';
                 keyEl.title = item.key;
                 keyEl.textContent = item.key;
-                keyEl.addEventListener('click', () => copyHistoryKey(item.key));
+                keyEl.addEventListener('click', function() { copyHistoryKey(item.key); });
 
-                const copyBtn = document.createElement('button');
+                var copyBtn = document.createElement('button');
                 copyBtn.className = 'btn-history-copy';
                 copyBtn.type = 'button';
                 copyBtn.textContent = '复制';
-                copyBtn.addEventListener('click', () => copyHistoryKey(item.key));
+                copyBtn.addEventListener('click', function() { copyHistoryKey(item.key); });
 
                 content.appendChild(badge);
                 content.appendChild(keyEl);
@@ -763,25 +761,14 @@
             });
         }
 
-        async function copyHistoryKey(key) {
+        function copyHistoryKey(key) {
             document.getElementById('result').value = key;
-            await window.copyToClipboard(key, {
-                successMsg: '密钥已复制',
-                errorMsg: '复制失败，请手动复制'
-            });
+            copyToClipboard(key);
         }
 
-        async function copyKeyResult(button) {
-            const key = document.getElementById('result').value;
-            const copied = await window.copyToClipboard(key, {
-                successMsg: '密钥已复制',
-                errorMsg: '复制失败，请手动复制'
-            });
-            if (copied && button) {
-                const originalHTML = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i>已复制';
-                setTimeout(() => { button.innerHTML = originalHTML; }, 1000);
-            }
+        function copyKeyResult(button) {
+            var key = document.getElementById('result').value;
+            copyToClipboard(key);
         }
 
         function clearAll() {
@@ -799,11 +786,5 @@
         renderHistory();
         generate();
     </script>
-
-    <div class="back-home">
-        <a href="index.html">
-            <i class="fas fa-arrow-left"></i>返回工具列表
-        </a>
-    </div>
 </body>
 </html>

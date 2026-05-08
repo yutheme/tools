@@ -1,0 +1,122 @@
+/* ========================================
+   深色模式主题变量覆盖
+   与 css/shared.css 配合使用
+   双重机制：手动切换 + 系统偏好检测
+   ======================================== */
+
+/* 手动切换深色模式 */
+[data-theme="dark"] {
+  --color-gray-50: #1a1a2e;
+  --color-gray-100: #16213e;
+  --color-gray-200: #2a2a4a;
+  --color-gray-300: #4a4a6a;
+  --color-gray-400: #7a7a9a;
+  --color-gray-500: #a0a0b8;
+  --color-gray-600: #c0c0d0;
+  --color-gray-700: #e0e0ea;
+  --color-white: #0f0f23;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  --color-primary-ring: rgba(22, 93, 255, 0.3);
+
+  /* 主色浅色背景提高不透明度 */
+  --color-primary-light: rgba(22, 93, 255, 0.15);
+
+  /* 工具专属颜色 - 深色模式提高 -light 不透明度 */
+  --color-tool-number-light: rgba(22, 93, 255, 0.15);
+  --color-tool-number-ring: rgba(22, 93, 255, 0.25);
+
+  --color-tool-password-light: rgba(245, 158, 11, 0.18);
+  --color-tool-password-ring: rgba(245, 158, 11, 0.25);
+
+  --color-tool-key-light: rgba(249, 115, 22, 0.18);
+  --color-tool-key-ring: rgba(249, 115, 22, 0.25);
+
+  --color-tool-wordcount-light: rgba(54, 207, 201, 0.15);
+  --color-tool-wordcount-ring: rgba(54, 207, 201, 0.25);
+
+  --color-tool-yaml-light: rgba(20, 184, 166, 0.15);
+  --color-tool-yaml-ring: rgba(20, 184, 166, 0.25);
+
+  --color-tool-translate-light: rgba(139, 92, 246, 0.18);
+  --color-tool-translate-ring: rgba(139, 92, 246, 0.25);
+
+  --color-tool-clipboard-light: rgba(168, 85, 247, 0.18);
+  --color-tool-clipboard-ring: rgba(168, 85, 247, 0.25);
+
+  --color-tool-vrime-light: rgba(236, 72, 153, 0.18);
+  --color-tool-vrime-ring: rgba(236, 72, 153, 0.25);
+}
+
+/* 系统偏好深色模式（未被手动覆盖时生效） */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-gray-50: #1a1a2e;
+    --color-gray-100: #16213e;
+    --color-gray-200: #2a2a4a;
+    --color-gray-300: #4a4a6a;
+    --color-gray-400: #7a7a9a;
+    --color-gray-500: #a0a0b8;
+    --color-gray-600: #c0c0d0;
+    --color-gray-700: #e0e0ea;
+    --color-white: #0f0f23;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+    --color-primary-ring: rgba(22, 93, 255, 0.3);
+
+    --color-primary-light: rgba(22, 93, 255, 0.15);
+
+    --color-tool-number-light: rgba(22, 93, 255, 0.15);
+    --color-tool-number-ring: rgba(22, 93, 255, 0.25);
+
+    --color-tool-password-light: rgba(245, 158, 11, 0.18);
+    --color-tool-password-ring: rgba(245, 158, 11, 0.25);
+
+    --color-tool-key-light: rgba(249, 115, 22, 0.18);
+    --color-tool-key-ring: rgba(249, 115, 22, 0.25);
+
+    --color-tool-wordcount-light: rgba(54, 207, 201, 0.15);
+    --color-tool-wordcount-ring: rgba(54, 207, 201, 0.25);
+
+    --color-tool-yaml-light: rgba(20, 184, 166, 0.15);
+    --color-tool-yaml-ring: rgba(20, 184, 166, 0.25);
+
+    --color-tool-translate-light: rgba(139, 92, 246, 0.18);
+    --color-tool-translate-ring: rgba(139, 92, 246, 0.25);
+
+    --color-tool-clipboard-light: rgba(168, 85, 247, 0.18);
+    --color-tool-clipboard-ring: rgba(168, 85, 247, 0.25);
+
+    --color-tool-vrime-light: rgba(236, 72, 153, 0.18);
+    --color-tool-vrime-ring: rgba(236, 72, 153, 0.25);
+  }
+}
+
+/* shared.css 中无法用变量覆盖的选择器修复 */
+[data-theme="dark"] .card {
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] ::selection {
+  color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .card {
+    border-color: var(--color-gray-200);
+  }
+
+  :root:not([data-theme="light"]) ::selection {
+    color: #ffffff;
+  }
+}

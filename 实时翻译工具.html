@@ -31,8 +31,6 @@
             --color-danger-light: #FEF2F2;
             --color-danger-border: #FEE2E2;
             --white: #FFFFFF;
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
             --radius-md: 8px;
             --radius-lg: 12px;
         }
@@ -58,7 +56,7 @@
         .container {
             max-width: 896px;
             margin: 0 auto;
-            background: var(--white);
+            background: var(--color-white);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
             overflow: hidden;
@@ -333,6 +331,24 @@
             color: #B91C1C;
         }
 
+        [data-theme="dark"] .error-content h3 {
+            color: #FCA5A5;
+        }
+
+        [data-theme="dark"] .error-content p {
+            color: #F87171;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .error-content h3 {
+                color: #FCA5A5;
+            }
+
+            :root:not([data-theme="light"]) .error-content p {
+                color: #F87171;
+            }
+        }
+
         .error-actions {
             margin-top: 0.75rem;
         }
@@ -344,10 +360,10 @@
 
         .help-card {
             margin-top: 1.5rem;
-            background: var(--white);
+            background: var(--color-white);
             border-radius: var(--radius-lg);
             padding: 1rem;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-card);
         }
 
         .help-title {
@@ -387,7 +403,7 @@
         /* 加载动画 */
         .loader {
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #ffffff;
+            border-top-color: var(--color-primary);
             border-radius: 50%;
             animation: spinner 0.6s linear infinite;
             width: 14px;
@@ -422,9 +438,9 @@
         }
 
         .lang-panel {
-            background: var(--white);
+            background: var(--color-white);
             border-radius: var(--radius-lg);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-lg);
             width: 100%;
             max-width: 448px;
             padding: 1.25rem;
@@ -636,7 +652,7 @@
 
     <!-- 通知提示 -->
     <div id="notification" class="notification">
-        <i class="fas fa-check-circle" style="color: #10B981;"></i>
+        <i class="fas fa-check-circle" style="color: var(--color-success);"></i>
         <span id="notificationText">操作成功</span>
     </div>
 

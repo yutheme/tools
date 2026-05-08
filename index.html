@@ -12,14 +12,33 @@
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
-    <!-- 外部资源 -->
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- 主题闪烁防护 -->
+    <script>
+        (function(){
+            var t=localStorage.getItem('theme');
+            if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+            document.documentElement.setAttribute('data-theme',t);
+        })();
+    </script>
+
+    <!-- CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+
+    <!-- 共享 CSS -->
     <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/loading.css">
+
     <style>
         /* ========== 首页特有样式 ========== */
         body {
             min-height: 100vh;
             background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(54, 207, 201, 0.05) 100%);
+        }
+
+        .page-content {
             padding: 1.5rem 0;
         }
 
@@ -33,8 +52,9 @@
         .page-title {
             text-align: center;
             margin-bottom: 2rem;
+            padding-top: 1rem;
         }
-        
+
         .page-title h1 {
             font-size: clamp(2rem, 5vw, 3rem);
             font-weight: bold;
@@ -44,14 +64,14 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .page-title p {
             color: var(--color-gray-500);
             max-width: 600px;
             margin: 0 auto;
             font-size: 1.1rem;
         }
-        
+
         /* 网格布局 */
         .tools-grid {
             display: grid;
@@ -78,12 +98,12 @@
                 gap: 1.25rem;
             }
         }
-        
-        /* 卡片样式 - 强化边界效果 */
+
+        /* 卡片样式 */
         .tool-card {
-            background: linear-gradient(180deg, var(--color-white) 0%, #FAFBFC 100%);
+            background: linear-gradient(180deg, var(--color-white) 0%, var(--color-gray-50) 100%);
             border-radius: var(--radius-lg);
-            border: 1px solid rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--color-gray-200);
             overflow: hidden;
             cursor: pointer;
             transform: translateY(0);
@@ -96,13 +116,11 @@
             box-shadow: var(--shadow-card);
         }
 
-        /* 悬停效果 - 更克制的动画 */
         .tool-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-hover);
         }
-        
-        /* 内容容器 */
+
         .tool-card-content {
             padding: 1.25rem 1rem;
             flex: 1;
@@ -110,7 +128,6 @@
             flex-direction: column;
         }
 
-        /* 图标区域 - hover 放大效果 */
         .tool-icon {
             width: 2.5rem;
             height: 2.5rem;
@@ -126,12 +143,10 @@
             transform: scale(1.1);
         }
 
-        /* 图标尺寸为1.8rem */
         .tool-icon i {
             font-size: 1.25rem !important;
         }
 
-        /* 标题区域 */
         .tool-card h2 {
             font-size: 1.1rem;
             font-weight: var(--font-weight-semibold);
@@ -141,7 +156,6 @@
             line-height: 1.4;
         }
 
-        /* 描述文本区域 */
         .tool-description {
             color: var(--color-gray-500);
             margin-bottom: 1rem;
@@ -153,29 +167,27 @@
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
         }
-        
-        /* 按钮容器 */
+
         .tool-action-container {
             margin-top: auto;
         }
-        
+
         .tool-action {
             display: inline-flex;
             align-items: center;
             font-weight: 500;
             transition: color 0.2s ease;
         }
-        
+
         .tool-action i {
             margin-left: 0.5rem;
             transition: transform 0.3s ease;
         }
-        
-        /* 底部特点区域 */
+
         .tool-card-footer {
             padding: 0.625rem 1rem;
             background-color: var(--color-gray-50);
-            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            border-top: 1px solid var(--color-gray-200);
             font-size: 0.75rem;
             color: var(--color-gray-500);
             height: auto;
@@ -187,8 +199,7 @@
             color: var(--color-secondary);
             margin-right: 0.25rem;
         }
-        
-        /* 链接样式 */
+
         .card-link {
             display: flex;
             flex-direction: column;
@@ -196,369 +207,60 @@
             width: 100%;
             text-decoration: none;
         }
-        
-        /* 页脚样式 */
+
         footer {
             text-align: center;
             margin-top: 4rem;
-            color: #6B7280;
+            color: var(--color-gray-500);
             font-size: 0.875rem;
         }
-        
-        /* 工具特定颜色 - 使用共享 CSS 变量 */
-        .tool-number .tool-icon {
-            background-color: var(--color-tool-number-light);
-        }
 
-        .tool-number .tool-action {
-            color: var(--color-tool-number);
-        }
+        /* 工具特定颜色 */
+        .tool-number .tool-icon { background-color: var(--color-tool-number-light); }
+        .tool-number .tool-action { color: var(--color-tool-number); }
+        .tool-number:hover .tool-icon { background-color: var(--color-tool-number-ring); }
+        .tool-number .tool-icon i { color: var(--color-tool-number); }
 
-        .tool-number:hover .tool-icon {
-            background-color: var(--color-tool-number-ring);
-        }
+        .tool-wordcount .tool-icon { background-color: var(--color-tool-wordcount-light); }
+        .tool-wordcount .tool-action { color: var(--color-tool-wordcount); }
+        .tool-wordcount:hover .tool-icon { background-color: var(--color-tool-wordcount-ring); }
+        .tool-wordcount .tool-icon i { color: var(--color-tool-wordcount); }
 
-        .tool-number .tool-icon i {
-            color: var(--color-tool-number);
-        }
+        .tool-translate .tool-icon { background-color: var(--color-tool-translate-light); }
+        .tool-translate .tool-action { color: var(--color-tool-translate); }
+        .tool-translate:hover .tool-icon { background-color: var(--color-tool-translate-ring); }
+        .tool-translate .tool-icon i { color: var(--color-tool-translate); }
 
-        .tool-wordcount .tool-icon {
-            background-color: var(--color-tool-wordcount-light);
-        }
+        .tool-password .tool-icon { background-color: var(--color-tool-password-light); }
+        .tool-password .tool-action { color: var(--color-tool-password); }
+        .tool-password:hover .tool-icon { background-color: var(--color-tool-password-ring); }
+        .tool-password .tool-icon i { color: var(--color-tool-password); }
 
-        .tool-wordcount .tool-action {
-            color: var(--color-tool-wordcount);
-        }
+        .tool-yaml .tool-icon { background-color: var(--color-tool-yaml-light); }
+        .tool-yaml .tool-action { color: var(--color-tool-yaml); }
+        .tool-yaml:hover .tool-icon { background-color: var(--color-tool-yaml-ring); }
+        .tool-yaml .tool-icon i { color: var(--color-tool-yaml); }
 
-        .tool-wordcount:hover .tool-icon {
-            background-color: var(--color-tool-wordcount-ring);
-        }
+        .tool-clipboard .tool-icon { background-color: var(--color-tool-clipboard-light); }
+        .tool-clipboard .tool-action { color: var(--color-tool-clipboard); }
+        .tool-clipboard:hover .tool-icon { background-color: var(--color-tool-clipboard-ring); }
+        .tool-clipboard .tool-icon i { color: var(--color-tool-clipboard); }
 
-        .tool-wordcount .tool-icon i {
-            color: var(--color-tool-wordcount);
-        }
+        .tool-key .tool-icon { background-color: var(--color-tool-key-light); }
+        .tool-key .tool-action { color: var(--color-tool-key); }
+        .tool-key:hover .tool-icon { background-color: var(--color-tool-key-ring); }
+        .tool-key .tool-icon i { color: var(--color-tool-key); }
 
-        .tool-translate .tool-icon {
-            background-color: var(--color-tool-translate-light);
-        }
-
-        .tool-translate .tool-action {
-            color: var(--color-tool-translate);
-        }
-
-        .tool-translate:hover .tool-icon {
-            background-color: var(--color-tool-translate-ring);
-        }
-
-        .tool-translate .tool-icon i {
-            color: var(--color-tool-translate);
-        }
-
-        .tool-password .tool-icon {
-            background-color: var(--color-tool-password-light);
-        }
-
-        .tool-password .tool-action {
-            color: var(--color-tool-password);
-        }
-
-        .tool-password:hover .tool-icon {
-            background-color: var(--color-tool-password-ring);
-        }
-
-        .tool-password .tool-icon i {
-            color: var(--color-tool-password);
-        }
-
-        .tool-yaml .tool-icon {
-            background-color: var(--color-tool-yaml-light);
-        }
-
-        .tool-yaml .tool-action {
-            color: var(--color-tool-yaml);
-        }
-
-        .tool-yaml:hover .tool-icon {
-            background-color: var(--color-tool-yaml-ring);
-        }
-
-        .tool-yaml .tool-icon i {
-            color: var(--color-tool-yaml);
-        }
-
-        .tool-clipboard .tool-icon {
-            background-color: var(--color-tool-clipboard-light);
-        }
-
-        .tool-clipboard .tool-action {
-            color: var(--color-tool-clipboard);
-        }
-
-        .tool-clipboard:hover .tool-icon {
-            background-color: var(--color-tool-clipboard-ring);
-        }
-
-        .tool-clipboard .tool-icon i {
-            color: var(--color-tool-clipboard);
-        }
-
-        .tool-key .tool-icon {
-            background-color: var(--color-tool-key-light);
-        }
-
-        .tool-key .tool-action {
-            color: var(--color-tool-key);
-        }
-
-        .tool-key:hover .tool-icon {
-            background-color: var(--color-tool-key-ring);
-        }
-
-        .tool-key .tool-icon i {
-            color: var(--color-tool-key);
-        }
-
-        .tool-vrime .tool-icon {
-            background-color: var(--color-tool-vrime-light);
-        }
-
-        .tool-vrime .tool-action {
-            color: var(--color-tool-vrime);
-        }
-
-        .tool-vrime:hover .tool-icon {
-            background-color: var(--color-tool-vrime-ring);
-        }
-
-        .tool-vrime .tool-icon i {
-            color: var(--color-tool-vrime);
-        }
+        .tool-vrime .tool-icon { background-color: var(--color-tool-vrime-light); }
+        .tool-vrime .tool-action { color: var(--color-tool-vrime); }
+        .tool-vrime:hover .tool-icon { background-color: var(--color-tool-vrime-ring); }
+        .tool-vrime .tool-icon i { color: var(--color-tool-vrime); }
 
         .tool-card:hover .tool-action i {
             transform: translateX(6px);
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header class="page-title">
-            <h1>
-                <i class="fa fa-wrench" style="color: #165DFF; margin-right: 0.75rem;"></i>实用工具集
-            </h1>
-            <p>
-                精选高效工具，满足日常办公与学习需求，简洁易用，功能强大
-            </p>
-        </header>
-        
-        <div class="tools-grid">
-            <!-- 数字大写转换工具 -->
-            <div class="tool-card tool-number">
-                <a href="数字大写转换.html" class="card-link" target="_blank" rel="noopener noreferrer">
-                    <div class="tool-card-content">
-                        <div class="tool-icon">
-                            <i class="fa fa-exchange"></i>
-                        </div>
-                        <h2>数字大写转换</h2>
-                        <div class="tool-description">
-                            快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式，支持大额数字和小数。
-                        </div>
-                        <div class="tool-action-container">
-                            <div class="tool-action">
-                                立即使用
-                                <i class="fa fa-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tool-card-footer">
-                        <i class="fa fa-check-circle"></i>
-                        符合财务规范格式
-                    </div>
-                </a>
-            </div>
-            
-            <!-- 字数统计工具 -->
-            <div class="tool-card tool-wordcount">
-                <a href="字数统计.html" class="card-link" target="_blank" rel="noopener noreferrer">
-                    <div class="tool-card-content">
-                        <div class="tool-icon">
-                            <i class="fa fa-file-text-o"></i>
-                        </div>
-                        <h2>字数统计工具</h2>
-                        <div class="tool-description">
-                            精准统计文本中的汉字、数字、字母等字符数量，支持多种文件格式上传分析。
-                        </div>
-                        <div class="tool-action-container">
-                            <div class="tool-action">
-                                立即使用
-                                <i class="fa fa-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tool-card-footer">
-                        <i class="fa fa-check-circle"></i>
-                        支持多格式文件分析
-                    </div>
-                </a>
-            </div>
-            
-            <!-- 实时翻译工具 -->
-            <div class="tool-card tool-translate">
-                <a href="实时翻译工具.html" class="card-link" target="_blank" rel="noopener noreferrer">
-                    <div class="tool-card-content">
-                        <div class="tool-icon">
-                            <i class="fa fa-language"></i>
-                        </div>
-                        <h2>智能翻译工具</h2>
-                        <div class="tool-description">
-                            自动识别语言类型，支持多语言互译，实时响应，操作简单，满足跨语言沟通需求。
-                        </div>
-                        <div class="tool-action-container">
-                            <div class="tool-action">
-                                立即使用
-                                <i class="fa fa-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tool-card-footer">
-                        <i class="fa fa-check-circle"></i>
-                        自动语言检测
-                    </div>
-                </a>
-            </div>
 
-            <!-- 密码生成器 -->
-            <div class="tool-card tool-password">
-                <a href="password-generator.html" class="card-link" target="_blank" rel="noopener noreferrer">
-                    <div class="tool-card-content">
-                        <div class="tool-icon">
-                            <i class="fa fa-lock"></i>
-                        </div>
-                        <h2>密码生成器</h2>
-                        <div class="tool-description">
-                            本地生成高强度账号密码，支持同时生成用户名+密码、排除易混淆字符、密码强度可视化、常用模板、批量生成。
-                        </div>
-                        <div class="tool-action-container">
-                            <div class="tool-action">
-                                立即使用
-                                <i class="fa fa-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tool-card-footer">
-                        <i class="fa fa-check-circle"></i>
-                        隐私安全 · 前端生成
-                    </div>
-                </a>
-            </div>
-
-            <!-- YAML 校正预览器 -->
-            <div class="tool-card tool-yaml">
-                <a href="yaml-previewer.html" class="card-link" target="_blank" rel="noopener noreferrer">
-                    <div class="tool-card-content">
-                        <div class="tool-icon">
-                            <i class="fa fa-file-text"></i>
-                        </div>
-                        <h2>YAML 工具</h2>
-                        <div class="tool-description">
-                            YAML 格式化验证一站式工具，支持YAML⇔JSON双向转换、保留注释、差异对比。
-                        </div>
-                        <div class="tool-action-container">
-                            <div class="tool-action">
-                                立即使用
-                                <i class="fa fa-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tool-card-footer">
-                        <i class="fa fa-check-circle"></i>
-                        双向转换 · 差异对比
-                    </div>
-                </a>
-            </div>
-
-            <!-- 剪贴板历史记录 -->
-            <div class="tool-card tool-clipboard">
-                <a href="剪贴板历史.html" class="card-link" target="_blank" rel="noopener noreferrer">
-                    <div class="tool-card-content">
-                        <div class="tool-icon">
-                            <i class="fa fa-clipboard"></i>
-                        </div>
-                        <h2>剪贴板历史</h2>
-                        <div class="tool-description">
-                            记录复制粘贴历史，一键找回之前复制的内容，支持搜索和快速复用。
-                        </div>
-                        <div class="tool-action-container">
-                            <div class="tool-action">
-                                立即使用
-                                <i class="fa fa-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tool-card-footer">
-                        <i class="fa fa-check-circle"></i>
-                        本地存储 · 安全隐私
-                    </div>
-                </a>
-            </div>
-
-            <!-- 密钥生成器 -->
-            <div class="tool-card tool-key">
-                <a href="key-generator.html" class="card-link" target="_blank" rel="noopener noreferrer">
-                    <div class="tool-card-content">
-                        <div class="tool-icon">
-                            <i class="fa fa-key"></i>
-                        </div>
-                        <h2>密钥生成器</h2>
-                        <div class="tool-description">
-                            生成 API Key、UUID、Base62、十六进制等多种格式密钥，支持自定义前缀和批量生成，完全本地运行。
-                        </div>
-                        <div class="tool-action-container">
-                            <div class="tool-action">
-                                立即使用
-                                <i class="fa fa-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tool-card-footer">
-                        <i class="fa fa-check-circle"></i>
-                        本地生成 · 支持多种格式
-                    </div>
-                </a>
-            </div>
-
-            <!-- 在线中文输入法 -->
-            <div class="tool-card tool-vrime">
-                <a href="vrime.html" class="card-link" target="_blank" rel="noopener noreferrer">
-                    <div class="tool-card-content">
-                        <div class="tool-icon" style="background-color: rgba(6, 182, 212, 0.1);">
-                            <i class="fa fa-keyboard-o"></i>
-                        </div>
-                        <h2>在线中文输入法</h2>
-                        <div class="tool-description">
-                            基于RIME的网页中文输入法，适合Meta Quest VR浏览器使用，支持拼音、五笔、双拼，完全本地运行。
-                        </div>
-                        <div class="tool-action-container">
-                            <div class="tool-action">
-                                立即使用
-                                <i class="fa fa-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tool-card-footer">
-                        <i class="fa fa-check-circle"></i>
-                        本地WASM · VR友好
-                    </div>
-                </a>
-            </div>
-        </div>
-        
-        <footer>
-            <p>© 2026 实用工具集 | 简洁高效的在线工具解决方案</p>
-        </footer>
-    </div>
-
-    <!-- 入场动画样式 -->
-    <style>
+        /* 入场动画 */
         .card-enter {
             opacity: 0;
             transform: translateY(20px);
@@ -568,20 +270,274 @@
             opacity: 1 !important;
             transform: translateY(0) !important;
         }
+
+        /* 深色模式适配 */
+        [data-theme="dark"] .tool-card {
+            background: linear-gradient(180deg, var(--color-white) 0%, var(--color-gray-100) 100%);
+        }
+
+        [data-theme="dark"] .tool-card-footer {
+            background-color: var(--color-gray-100);
+        }
+
+        [data-theme="dark"] body,
+        [data-theme="dark"] .page-content {
+            background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-50) 100%);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .tool-card {
+                background: linear-gradient(180deg, var(--color-white) 0%, var(--color-gray-100) 100%);
+            }
+
+            :root:not([data-theme="light"]) .tool-card-footer {
+                background-color: var(--color-gray-100);
+            }
+
+            :root:not([data-theme="light"]) body,
+            :root:not([data-theme="light"]) .page-content {
+                background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-50) 100%);
+            }
+        }
     </style>
+</head>
+<body>
+    <div class="page-content">
+    <div class="container">
+        <header class="page-title">
+            <h1>
+                <i class="fas fa-wrench" style="color: var(--color-tool-number); margin-right: 0.75rem;"></i>实用工具集
+            </h1>
+            <p>
+                精选高效工具，满足日常办公与学习需求，简洁易用，功能强大
+            </p>
+        </header>
+
+        <div class="tools-grid">
+            <!-- 数字大写转换工具 -->
+            <div class="tool-card tool-number">
+                <a href="数字大写转换.html" class="card-link">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
+                            <i class="fas fa-right-left"></i>
+                        </div>
+                        <h2>数字大写转换</h2>
+                        <div class="tool-description">
+                            快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式，支持大额数字和小数。
+                        </div>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-card-footer">
+                        <i class="fas fa-circle-check"></i>
+                        符合财务规范格式
+                    </div>
+                </a>
+            </div>
+
+            <!-- 字数统计工具 -->
+            <div class="tool-card tool-wordcount">
+                <a href="字数统计.html" class="card-link">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
+                            <i class="far fa-file-lines"></i>
+                        </div>
+                        <h2>字数统计工具</h2>
+                        <div class="tool-description">
+                            精准统计文本中的汉字、数字、字母等字符数量，支持多种文件格式上传分析。
+                        </div>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-card-footer">
+                        <i class="fas fa-circle-check"></i>
+                        支持多格式文件分析
+                    </div>
+                </a>
+            </div>
+
+            <!-- 实时翻译工具 -->
+            <div class="tool-card tool-translate">
+                <a href="实时翻译工具.html" class="card-link">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <h2>智能翻译工具</h2>
+                        <div class="tool-description">
+                            自动识别语言类型，支持多语言互译，实时响应，操作简单，满足跨语言沟通需求。
+                        </div>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-card-footer">
+                        <i class="fas fa-circle-check"></i>
+                        自动语言检测
+                    </div>
+                </a>
+            </div>
+
+            <!-- 密码生成器 -->
+            <div class="tool-card tool-password">
+                <a href="password-generator.html" class="card-link">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h2>密码生成器</h2>
+                        <div class="tool-description">
+                            本地生成高强度账号密码，支持同时生成用户名+密码、排除易混淆字符、密码强度可视化、常用模板、批量生成。
+                        </div>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-card-footer">
+                        <i class="fas fa-circle-check"></i>
+                        隐私安全 · 前端生成
+                    </div>
+                </a>
+            </div>
+
+            <!-- YAML 校正预览器 -->
+            <div class="tool-card tool-yaml">
+                <a href="yaml-previewer.html" class="card-link">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
+                            <i class="fas fa-file-lines"></i>
+                        </div>
+                        <h2>YAML 工具</h2>
+                        <div class="tool-description">
+                            YAML 格式化验证一站式工具，支持YAML⇔JSON双向转换、保留注释、差异对比。
+                        </div>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-card-footer">
+                        <i class="fas fa-circle-check"></i>
+                        双向转换 · 差异对比
+                    </div>
+                </a>
+            </div>
+
+            <!-- 剪贴板历史记录 -->
+            <div class="tool-card tool-clipboard">
+                <a href="剪贴板历史.html" class="card-link">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
+                            <i class="fas fa-clipboard"></i>
+                        </div>
+                        <h2>剪贴板历史</h2>
+                        <div class="tool-description">
+                            记录复制粘贴历史，一键找回之前复制的内容，支持搜索和快速复用。
+                        </div>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-card-footer">
+                        <i class="fas fa-circle-check"></i>
+                        本地存储 · 安全隐私
+                    </div>
+                </a>
+            </div>
+
+            <!-- 密钥生成器 -->
+            <div class="tool-card tool-key">
+                <a href="key-generator.html" class="card-link">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <h2>密钥生成器</h2>
+                        <div class="tool-description">
+                            生成 API Key、UUID、Base62、十六进制等多种格式密钥，支持自定义前缀和批量生成，完全本地运行。
+                        </div>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-card-footer">
+                        <i class="fas fa-circle-check"></i>
+                        本地生成 · 支持多种格式
+                    </div>
+                </a>
+            </div>
+
+            <!-- 在线中文输入法 -->
+            <div class="tool-card tool-vrime">
+                <a href="vrime.html" class="card-link">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
+                            <i class="far fa-keyboard"></i>
+                        </div>
+                        <h2>在线中文输入法</h2>
+                        <div class="tool-description">
+                            基于RIME的网页中文输入法，适合Meta Quest VR浏览器使用，支持拼音、五笔、双拼，完全本地运行。
+                        </div>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-card-footer">
+                        <i class="fas fa-circle-check"></i>
+                        本地WASM · VR友好
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2026 实用工具集 | 简洁高效的在线工具解决方案</p>
+        </footer>
+    </div>
+    </div>
+
+    <script src="js/utils/toast.js"></script>
+    <script src="js/utils/debounce.js"></script>
+    <script src="js/utils/copy.js"></script>
+    <script src="js/utils/storage.js"></script>
+    <script src="js/utils/theme.js"></script>
+    <script src="js/utils/loading.js"></script>
+    <script src="js/components/navbar.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.tool-card');
+        document.addEventListener('DOMContentLoaded', function() {
+            var cards = document.querySelectorAll('.tool-card');
 
-            // 合并循环,减少重复遍历
-            cards.forEach((card, index) => {
-                // 初始状态
+            cards.forEach(function(card, index) {
                 card.classList.add('card-enter');
                 card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
 
-                // 延迟触发入场动画
-                setTimeout(() => {
+                setTimeout(function() {
                     card.classList.add('card-enter-active');
                 }, 200 * index);
             });

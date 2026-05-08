@@ -4,16 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YAML 预览/验证/格式化工具 - YAML JSON互转对比</title>
-        <link rel="icon" type="image/png" href="icons/yaml-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="icons/yaml-96x96.png" sizes="96x96">
     <link rel="icon" type="image/svg+xml" href="icons/yaml.svg">
     <link rel="shortcut icon" href="icons/yaml-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/yaml-apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
+
+    <!-- 主题闪烁防护 -->
+    <script>
+        (function(){
+            var t=localStorage.getItem('theme');
+            if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+            document.documentElement.setAttribute('data-theme',t);
+        })();
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/yaml@2.2.2/dist/yaml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/loading.css">
     <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-yaml.min.js"></script>
@@ -28,44 +41,26 @@
             --color-danger: #EF4444;
             --color-success: #10B981;
             --color-warning: #F59E0B;
-            --color-gray-50: #F9FAFB;
-            --color-gray-100: #F3F4F6;
-            --color-gray-200: #E5E7EB;
-            --color-gray-400: #9CA3AF;
-            --color-gray-500: #6B7280;
-            --color-gray-700: #374151;
-            --color-gray-800: #1F2937;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
-            --transition-normal: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
             background-color: var(--color-gray-50);
-            color: var(--color-gray-800);
-            line-height: 1.5;
+            color: var(--color-gray-700);
             min-height: 100vh;
+        }
+
+        .page-content {
             padding: 1rem;
         }
 
         .container {
-            background: white;
+            background: var(--color-white);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             overflow: hidden;
-            transition: var(--transition-normal);
         }
 
         .header {
@@ -106,11 +101,11 @@
 
         .btn {
             padding: 0.75rem 1.25rem;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-size: 0.875rem;
             font-weight: 500;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: all 0.3s ease;
             border: none;
             display: inline-flex;
             align-items: center;
@@ -137,28 +132,6 @@
             transform: translateY(-1px);
         }
 
-        /* 返回首页导航 */
-        .back-home {
-            padding: 1rem 1.5rem;
-            text-align: center;
-            border-top: 1px solid var(--color-gray-200);
-            background: var(--color-gray-50);
-        }
-        .back-home a {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--color-primary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-md);
-            transition: var(--transition-normal);
-        }
-        .back-home a:hover {
-            background-color: var(--color-primary-light);
-        }
-
         .editor-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -174,7 +147,7 @@
         .editor-box label {
             font-size: 0.875rem;
             font-weight: 500;
-            color: var(--dark);
+            color: var(--color-gray-700);
             display: flex;
             align-items: center;
         }
@@ -189,10 +162,10 @@
         .editor-with-line {
             display: flex;
             border: 1px solid var(--color-gray-200);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             background: var(--color-gray-100);
             overflow: hidden;
-            transition: var(--transition-normal);
+            transition: all 0.3s ease;
         }
 
         .editor-line-numbers {
@@ -206,9 +179,9 @@
         }
 
         .editor-line-numbers div {
-            font-family: 'Consolas', 'Monaco', monospace;
+            font-family: var(--font-family-mono);
             font-size: 0.875rem;
-            color: var(--color-gray-500);
+            color: var(--color-gray-400);
             height: 1.4rem;
             line-height: 1.4rem;
         }
@@ -230,12 +203,13 @@
             padding: 0.75rem 1rem;
             border: none;
             font-size: 0.875rem;
-            font-family: 'Consolas', 'Monaco', monospace;
+            font-family: var(--font-family-mono);
             resize: vertical;
             outline: none;
             background: transparent;
             line-height: 1.4rem;
             tab-size: 2;
+            color: var(--color-gray-700);
         }
 
         .prism-editor {
@@ -256,7 +230,7 @@
         .editor-with-line:focus-within {
             border-color: var(--color-primary);
             box-shadow: 0 0 0 3px var(--color-primary-ring);
-            background: white;
+            background: var(--color-white);
         }
 
         textarea {
@@ -264,24 +238,24 @@
             height: 500px;
             padding: 0.75rem 1rem;
             border: 1px solid var(--color-gray-200);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-size: 0.875rem;
-            font-family: 'Consolas', 'Monaco', monospace;
+            font-family: var(--font-family-mono);
             resize: vertical;
-            transition: var(--transition-normal);
+            transition: all 0.3s ease;
             outline: none;
             background: var(--color-gray-100);
             line-height: 1.6;
             tab-size: 2;
+            color: var(--color-gray-700);
         }
 
         textarea:focus {
             border-color: var(--color-primary);
             box-shadow: 0 0 0 3px var(--color-primary-ring);
-            background: white;
+            background: var(--color-white);
         }
 
-        /* Diff 对比样式 */
         .diff-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -291,7 +265,7 @@
 
         .diff-panel {
             border: 1px solid var(--color-gray-200);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             overflow: hidden;
         }
 
@@ -300,12 +274,12 @@
             padding: 0.5rem 1rem;
             margin: 0;
             font-size: 0.8rem;
-            color: var(--color-gray-500);
+            color: var(--color-gray-400);
             border-bottom: 1px solid var(--color-gray-200);
         }
 
         .diff-content {
-            font-family: 'Consolas', 'Monaco', monospace;
+            font-family: var(--font-family-mono);
             font-size: 0.75rem;
             line-height: 1.5;
             max-height: 300px;
@@ -335,7 +309,7 @@
             background: rgba(245, 63, 63, 0.1);
             color: var(--color-danger);
             padding: 1rem;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             line-height: 1.8;
             border-left: 4px solid var(--color-danger);
         }
@@ -344,7 +318,7 @@
             background: rgba(0, 180, 42, 0.1);
             color: var(--color-success);
             padding: 1rem;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             border-left: 4px solid var(--color-success);
         }
 
@@ -353,11 +327,15 @@
             margin-top: 2rem;
             padding: 1.5rem 0;
             border-top: 1px solid var(--color-gray-200);
-            color: var(--color-gray-500);
+            color: var(--color-gray-400);
             font-size: 0.875rem;
         }
 
         @media (max-width: 768px) {
+            .page-content {
+                padding: 0.5rem;
+            }
+
             .editor-container {
                 grid-template-columns: 1fr;
             }
@@ -372,9 +350,53 @@
                 justify-content: center;
             }
         }
+
+        /* 深色模式 - 变量系统自动反转灰度，仅需覆盖透明度差异 */
+        [data-theme="dark"] .error-box {
+            background: rgba(245, 63, 63, 0.15);
+        }
+
+        [data-theme="dark"] .success-box {
+            background: rgba(0, 180, 42, 0.15);
+        }
+
+        [data-theme="dark"] .diff-content ins {
+            background: rgba(0, 180, 42, 0.25);
+        }
+
+        [data-theme="dark"] .diff-content del {
+            background: rgba(245, 63, 63, 0.25);
+        }
+
+        [data-theme="dark"] .editor-line-numbers div.error {
+            background: rgba(245, 63, 63, 0.4);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .error-box {
+                background: rgba(245, 63, 63, 0.15);
+            }
+
+            :root:not([data-theme="light"]) .success-box {
+                background: rgba(0, 180, 42, 0.15);
+            }
+
+            :root:not([data-theme="light"]) .diff-content ins {
+                background: rgba(0, 180, 42, 0.25);
+            }
+
+            :root:not([data-theme="light"]) .diff-content del {
+                background: rgba(245, 63, 63, 0.25);
+            }
+
+            :root:not([data-theme="light"]) .editor-line-numbers div.error {
+                background: rgba(245, 63, 63, 0.4);
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="page-content">
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-file-code"></i>YAML 工具</h1>
@@ -471,18 +493,25 @@
         </div>
 
         <footer>
-            <p>© 2026 工具集合 | 所有工具仅供学习使用</p>
+            <p>&copy; 2026 工具集合 | 所有工具仅供学习使用</p>
         </footer>
     </div>
+    </div>
 
+    <!-- 共享 JS -->
     <script src="js/utils/toast.js"></script>
+    <script src="js/utils/debounce.js"></script>
     <script src="js/utils/copy.js"></script>
+    <script src="js/utils/storage.js"></script>
+    <script src="js/utils/theme.js"></script>
+    <script src="js/utils/loading.js"></script>
+    <script src="js/components/navbar.js"></script>
 
     <script>
-        const inputArea = document.getElementById('inputArea');
-        const outputArea = document.getElementById('outputArea');
-        const errorBox = document.getElementById('errorBox');
-        const successBox = document.getElementById('successBox');
+        var inputArea = document.getElementById('inputArea');
+        var outputArea = document.getElementById('outputArea');
+        var errorBox = document.getElementById('errorBox');
+        var successBox = document.getElementById('successBox');
 
         function hideMessages() {
             errorBox.style.display = 'none';
@@ -490,10 +519,10 @@
             clearErrorLines();
         }
 
-        function showError(msg, extraTip = '') {
-            let fullMsg = msg;
+        function showError(msg, extraTip) {
+            var fullMsg = msg;
             if (extraTip) {
-                fullMsg += `<br><br>💡 建议：${extraTip}`;
+                fullMsg += '<br><br>💡 建议：' + extraTip;
             }
             errorBox.innerHTML = fullMsg;
             errorBox.style.display = 'block';
@@ -508,7 +537,7 @@
 
         function autoFixIndent() {
             hideMessages();
-            let content = inputArea.value;
+            var content = inputArea.value;
             content = content.replace(/\t/g, '  ');
             content = content.replace(/^(\s*)-\s+/gm, '$1  - ');
             inputArea.value = content;
@@ -517,100 +546,88 @@
 
         function validateYaml() {
             hideMessages();
-            const content = inputArea.value.trim();
+            var content = inputArea.value.trim();
             if (!content) {
                 showError('请输入YAML内容');
                 return false;
             }
             try {
-                const parsed = jsyaml.load(content, {
+                var parsed = jsyaml.load(content, {
                     strict: false,
                     schema: jsyaml.DEFAULT_SCHEMA,
                     allowDuplicate: false
                 });
-                
-                // 专项校验：检测常见配置错误
-                const issues = specialValidate(parsed);
+
+                var issues = specialValidate(parsed);
                 if (issues.length > 0) {
-                    let extraTip = '<br>• ' + issues.join('<br>• ');
-                    showSuccess(`✅ YAML 格式验证通过，但发现${issues.length}个建议检查项:${extraTip}`);
+                    var extraTip = '<br>• ' + issues.join('<br>• ');
+                    showSuccess('✅ YAML 格式验证通过，但发现' + issues.length + '个建议检查项:' + extraTip);
                 } else {
                     showSuccess('✅ YAML 格式验证通过');
                 }
                 return parsed;
             } catch (e) {
-                let extraTip = '';
-                let errorLine = null;
-                // 尝试解析行号
-                const lineMatch = e.message.match(/line\s+(\d+)/i);
+                var extraTip = '';
+                var errorLine = null;
+                var lineMatch = e.message.match(/line\s+(\d+)/i);
                 if (lineMatch) {
                     errorLine = parseInt(lineMatch[1]);
                     markErrorLine(errorLine);
                 }
-                if (e.message.includes('indentation')) {
+                if (e.message.indexOf('indentation') !== -1) {
                     extraTip = '检查是否混用了制表符和空格，列表项建议比上级键多缩进2个空格，可点击「自动修复缩进」尝试修复';
-                } else if (e.message.includes('duplicate')) {
+                } else if (e.message.indexOf('duplicate') !== -1) {
                     extraTip = 'YAML中不允许重复的键，请检查是否有重复定义的字段';
-                } else if (e.message.includes('mapping')) {
+                } else if (e.message.indexOf('mapping') !== -1) {
                     extraTip = '键值对格式错误，检查冒号后面是否有空格，缩进是否正确';
                 }
                 if (errorLine) {
-                    extraTip = `错误位于第 ${errorLine} 行\n${extraTip}`;
+                    extraTip = '错误位于第 ' + errorLine + ' 行\n' + extraTip;
                 }
-                showError(`❌ 验证失败: ${e.message}`, extraTip);
+                showError('❌ 验证失败: ' + e.message, extraTip);
                 return false;
             }
         }
 
-        // 专项校验：Docker Compose / Kubernetes 常见配置错误
         function specialValidate(data) {
-            const issues = [];
+            var issues = [];
 
-            // Docker Compose 检测
             if (data && data.services) {
-                // 检查 services 是不是正确格式
                 if (Array.isArray(data.services)) {
                     issues.push('Docker Compose: services 应该是映射对象不是列表，每个服务作为键名');
                 }
 
-                // 逐个检查服务
                 if (typeof data.services === 'object' && !Array.isArray(data.services)) {
-                    Object.entries(data.services).forEach(([name, service]) => {
-                        // 检查 ports 格式
+                    Object.entries(data.services).forEach(function(entry) {
+                        var name = entry[0], service = entry[1];
                         if (service.ports && Array.isArray(service.ports)) {
-                            service.ports.forEach(port => {
-                                if (typeof port === 'string' && port.includes(':') && port.split(':').length > 2) {
-                                    issues.push(`服务 ${name}: ports 格式 \"${port}\" 可能错误，建议使用 "HOST:CONTAINER" 或者使用长格式`);
+                            service.ports.forEach(function(port) {
+                                if (typeof port === 'string' && port.indexOf(':') !== -1 && port.split(':').length > 2) {
+                                    issues.push('服务 ' + name + ': ports 格式 "' + port + '" 可能错误，建议使用 "HOST:CONTAINER" 或者使用长格式');
                                 }
                             });
                         }
-                        // 检查 volumes 格式
                         if (service.volumes && Array.isArray(service.volumes)) {
-                            service.volumes.forEach(vol => {
+                            service.volumes.forEach(function(vol) {
                                 if (typeof vol === 'string' && vol.endsWith(':')) {
-                                    issues.push(`服务 ${name}: volumes \"${vol}\" 末尾不应该有冒号`);
+                                    issues.push('服务 ' + name + ': volumes "' + vol + '" 末尾不应该有冒号');
                                 }
                             });
                         }
-                        // 检查 image 是否存在
                         if (!service.image && !service.build) {
-                            issues.push(`服务 ${name}: 缺少 image 或 build 字段`);
+                            issues.push('服务 ' + name + ': 缺少 image 或 build 字段');
                         }
                     });
                 }
 
-                // 检查 volumes 顶级字段
                 if (data.volumes && typeof data.volumes !== 'object') {
                     issues.push('Docker Compose: 顶级 volumes 应该是映射对象');
                 }
-
-                // 检查 networks 顶级字段
                 if (data.networks && typeof data.networks !== 'object') {
                     issues.push('Docker Compose: 顶级 networks 应该是映射对象');
                 }
             }
 
-            // Kubernetes 检测
             if (data && data.apiVersion && data.kind) {
                 if (!data.metadata) {
                     issues.push('Kubernetes: 缺少 metadata 字段');
@@ -620,15 +637,11 @@
                 if (!data.spec && data.kind !== 'List') {
                     issues.push('Kubernetes: 缺少 spec 字段');
                 }
-
-                // 检查 Pod / Deployment 常见问题
                 if (data.kind === 'Deployment' && data.spec && data.spec.template) {
                     if (!data.spec.template.spec) {
                         issues.push('Deployment: spec.template.spec 结构不正确，请检查缩进');
                     }
                 }
-
-                // 检查 ports 常见缩进问题
                 if (data.kind === 'Service' && data.spec) {
                     if (data.spec.ports && !Array.isArray(data.spec.ports)) {
                         issues.push('Service: spec.ports 应该是列表数组，请检查缩进');
@@ -636,137 +649,91 @@
                 }
             }
 
-            // 通用缩进启发式检查：列表项后面是否多了缩进
-            const lines = content.split('\n');
-            lines.forEach((line, idx) => {
-                const match = line.match(/^(\s+)-/);
-                if (match) {
-                    const indent = match[1].length;
-                    const nextIdx = idx + 1;
-                    if (nextIdx < lines.length) {
-                        const nextLine = lines[nextIdx];
-                        const nextMatch = nextLine.match(/^(\s+)\S/);
-                        if (nextMatch && nextMatch[1].length <= indent) {
-                            // 如果列表项内容缩进比-还小或相等，可能有问题
-                            // 这是一个常见错误，不报错只提醒
-                        }
-                    }
-                }
-            });
-
             return issues;
         }
 
         function formatYaml() {
             hideMessages();
-            const content = inputArea.value.trim();
+            var content = inputArea.value.trim();
             if (!content) {
                 showError('请输入YAML内容');
                 return;
             }
             try {
-                // 使用yaml库保留注释解析和格式化
-                const parsed = yaml.parseDocument(content);
-                const formatted = yaml.stringify(parsed, {
-                    indent: 2,
-                    lineWidth: 120
-                });
+                var parsed = yaml.parseDocument(content);
+                var formatted = yaml.stringify(parsed, { indent: 2, lineWidth: 120 });
                 outputArea.value = formatted;
                 updateOutput();
                 showSuccess('✅ YAML 格式化完成（保留注释）');
             } catch (e) {
-                // 如果带注释解析失败，回退到js-yaml（会丢失注释但能工作
                 try {
-                    const parsed = jsyaml.load(content);
-                    const formatted = jsyaml.dump(parsed, {
-                        indent: 2,
-                        lineWidth: 120,
-                        noRefs: true,
-                        sortKeys: false
-                    });
-                    outputArea.value = formatted;
+                    var parsed2 = jsyaml.load(content);
+                    var formatted2 = jsyaml.dump(parsed2, { indent: 2, lineWidth: 120, noRefs: true, sortKeys: false });
+                    outputArea.value = formatted2;
                     showSuccess('✅ YAML 格式化完成（注释无法保留，因为存在语法问题）');
                 } catch (e2) {
-                    showError(`❌ 格式化失败: ${e.message}`);
+                    showError('❌ 格式化失败: ' + e.message);
                 }
             }
         }
 
         function yamlToJson() {
             hideMessages();
-            const content = inputArea.value.trim();
+            var content = inputArea.value.trim();
             if (!content) {
                 showError('请输入YAML内容');
                 return;
             }
             try {
-                const parsed = jsyaml.load(content);
-                const json = JSON.stringify(parsed, null, 2);
+                var parsed = jsyaml.load(content);
+                var json = JSON.stringify(parsed, null, 2);
                 outputArea.value = json;
                 updateOutput();
                 showSuccess('✅ YAML → JSON 转换完成');
             } catch (e) {
-                let extraTip = '';
-                if (e.message.includes('indentation')) {
+                var extraTip = '';
+                if (e.message.indexOf('indentation') !== -1) {
                     extraTip = '检查是否混用了制表符和空格，缩进是否正确';
                 }
-                showError(`❌ 转换失败: ${e.message}`, extraTip);
+                showError('❌ 转换失败: ' + e.message, extraTip);
             }
         }
 
         function jsonToYaml() {
             hideMessages();
-            const content = inputArea.value.trim();
+            var content = inputArea.value.trim();
             if (!content) {
                 showError('请输入JSON内容');
                 return;
             }
             try {
-                const parsed = JSON.parse(content);
-                const yaml = jsyaml.dump(parsed, {
-                    indent: 2,
-                    lineWidth: 120,
-                    noRefs: true,
-                    sortKeys: false
-                });
-                outputArea.value = yaml;
+                var parsed = JSON.parse(content);
+                var yamlStr = jsyaml.dump(parsed, { indent: 2, lineWidth: 120, noRefs: true, sortKeys: false });
+                outputArea.value = yamlStr;
                 updateOutput();
                 showSuccess('✅ JSON → YAML 转换完成');
             } catch (e) {
-                showError(`❌ 转换失败: ${e.message}`, '请检查JSON语法是否正确，引号、括号是否配对');
+                showError('❌ 转换失败: ' + e.message, '请检查JSON语法是否正确，引号、括号是否配对');
             }
         }
 
         function compressYaml() {
             hideMessages();
-            const parsed = validateYaml();
+            var parsed = validateYaml();
             if (!parsed) return;
             try {
-                const compressed = jsyaml.dump(parsed, {
-                    indent: 0,
-                    lineWidth: 999999,
-                    noRefs: true,
-                    sortKeys: false
-                });
+                var compressed = jsyaml.dump(parsed, { indent: 0, lineWidth: 999999, noRefs: true, sortKeys: false });
                 outputArea.value = compressed.trim();
                 updateOutput();
                 showSuccess('✅ YAML 压缩完成');
             } catch (e) {
-                showError(`❌ 压缩失败: ${e.message}`);
+                showError('❌ 压缩失败: ' + e.message);
             }
         }
 
-        async function copyResult(button) {
-            const content = document.getElementById('outputArea').value;
-            const copied = await window.copyToClipboard(content, {
-                successMsg: 'YAML 内容已复制',
-                errorMsg: '复制失败，请手动复制'
-            });
-            if (copied && button) {
-                const originalHTML = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i>已复制';
-                setTimeout(() => { button.innerHTML = originalHTML; }, 1000);
-            }
+        function copyResult(button) {
+            var content = document.getElementById('outputArea').value;
+            copyToClipboard(content);
         }
 
         function clearAll() {
@@ -776,26 +743,23 @@
         }
 
         function downloadResult() {
-            const content = outputArea.value.trim();
+            var content = outputArea.value.trim();
             if (!content) {
                 showError('没有可下载的内容');
                 return;
             }
-            
-            // 检测输出类型，选择合适的扩展名
-            let ext = '.yaml';
+
+            var ext = '.yaml';
             try {
                 JSON.parse(content);
                 ext = '.json';
-            } catch (e) {
-                // 不是JSON，用yaml
-            }
-            
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
+            } catch (e) {}
+
+            var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
             a.href = url;
-            a.download = `output${ext}`;
+            a.download = 'output' + ext;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -803,43 +767,38 @@
             showSuccess('✅ 已开始下载');
         }
 
-        // 文件上传处理
         document.getElementById('fileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
+            var file = e.target.files[0];
             if (!file) return;
-            
-            const reader = new FileReader();
+
+            var reader = new FileReader();
             reader.onload = function(event) {
                 inputArea.value = event.target.result;
                 hideMessages();
-                showSuccess(`✅ 已加载文件: ${file.name}`);
+                showSuccess('✅ 已加载文件: ' + file.name);
             };
             reader.readAsText(file);
-            // 重置input，允许重复上传同一个文件
             e.target.value = '';
         });
 
-        // 更新行号和语法高亮
         function updateLineNumbers() {
             renderLineNumbers(inputArea, inputLineNumbers);
             updateHighlight(inputArea.value, inputHighlight, 'yaml');
         }
 
-        // 渲染行号
         function renderLineNumbers(textarea, lineNumberEl) {
-            const lines = textarea.value.split('\n').length;
-            let html = '';
-            for (let i = 1; i <= lines; i++) {
-                html += `<div data-line="${i}">${i}</div>`;
+            var lines = textarea.value.split('\n').length;
+            var html = '';
+            for (var i = 1; i <= lines; i++) {
+                html += '<div data-line="' + i + '">' + i + '</div>';
             }
             lineNumberEl.innerHTML = html;
             syncLineNumberMetrics(textarea, lineNumberEl);
 
-            // 同步滚动。只绑定一次，避免每次输入都重复注册监听器。
             if (!textarea.dataset.lineNumberScrollBound) {
-                textarea.addEventListener('scroll', () => {
-                    const targetId = textarea.id === 'inputArea' ? 'inputLineNumbers' : 'outputLineNumbers';
-                    const target = document.getElementById(targetId);
+                textarea.addEventListener('scroll', function() {
+                    var targetId = textarea.id === 'inputArea' ? 'inputLineNumbers' : 'outputLineNumbers';
+                    var target = document.getElementById(targetId);
                     target.scrollTop = textarea.scrollTop;
                     target.scrollLeft = 0;
                     syncLineNumberMetrics(textarea, target);
@@ -849,51 +808,44 @@
         }
 
         function syncLineNumberMetrics(textarea, lineNumberEl) {
-            // textarea 的 clientHeight 会扣掉横向滚动条高度，行号栏用同样高度避免底部错位。
-            lineNumberEl.style.height = `${textarea.clientHeight}px`;
+            lineNumberEl.style.height = textarea.clientHeight + 'px';
         }
 
-        // 更新语法高亮
         function updateHighlight(content, highlightEl, lang) {
             highlightEl.textContent = content;
             Prism.highlightElement(highlightEl);
         }
 
-        // 标记错误行
         function markErrorLine(lineNum) {
             if (!lineNum) return;
-            const lines = inputLineNumbers.querySelectorAll('div');
-            lines.forEach(line => {
-                const num = parseInt(line.getAttribute('data-line'));
+            var lines = inputLineNumbers.querySelectorAll('div');
+            lines.forEach(function(line) {
+                var num = parseInt(line.getAttribute('data-line'));
                 if (num === lineNum) {
                     line.classList.add('error');
                 }
             });
         }
 
-        // 清除错误标记
         function clearErrorLines() {
-            const lines = inputLineNumbers.querySelectorAll('div.error');
-            lines.forEach(line => line.classList.remove('error'));
+            var lines = inputLineNumbers.querySelectorAll('div.error');
+            lines.forEach(function(line) { line.classList.remove('error'); });
         }
 
-        // 输出结果也更新行号和高亮
         function updateOutput() {
             renderLineNumbers(outputArea, outputLineNumbers);
-            // 检测输出是JSON还是YAML
-            let lang = 'yaml';
+            var lang = 'yaml';
             try {
                 JSON.parse(outputArea.value);
                 lang = 'json';
             } catch (e) {
                 lang = 'yaml';
             }
-            outputHighlight.className = `language-${lang}`;
+            outputHighlight.className = 'language-' + lang;
             updateHighlight(outputArea.value, outputHighlight, lang);
         }
 
-        // 双YAML对比功能
-        let diffVisible = false;
+        var diffVisible = false;
         function toggleDiffCompare() {
             diffVisible = !diffVisible;
             document.getElementById('diffCompareContainer').style.display = diffVisible ? 'grid' : 'none';
@@ -905,33 +857,32 @@
 
         function doDiffCompare() {
             hideMessages();
-            const left = document.getElementById('diffLeft').value;
-            const right = document.getElementById('diffRight').value;
+            var left = document.getElementById('diffLeft').value;
+            var right = document.getElementById('diffRight').value;
 
             if (!left.trim() || !right.trim()) {
                 showError('请在两个输入框中都粘贴内容才能对比');
                 return;
             }
 
-            const diff = Diff.diffLines(left, right);
-            let result = '<pre>';
+            var diff = Diff.diffLines(left, right);
+            var result = '<pre>';
 
-            diff.forEach(part => {
-                const lines = part.value.split('\n');
-                // 去掉末尾空行
+            diff.forEach(function(part) {
+                var lines = part.value.split('\n');
                 if (lines[lines.length - 1] === '') lines.pop();
 
                 if (part.added) {
-                    lines.forEach(line => {
-                        result += `<ins>+ ${escapeHtml(line)}</ins>\n`;
+                    lines.forEach(function(line) {
+                        result += '<ins>+ ' + escapeHtml(line) + '</ins>\n';
                     });
                 } else if (part.removed) {
-                    lines.forEach(line => {
-                        result += `<del>- ${escapeHtml(line)}</del>\n`;
+                    lines.forEach(function(line) {
+                        result += '<del>- ' + escapeHtml(line) + '</del>\n';
                     });
                 } else {
-                    lines.forEach(line => {
-                        result += `  ${escapeHtml(line)}\n`;
+                    lines.forEach(function(line) {
+                        result += '  ' + escapeHtml(line) + '\n';
                     });
                 }
             });
@@ -941,14 +892,12 @@
             showSuccess('✅ 对比完成');
         }
 
-        // HTML转义防止XSS
         function escapeHtml(text) {
-            const div = document.createElement('div');
+            var div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        // 移动端适配diff
         if (window.innerWidth <= 768) {
             document.querySelector('.diff-container').style.gridTemplateColumns = '1fr';
         }
@@ -957,15 +906,8 @@
         document.getElementById('diffLeft').addEventListener('input', doDiffCompare);
         document.getElementById('diffRight').addEventListener('input', doDiffCompare);
 
-        // 初始化
         updateLineNumbers();
         updateOutput();
     </script>
-
-    <div class="back-home">
-        <a href="index.html">
-            <i class="fas fa-arrow-left"></i>返回工具列表
-        </a>
-    </div>
 </body>
 </html>

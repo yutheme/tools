@@ -165,7 +165,7 @@ body {
 /* 选中文本 */
 ::selection {
   background-color: var(--color-primary);
-  color: white;
+  color: #ffffff;
 }
 
 /* ========== 4. 通用组件 - 按钮 ========== */
@@ -314,7 +314,7 @@ input[type="checkbox"] {
 .card {
   background-color: var(--color-white);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--color-gray-200);
   box-shadow: var(--shadow-md);
   overflow: hidden;
   transition: box-shadow var(--transition-normal);
@@ -424,33 +424,4 @@ input[type="checkbox"] {
   min-width: 0;
 }
 
-/* ========== 12. Toast 通知基础样式 ========== */
-.toast {
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(100%);
-  padding: 0.875rem 1.5rem;
-  background-color: var(--color-gray-700);
-  color: white;
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  box-shadow: var(--shadow-lg);
-  opacity: 0;
-  transition: all var(--transition-slow);
-  z-index: 1000;
-  pointer-events: none;
-}
-
-.toast.show {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-}
-
-.toast.success {
-  background-color: var(--color-success);
-}
-
-.toast.error {
-  background-color: var(--color-danger);
-}
+/* ========== 12. Toast 通知样式（由 js/utils/toast.js 动态生成） ========== */
