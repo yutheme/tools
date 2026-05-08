@@ -278,6 +278,9 @@
         </div>
     </div>
 
+    <script src="js/utils/toast.js"></script>
+    <script src="js/utils/copy.js"></script>
+    <script src="js/utils/debounce.js"></script>
     <script>
         // 确保DOM加载完成后执行
         document.addEventListener('DOMContentLoaded', function() {
@@ -565,23 +568,32 @@
             const numberInput = document.getElementById('numberInput');
             const resultOutput = document.getElementById('resultOutput');
             const copyBtn = document.getElementById('copyBtn');
-            const copyAlert = document.getElementById('copyAlert');
             const errorBox = document.getElementById('errorBox');
             const errorMsg = document.getElementById('errorMsg');
             
-            // 输入延迟处理计时器
-            let inputTimer = null;
             // 延迟时间（毫秒）
             const INPUT_DELAY = 500;
-            
-            // 输入处理 - 添加延迟验证
+
+            const convertInput = debounce(function(inputValue) {
+                try {
+                    // 执行转换并输出
+                    const result = NumberConverter.convert(inputValue);
+                    resultOutput.value = result;
+
+                    // 视觉反馈
+                    resultOutput.style.borderColor = 'var(--color-primary)';
+                    setTimeout(() => {
+                        resultOutput.style.borderColor = 'var(--color-gray-200)';
+                    }, 300);
+                } catch (error) {
+                    errorMsg.textContent = error.message;
+                    errorBox.classList.add('show');
+                }
+            }, INPUT_DELAY);
+
+            // 输入处理 - 使用共享 debounce 延迟验证
             numberInput.addEventListener('input', function() {
                 const inputValue = this.value.trim();
-
-                // 清除之前的计时器
-                if (inputTimer) {
-                    clearTimeout(inputTimer);
-                }
 
                 // 立即清空结果和错误提示，提供即时反馈
                 resultOutput.value = '';
@@ -592,45 +604,21 @@
                     return;
                 }
 
-                // 设置新的计时器，延迟处理
-                inputTimer = setTimeout(() => {
-                    try {
-                        // 执行转换并输出
-                        const result = NumberConverter.convert(inputValue);
-                        resultOutput.value = result;
-
-                        // 视觉反馈
-                        resultOutput.style.borderColor = 'var(--color-primary)';
-                        setTimeout(() => {
-                            resultOutput.style.borderColor = 'var(--color-gray-200)';
-                        }, 300);
-                    } catch (error) {
-                        errorMsg.textContent = error.message;
-                        errorBox.classList.add('show');
-                    }
-                }, INPUT_DELAY);
+                convertInput(inputValue);
             });
             
-            // 复制功能 - 使用现代Clipboard API
-            copyBtn.addEventListener('click', function() {
-                if (resultOutput.value) {
-                    navigator.clipboard.writeText(resultOutput.value)
-                        .then(() => {
-                            copyAlert.classList.add('show');
-                            setTimeout(() => copyAlert.classList.remove('show'), 2000);
+            // 复制功能 - 使用共享复制工具，包含 Clipboard API 和降级方案
+            copyBtn.addEventListener('click', async function() {
+                const copied = await window.copyToClipboard(resultOutput.value, {
+                    successMsg: '转换结果已复制 ✓',
+                    errorMsg: '复制失败，请手动复制'
+                });
 
-                            this.innerHTML = '<i class="fas fa-check"></i>';
-                            setTimeout(() => {
-                                this.innerHTML = '<i class="fas fa-clipboard"></i>';
-                            }, 1000);
-                        })
-                        .catch(() => {
-                            // 降级方案
-                            resultOutput.select();
-                            document.execCommand('copy');
-                            copyAlert.classList.add('show');
-                            setTimeout(() => copyAlert.classList.remove('show'), 2000);
-                        });
+                if (copied) {
+                    this.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-clipboard"></i>';
+                    }, 1000);
                 }
             });
         });

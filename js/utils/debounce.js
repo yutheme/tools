@@ -31,93 +31,88 @@
  */
 function debounce(func, wait = 300, options = {}) {
   let timeout;
+  let maxTimeout;
   let lastArgs;
   let lastThis;
   let result;
-  let lastCallTime;
-  let lastInvokeTime = 0;
-  let leading = options.leading ?? false;
-  let maxWait = options.maxWait ?? null;
-  let trailing = options.trailing ?? true;
+  const leading = options.leading ?? false;
+  const trailing = options.trailing ?? true;
+  const maxWait = options.maxWait ?? null;
 
-  function invokeFunc(time) {
+  function invoke() {
     const args = lastArgs;
     const thisArg = lastThis;
-
     lastArgs = lastThis = undefined;
-    lastInvokeTime = time;
     result = func.apply(thisArg, args);
     return result;
   }
 
-  function leadingEdge(time) {
-    lastInvokeTime = time;
-    timeout = setTimeout(timerExpired, wait);
-    return leading ? invokeFunc(time) : result;
-  }
-
-  function shouldInvoke(time) {
-    const timeSinceLastCall = time - (lastCallTime ?? 0);
-    const timeSinceLastInvoke = time - lastInvokeTime;
-
-    return (
-      lastCallTime === undefined ||
-      timeSinceLastCall >= wait ||
-      timeSinceLastCall < 0 ||
-      (maxWait && timeSinceLastInvoke >= maxWait)
-    );
-  }
-
-  function timerExpired() {
-    const time = Date.now();
-    if (shouldInvoke(time)) {
-      return trailingEdge(time);
+  function clearTimers() {
+    if (timeout !== undefined) {
+      clearTimeout(timeout);
+      timeout = undefined;
     }
-    timeout = setTimeout(timerExpired, Math.max(0, wait - (time - lastCallTime)));
+    if (maxTimeout !== undefined) {
+      clearTimeout(maxTimeout);
+      maxTimeout = undefined;
+    }
   }
 
-  function trailingEdge(time) {
+  function trailingEdge() {
     timeout = undefined;
     if (trailing && lastArgs) {
-      return invokeFunc(time);
+      const value = invoke();
+      if (maxTimeout !== undefined) {
+        clearTimeout(maxTimeout);
+        maxTimeout = undefined;
+      }
+      return value;
     }
     lastArgs = lastThis = undefined;
     return result;
   }
 
-  function cancel() {
-    if (timeout !== undefined) {
-      clearTimeout(timeout);
-    }
-    lastInvokeTime = 0;
-    lastArgs = lastCallTime = lastThis = timeout = undefined;
-  }
-
-  function flush() {
-    return timeout === undefined ? result : trailingEdge(Date.now());
-  }
-
   function debounced(...args) {
-    const time = Date.now();
-    const isInvoking = shouldInvoke(time);
+    const shouldCallLeading = leading && timeout === undefined;
 
     lastArgs = args;
     lastThis = this;
-    lastCallTime = time;
 
-    if (isInvoking) {
-      if (timeout === undefined && leading) {
-        return leadingEdge(time);
-      }
-      if (maxWait) {
-        timeout = setTimeout(timerExpired, wait);
-      }
+    if (timeout !== undefined) {
+      clearTimeout(timeout);
     }
+
+    timeout = setTimeout(trailingEdge, wait);
+
+    if (maxWait && maxTimeout === undefined) {
+      maxTimeout = setTimeout(() => {
+        clearTimers();
+        if (lastArgs) {
+          invoke();
+        }
+      }, maxWait);
+    }
+
+    if (shouldCallLeading) {
+      return invoke();
+    }
+
     return result;
   }
 
-  debounced.cancel = cancel;
-  debounced.flush = flush;
+  debounced.cancel = () => {
+    clearTimers();
+    lastArgs = lastThis = undefined;
+  };
+
+  debounced.flush = () => {
+    if (timeout === undefined) {
+      return result;
+    }
+    clearTimers();
+    return lastArgs ? invoke() : result;
+  };
+
   return debounced;
 }
 
