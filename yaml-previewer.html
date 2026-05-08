@@ -401,7 +401,7 @@
                 <button onclick="compressYaml()" class="btn btn-primary">
                     <i class="fas fa-compress"></i>压缩 YAML
                 </button>
-                <button onclick="copyResult()" class="btn btn-primary">
+                <button onclick="copyResult(this)" class="btn btn-primary">
                     <i class="fas fa-clipboard"></i>复制结果
                 </button>
                 <label class="btn btn-primary" style="cursor: pointer;">
@@ -474,6 +474,9 @@
             <p>© 2026 工具集合 | 所有工具仅供学习使用</p>
         </footer>
     </div>
+
+    <script src="js/utils/toast.js"></script>
+    <script src="js/utils/copy.js"></script>
 
     <script>
         const inputArea = document.getElementById('inputArea');
@@ -753,17 +756,17 @@
             }
         }
 
-        function copyResult() {
-            const content = outputArea.value.trim();
-            if (!content) {
-                showError('没有可复制的内容');
-                return;
+        async function copyResult(button) {
+            const content = document.getElementById('outputArea').value;
+            const copied = await window.copyToClipboard(content, {
+                successMsg: 'YAML 内容已复制',
+                errorMsg: '复制失败，请手动复制'
+            });
+            if (copied && button) {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i>已复制';
+                setTimeout(() => { button.innerHTML = originalHTML; }, 1000);
             }
-            navigator.clipboard.writeText(content).then(() => {
-                showSuccess('✅ 已复制到剪贴板');
-            }).catch(() => {
-                    showError('❌ 复制失败，请手动复制');
-                });
         }
 
         function clearAll() {

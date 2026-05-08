@@ -508,7 +508,7 @@
                 <label><i class="fas fa-clipboard-list"></i>生成结果</label>
                 <div class="result-container">
                     <textarea id="result" readonly placeholder="生成的密钥将显示在这里"></textarea>
-                    <button onclick="copyToClipboard()" class="copy-btn">
+                    <button onclick="copyKeyResult(this)" class="copy-btn">
                         <i class="fas fa-clipboard"></i>复制
                     </button>
                 </div>
@@ -533,6 +533,8 @@
         </div>
     </div>
 
+    <script src="js/utils/toast.js"></script>
+    <script src="js/utils/copy.js"></script>
     <script>
         let currentKeyType = 'api';
         const descriptions = {
@@ -761,17 +763,25 @@
             });
         }
 
-        function copyHistoryKey(key) {
+        async function copyHistoryKey(key) {
             document.getElementById('result').value = key;
-            navigator.clipboard?.writeText(key);
-            navigator.vibrate && navigator.vibrate(30);
+            await window.copyToClipboard(key, {
+                successMsg: '密钥已复制',
+                errorMsg: '复制失败，请手动复制'
+            });
         }
 
-        function copyToClipboard() {
-            const el = document.getElementById('result');
-            el.select();
-            document.execCommand('copy');
-            navigator.vibrate && navigator.vibrate(30);
+        async function copyKeyResult(button) {
+            const key = document.getElementById('result').value;
+            const copied = await window.copyToClipboard(key, {
+                successMsg: '密钥已复制',
+                errorMsg: '复制失败，请手动复制'
+            });
+            if (copied && button) {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i>已复制';
+                setTimeout(() => { button.innerHTML = originalHTML; }, 1000);
+            }
         }
 
         function clearAll() {

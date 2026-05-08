@@ -589,6 +589,10 @@
 
     <div class="notification" id="notification"></div>
 
+    <script src="js/utils/toast.js"></script>
+    <script src="js/utils/copy.js"></script>
+    <script src="js/utils/debounce.js"></script>
+
     <script>
         // 等待DOM加载完成后执行
         document.addEventListener('DOMContentLoaded', function() {
@@ -907,19 +911,6 @@
                 }
             }
 
-            // 防抖动函数
-            function debounce(func, wait) {
-                let timeout;
-                return function executedFunction(...args) {
-                    const later = () => {
-                        clearTimeout(timeout);
-                        func.apply(this, args);
-                    };
-                    clearTimeout(timeout);
-                    timeout = setTimeout(later, wait);
-                };
-            }
-
             // UI更新函数
             function updateUI(stats) {
                 try {
@@ -1016,7 +1007,7 @@
                     textInput.value = content;
                     const stats = analyzeText(content);
                     updateUI(stats);
-                    showNotification(`已成功加载 ${file.name}`);
+                    Toast.success(`已成功加载 ${file.name}`);
                 } catch (e) {
                     // 静默失败,不显示错误
                 } finally {
@@ -1025,17 +1016,9 @@
                 }
             }
 
-            // 显示通知 - 只保留成功通知
+            // 显示通知 - 使用共享 Toast
             function showNotification(message) {
-                notification.textContent = message;
-                notification.className = 'notification';
-                notification.style.backgroundColor = 'var(--color-info)';
-
-                notification.classList.add('show');
-
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
+                Toast.info(message);
             }
 
             // 显示处理状态
@@ -1113,7 +1096,7 @@
                     textInput.value = '';
                     const stats = analyzeText('');
                     updateUI(stats);
-                    showNotification('内容已清空');
+                    Toast.success('内容已清空');
 
                     // 添加动画效果
                     const cards = document.querySelectorAll('.stat-card');
@@ -1131,7 +1114,7 @@
             }
 
             // 复制结果功能
-            function copyResults() {
+            async function copyResults(button) {
                 try {
                     const stats = analyzeText(textInput.value);
                     const total = stats.total;
@@ -1151,33 +1134,15 @@
                     resultText += `空格: ${stats.spaces} (${Math.round((stats.spaces / total) * 100)}%)\n`;
                     resultText += `其他字符: ${stats.other} (${Math.round((stats.other / total) * 100)}%)\n`;
 
-                    // 使用Clipboard API进行复制,提高兼容性
-                    navigator.clipboard.writeText(resultText).then(() => {
-                        // 显示复制成功反馈
-                        const originalText = copyButton.innerHTML;
-                        copyButton.innerHTML = `
-                            <i class="fas fa-check"></i>
-                            复制成功
-                        `;
-
-                        setTimeout(() => {
-                            copyButton.innerHTML = originalText;
-                        }, 2000);
-
-                        showNotification('统计结果已复制到剪贴板');
-                    }).catch(err => {
-                        // 备用复制方法
-                        const textArea = document.createElement('textarea');
-                        textArea.value = resultText;
-                        textArea.style.position = 'fixed';
-                        textArea.style.opacity = '0';
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textArea);
-
-                        showNotification('统计结果已复制到剪贴板');
+                    const copied = await window.copyToClipboard(resultText, {
+                        successMsg: '统计结果已复制',
+                        errorMsg: '复制失败，请手动复制'
                     });
+                    if (copied && button) {
+                        const originalHTML = button.innerHTML;
+                        button.innerHTML = '<i class="fas fa-check"></i>已复制';
+                        setTimeout(() => { button.innerHTML = originalHTML; }, 1000);
+                    }
                 } catch (err) {
                     // 静默失败,不显示错误
                 }
@@ -1186,7 +1151,7 @@
             // 绑定事件处理函数
             fileInput.addEventListener('change', handleFileUpload);
             clearButton.addEventListener('click', clearContent);
-            copyButton.addEventListener('click', copyResults);
+            copyButton.addEventListener('click', function() { copyResults(this); });
 
             // 初始化
             updateUI(analyzeText(''));

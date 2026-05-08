@@ -640,6 +640,10 @@
         <span id="notificationText">操作成功</span>
     </div>
 
+    <script src="js/utils/toast.js"></script>
+    <script src="js/utils/copy.js"></script>
+    <script src="js/utils/debounce.js"></script>
+
     <script>
         // 语言映射配置 - 使用Google Translate API语言代码
         const LANGUAGE_CONFIG = {
@@ -880,11 +884,11 @@
         // 绑定事件监听器
         function attachEventListeners() {
             // 文本输入事件
-            elements.sourceText.addEventListener('input', debounce(handleTextInput, 300));
+            elements.sourceText.addEventListener('input', window.debounce(handleTextInput, 300));
 
             // 其他按钮事件
             elements.clearBtn.addEventListener('click', clearAllFields);
-            elements.copyBtn.addEventListener('click', copyTranslationResult);
+            elements.copyBtn.addEventListener('click', function() { copyTranslationResult(this); });
             elements.translateBtn.addEventListener('click', performTranslation);
             elements.retryBtn.addEventListener('click', performTranslation);
             elements.closeLangSelector.addEventListener('click', () => {
@@ -919,17 +923,6 @@
                     performTranslation();
                 }
             });
-        }
-
-        // 防抖函数
-        function debounce(func, wait) {
-            let timeout;
-            return function() {
-                const context = this;
-                const args = arguments;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(context, args), wait);
-            };
         }
 
         // 处理文本输入 - 实时检测语言
@@ -1046,36 +1039,21 @@
             elements.errorPanel.classList.remove('show');
             translationState = { from: 'auto', to: 'zh' };
             updateLanguageDisplay(true);
-            showNotification('已清空输入');
+            Toast.success('已清空输入');
         }
 
         // 复制翻译结果
-        function copyTranslationResult() {
-            const resultText = elements.resultText.textContent.trim();
-            if (resultText && !resultText.includes('翻译结果将显示在这里')) {
-                navigator.clipboard.writeText(resultText)
-                    .then(() => showNotification('结果已复制'))
-                    .catch(() => showNotification('复制失败，请手动复制', false));
+        async function copyTranslationResult(button) {
+            const resultText = document.getElementById('resultText').textContent;
+            const copied = await window.copyToClipboard(resultText, {
+                successMsg: '翻译结果已复制',
+                errorMsg: '复制失败，请手动复制'
+            });
+            if (copied && button) {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i>已复制';
+                setTimeout(() => { button.innerHTML = originalHTML; }, 1000);
             }
-        }
-
-        // 显示通知
-        function showNotification(message, isSuccess = true) {
-            elements.notificationText.textContent = message;
-            elements.notification.classList.add('show');
-
-            if (!isSuccess) {
-                elements.notification.classList.add('error');
-                elements.notification.querySelector('i').className = 'fas fa-exclamation-circle';
-            } else {
-                elements.notification.classList.remove('error');
-                elements.notification.querySelector('i').className = 'fas fa-check-circle';
-                elements.notification.querySelector('i').style.color = '#10B981';
-            }
-
-            setTimeout(() => {
-                elements.notification.classList.remove('show');
-            }, 2000);
         }
 
         // 显示错误面板
@@ -1095,7 +1073,7 @@
         async function performTranslation() {
             const textToTranslate = elements.sourceText.value;
             if (!textToTranslate.trim()) {
-                showNotification('请输入要翻译的文本', false);
+                Toast.warning('请输入要翻译的文本');
                 elements.sourceText.classList.add('error-highlight');
                 return;
             }
@@ -1122,7 +1100,7 @@
                     updateLanguageDisplay(true);
                 }
 
-                showNotification(result.provider === 'mymemory' ? '翻译完成（Google 限流，已用备用服务）' : '翻译完成');
+                Toast.success(result.provider === 'mymemory' ? '翻译完成（Google 限流，已用备用服务）' : '翻译完成');
             } catch (error) {
                 handleTranslationError(error);
             } finally {
@@ -1152,7 +1130,7 @@
 
             elements.resultText.innerHTML = `<div class="result-error"><i class="fas fa-exclamation-circle mr-1"></i> 翻译失败</div>`;
             showError(errorMessage);
-            showNotification(errorMessage, false);
+            Toast.error(errorMessage);
         }
 
         // 初始化应用
