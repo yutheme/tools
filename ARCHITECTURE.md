@@ -58,24 +58,34 @@
 
 ```text
 tools/
-├── index.html
-├── password-generator.html
-├── key-generator.html
-├── yaml-previewer.html
-├── word-count.html
-├── number-converter.html
-├── translator.html
-├── clipboard-history.html
-├── vrime.html
+├── index.html                         # 首页
+├── password-generator.html            # 密码生成器
+├── key-generator.html                 # 密钥生成器
+├── yaml-previewer.html                # YAML 工具
+├── word-count.html                    # 字数统计
+├── number-converter.html              # 数字大写转换
+├── translator.html                    # 翻译工具
+├── clipboard-history.html             # 剪贴板历史
+├── vrime.html                         # 中文输入法
+├── docker-converter.html              # Docker 转换器
 ├── css/
-│   └── shared.css
+│   ├── shared.css                     # 通用基础样式
+│   ├── themes.css                     # 深色模式主题变量
+│   ├── navbar.css                     # 导航栏样式
+│   └── loading.css                    # Loading 动画样式
 ├── js/
-│   └── utils/
-│       ├── debounce.js
-│       ├── storage.js
-│       ├── toast.js
-│       └── copy.js
-├── icons/
+│   ├── components/
+│   │   └── navbar.js                  # 导航栏组件
+│   ├── utils/
+│   │   ├── debounce.js                # 防抖/节流
+│   │   ├── copy.js                    # 复制能力
+│   │   ├── toast.js                   # 轻量通知
+│   │   ├── storage.js                 # 本地存储封装
+│   │   ├── loading.js                 # 轻量 Loading
+│   │   └── theme.js                   # 主题切换
+│   └── tools/
+│       └── docker-converter.js        # Docker 转换器核心引擎
+├── icons/                             # 工具图标（SVG + PNG）
 ├── README.md
 ├── ARCHITECTURE.md
 ├── DEVELOPMENT_PLAN.md
