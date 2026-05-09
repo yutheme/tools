@@ -221,7 +221,7 @@
             color: var(--color-primary);
         }
 
-        .history-list {
+        .clipboard-list {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
@@ -230,16 +230,16 @@
             padding-right: 0.5rem;
         }
 
-        .history-list::-webkit-scrollbar {
+        .clipboard-list::-webkit-scrollbar {
             width: 6px;
         }
 
-        .history-list::-webkit-scrollbar-track {
+        .clipboard-list::-webkit-scrollbar-track {
             background: var(--color-gray-100);
             border-radius: 3px;
         }
 
-        .history-list::-webkit-scrollbar-thumb {
+        .clipboard-list::-webkit-scrollbar-thumb {
             background: var(--color-gray-300);
             border-radius: 3px;
         }
@@ -398,7 +398,7 @@
                 <span><i class="fas fa-list"></i>共 <strong id="totalCount">0</strong> 条记录</span>
                 <span><i class="fas fa-database"></i>本地存储，隐私安全</span>
             </div>
-            <div class="history-list" id="historyList">
+            <div class="clipboard-list" id="historyList">
                 <div class="empty-state">
                     <i class="fas fa-clipboard"></i>
                     <p>暂无剪贴板记录</p>
