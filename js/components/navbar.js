@@ -25,7 +25,7 @@
   ];
 
   var HISTORY_KEY = 'visit_history';
-  var MAX_HISTORY = 10;
+  var MAX_HISTORY = 5;
 
   // 记录当前页面访问
   function recordVisit() {
