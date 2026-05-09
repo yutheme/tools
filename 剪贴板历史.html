@@ -395,7 +395,7 @@
                 <span><i class="fas fa-list"></i>共 <strong id="totalCount">0</strong> 条记录</span>
                 <span><i class="fas fa-database"></i>本地存储，隐私安全</span>
             </div>
-            <div class="clipboard-list" id="historyList">
+            <div class="clipboard-list" id="clipboardHistoryList">
                 <div class="empty-state">
                     <i class="fas fa-clipboard"></i>
                     <p>暂无剪贴板记录</p>
@@ -484,7 +484,7 @@
         function renderHistory() {
             var history = getHistory();
             var searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            var container = document.getElementById('historyList');
+            var container = document.getElementById('clipboardHistoryList');
             var clearBtn = document.getElementById('clearBtn');
 
             var filtered = history.filter(function(item) {
