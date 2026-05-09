@@ -126,9 +126,9 @@
   - `password-generator.html`
   - `key-generator.html`
   - `yaml-previewer.html`
-  - `字数统计.html`
-  - `数字大写转换.html`
-  - `剪贴板历史.html`
+  - `word-count.html`
+  - `number-converter.html`
+  - `clipboard-history.html`
 
 ### 执行方式
 
@@ -191,11 +191,11 @@
 
 1. `password-generator.html`
 2. `key-generator.html`
-3. `数字大写转换.html`
-4. `字数统计.html`
+3. `number-converter.html`
+4. `word-count.html`
 5. `yaml-previewer.html`
-6. `实时翻译工具.html`
-7. `剪贴板历史.html`
+6. `translator.html`
+7. `clipboard-history.html`
 8. `vrime.html`
 
 ### 每个页面的处理清单

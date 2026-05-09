@@ -62,10 +62,10 @@ tools/
 ├── password-generator.html
 ├── key-generator.html
 ├── yaml-previewer.html
-├── 字数统计.html
-├── 数字大写转换.html
-├── 实时翻译工具.html
-├── 剪贴板历史.html
+├── word-count.html
+├── number-converter.html
+├── translator.html
+├── clipboard-history.html
 ├── vrime.html
 ├── css/
 │   └── shared.css
@@ -96,10 +96,10 @@ tools/
 ├── password-generator.html            # 工具页：密码生成器
 ├── key-generator.html                 # 工具页：密钥生成器
 ├── yaml-previewer.html                # 工具页：YAML 工具
-├── 字数统计.html                       # 工具页：字数统计
-├── 数字大写转换.html                   # 工具页：数字大写转换
-├── 实时翻译工具.html                   # 工具页：翻译工具
-├── 剪贴板历史.html                     # 工具页：剪贴板历史
+├── word-count.html                        # 工具页：字数统计
+├── number-converter.html                  # 工具页：数字大写转换
+├── translator.html                        # 工具页：翻译工具
+├── clipboard-history.html                 # 工具页：剪贴板历史
 ├── vrime.html                         # 工具页：中文输入法
 ├── css/
 │   ├── shared.css                     # 通用基础样式

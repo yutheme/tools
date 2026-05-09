@@ -4,14 +4,22 @@
  * 功能：搜索工具、主题切换、GitHub链接、最近使用历史
  */
 (function() {
+  // 旧中文路径 → 新英文路径映射（兼容 localStorage 中已存储的历史记录）
+  var PATH_ALIASES = {
+    '数字大写转换.html': 'number-converter.html',
+    '字数统计.html': 'word-count.html',
+    '实时翻译工具.html': 'translator.html',
+    '剪贴板历史.html': 'clipboard-history.html'
+  };
+
   // 工具列表数据（与 index.html 卡片信息保持一致）
   var toolsData = [
-    { name: '数字大写转换', path: '数字大写转换.html', desc: '快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式', icon: 'fas fa-right-left', color: '#165DFF' },
-    { name: '字数统计工具', path: '字数统计.html', desc: '精准统计文本中的汉字、数字、字母等字符数量', icon: 'far fa-file-lines', color: '#36CFC9' },
-    { name: '智能翻译工具', path: '实时翻译工具.html', desc: '自动识别语言类型，支持多语言互译，实时响应', icon: 'fas fa-language', color: '#8B5CF6' },
+    { name: '数字大写转换', path: 'number-converter.html', desc: '快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式', icon: 'fas fa-right-left', color: '#165DFF' },
+    { name: '字数统计工具', path: 'word-count.html', desc: '精准统计文本中的汉字、数字、字母等字符数量', icon: 'far fa-file-lines', color: '#36CFC9' },
+    { name: '智能翻译工具', path: 'translator.html', desc: '自动识别语言类型，支持多语言互译，实时响应', icon: 'fas fa-language', color: '#8B5CF6' },
     { name: '密码生成器', path: 'password-generator.html', desc: '本地生成高强度账号密码，支持用户名+密码、密码强度可视化', icon: 'fas fa-lock', color: '#F59E0B' },
     { name: 'YAML 工具', path: 'yaml-previewer.html', desc: 'YAML 格式化验证，支持YAML⇔JSON双向转换、差异对比', icon: 'fas fa-file-lines', color: '#14B8A6' },
-    { name: '剪贴板历史', path: '剪贴板历史.html', desc: '记录复制粘贴历史，一键找回之前复制的内容', icon: 'fas fa-clipboard', color: '#A855F7' },
+    { name: '剪贴板历史', path: 'clipboard-history.html', desc: '记录复制粘贴历史，一键找回之前复制的内容', icon: 'fas fa-clipboard', color: '#A855F7' },
     { name: '密钥生成器', path: 'key-generator.html', desc: '生成 API Key、UUID、Base62、Hex 等多种格式密钥', icon: 'fas fa-key', color: '#F97316' },
     { name: '在线中文输入法', path: 'vrime.html', desc: '基于RIME的网页中文输入法，支持拼音、五笔、双拼', icon: 'far fa-keyboard', color: '#06B6D4' }
   ];
@@ -24,13 +32,24 @@
     var currentPath = decodeURIComponent(location.pathname.split('/').pop() || '');
     if (!currentPath) return; // 根路径不记录
     var tool = toolsData.find(function(t) { return t.path === currentPath; });
+    // 兼容旧中文路径：如果当前路径是旧路径，也能匹配到对应工具
+    if (!tool) {
+      var alias = PATH_ALIASES[currentPath];
+      if (alias) {
+        tool = toolsData.find(function(t) { return t.path === alias; });
+      }
+    }
     if (!tool) return;
 
     var history = [];
     try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e) { history = []; }
 
-    // 移除相同路径的旧记录
-    history = history.filter(function(h) { return h.path !== tool.path; });
+    // 移除相同路径的旧记录（同时清理旧中文路径的记录）
+    var pathsToClean = [tool.path];
+    Object.keys(PATH_ALIASES).forEach(function(oldPath) {
+      if (PATH_ALIASES[oldPath] === tool.path) pathsToClean.push(oldPath);
+    });
+    history = history.filter(function(h) { return pathsToClean.indexOf(h.path) === -1; });
     history.unshift({ name: tool.name, path: tool.path, time: Date.now() });
     if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
 
@@ -38,7 +57,22 @@
   }
 
   function getHistory() {
-    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e) { return []; }
+    try {
+      var history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      // 自动迁移旧中文路径到新英文路径
+      var migrated = false;
+      history = history.map(function(item) {
+        if (PATH_ALIASES[item.path]) {
+          migrated = true;
+          return { name: item.name, path: PATH_ALIASES[item.path], time: item.time };
+        }
+        return item;
+      });
+      if (migrated) {
+        try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch(e) {}
+      }
+      return history;
+    } catch(e) { return []; }
   }
 
   function createNavbar() {

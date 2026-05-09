@@ -137,7 +137,7 @@
 
 1. `password-generator.html`
 2. `key-generator.html`
-3. `数字大写转换.html`
+3. `number-converter.html`
 
 ### 试点目标
 
@@ -161,9 +161,9 @@
 ### 涉及页面
 
 - [ ] `yaml-previewer.html`
-- [ ] `字数统计.html`
-- [ ] `实时翻译工具.html`
-- [ ] `剪贴板历史.html`
+- [ ] `word-count.html`
+- [ ] `translator.html`
+- [ ] `clipboard-history.html`
 - [ ] `vrime.html`
 
 ### 每页检查清单
