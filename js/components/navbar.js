@@ -6,7 +6,6 @@
 (function() {
   // 工具列表数据（与 index.html 卡片信息保持一致）
   var toolsData = [
-    { name: '首页', path: 'index.html', desc: '实用工具集', icon: 'fas fa-wrench', color: '#165DFF' },
     { name: '数字大写转换', path: '数字大写转换.html', desc: '快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式', icon: 'fas fa-right-left', color: '#165DFF' },
     { name: '字数统计工具', path: '字数统计.html', desc: '精准统计文本中的汉字、数字、字母等字符数量', icon: 'far fa-file-lines', color: '#36CFC9' },
     { name: '智能翻译工具', path: '实时翻译工具.html', desc: '自动识别语言类型，支持多语言互译，实时响应', icon: 'fas fa-language', color: '#8B5CF6' },
@@ -22,9 +21,8 @@
 
   // 记录当前页面访问
   function recordVisit() {
-    var currentPath = location.pathname.split('/').pop() || 'index.html';
-    // 根路径或空路径视为首页
-    if (!currentPath || currentPath === '') currentPath = 'index.html';
+    var currentPath = decodeURIComponent(location.pathname.split('/').pop() || '');
+    if (!currentPath) return; // 根路径不记录
     var tool = toolsData.find(function(t) { return t.path === currentPath; });
     if (!tool) return;
 
