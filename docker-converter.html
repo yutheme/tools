@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Run → Compose 转换器</title>
+    <link rel="icon" type="image/png" href="icons/docker-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/svg+xml" href="icons/docker.svg">
+    <link rel="shortcut icon" href="icons/docker-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/docker-apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+
+    <!-- 主题闪烁防护 -->
+    <script>
+        (function(){
+            var t=localStorage.getItem('theme');
+            if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+            document.documentElement.setAttribute('data-theme',t);
+        })();
+    </script>
+
+    <!-- CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
+
+    <!-- 共享 CSS -->
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/loading.css">
+
+    <style>
+        :root {
+            --color-primary: var(--color-tool-docker);
+            --color-primary-dark: var(--color-tool-docker-dark);
+            --color-primary-light: var(--color-tool-docker-light);
+            --color-primary-ring: var(--color-tool-docker-ring);
+        }
+
+        body {
+            background-color: var(--color-gray-50);
+            color: var(--color-gray-700);
+            min-height: 100vh;
+        }
+
+        .page-content {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+            transition: var(--transition-normal);
+        }
+
+        /* 宽屏双列布局 */
+        @media (min-width: 992px) {
+            .main-content {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+            padding: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .header h1 i {
+            margin-right: 0.5rem;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .panel-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-gray-700);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-title i {
+            color: var(--color-primary);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 1rem;
+            border: 2px solid var(--color-gray-200);
+            border-radius: var(--radius-md);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height-normal);
+            color: var(--color-gray-700);
+            background: var(--color-white);
+            resize: vertical;
+            transition: all var(--transition-fast);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-primary-ring);
+        }
+
+        textarea::placeholder {
+            color: var(--color-gray-400);
+        }
+
+        [data-theme="dark"] textarea {
+            background: var(--color-gray-100);
+            border-color: var(--color-gray-300);
+        }
+
+        /* 示例按钮区 */
+        .example-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .example-btn {
+            padding: 0.5rem 1rem;
+            background: var(--color-gray-100);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-sm);
+            color: var(--color-gray-600);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .example-btn:hover {
+            background: var(--color-primary-light);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .example-btn i {
+            font-size: var(--font-size-xs);
+        }
+
+        /* 控制区 */
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-top: 1px solid var(--color-gray-200);
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        [data-theme="dark"] .controls {
+            border-color: var(--color-gray-300);
+        }
+
+        .auto-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: var(--font-size-sm);
+            color: var(--color-gray-600);
+            cursor: pointer;
+        }
+
+        .auto-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--color-primary);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .output-wrapper {
+            position: relative;
+        }
+
+        .output-actions {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 0.75rem;
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-sm);
+            color: var(--color-gray-600);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .action-btn:hover {
+            background: var(--color-primary-light);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        pre {
+            width: 100%;
+            min-height: 180px;
+            max-height: 400px;
+            padding: 1rem;
+            margin: 0;
+            overflow: auto;
+            background: var(--color-gray-100);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-md);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height-normal);
+        }
+
+        code {
+            color: var(--color-gray-700);
+        }
+
+        [data-theme="dark"] pre {
+            background: var(--color-gray-200);
+            border-color: var(--color-gray-300);
+        }
+
+        /* 错误提示 */
+        .error-box {
+            padding: 0.875rem 1rem;
+            background: #FEF2F2;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-md);
+            color: #DC2626;
+            font-size: var(--font-size-sm);
+            display: none;
+            align-items: flex-start;
+            gap: 0.75rem;
+            transition: all var(--transition-fast);
+        }
+
+        .error-box i {
+            margin-top: 0.125rem;
+            flex-shrink: 0;
+        }
+
+        .error-box.show {
+            display: flex;
+        }
+
+        [data-theme="dark"] .error-box {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #F87171;
+        }
+
+        /* 解析信息 */
+        .parse-info {
+            padding: 1rem;
+            background: var(--color-gray-100);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+        }
+
+        [data-theme="dark"] .parse-info {
+            background: var(--color-gray-200);
+        }
+
+        .parse-info h4 {
+            font-weight: 600;
+            color: var(--color-gray-700);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .parse-info h4 i {
+            color: var(--color-primary);
+        }
+
+        .parse-info ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .parse-info li {
+            padding: 0.375rem 0;
+            border-bottom: 1px solid var(--color-gray-200);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        [data-theme="dark"] .parse-info li {
+            border-color: var(--color-gray-300);
+        }
+
+        .parse-info li:last-child {
+            border-bottom: none;
+        }
+
+        .parse-info li i {
+            color: var(--color-success);
+            margin-top: 0.125rem;
+            flex-shrink: 0;
+        }
+
+        .parse-info li .label {
+            color: var(--color-gray-500);
+            min-width: 80px;
+            font-weight: 500;
+        }
+
+        .parse-info li .value {
+            color: var(--color-gray-700);
+            font-family: var(--font-family-mono);
+            word-break: break-all;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            color: var(--color-gray-400);
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: var(--font-size-base);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .auto-toggle {
+                justify-content: center;
+            }
+
+            textarea {
+                min-height: 140px;
+            }
+
+            pre {
+                min-height: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏由 navbar.js 动态生成 -->
+
+    <div class="page-content">
+        <div class="container">
+            <div class="header">
+                <h1><i class="fab fa-docker"></i> Docker Run → Compose 转换器</h1>
+                <p>将 docker run 命令一键转换为 docker-compose.yml 格式，支持端口映射、卷挂载、环境变量等常用参数</p>
+            </div>
+
+            <div class="main-content">
+                <!-- 左侧：输入区 -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-terminal"></i>
+                            <span>Docker Run 命令</span>
+                        </div>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="input-command" 
+                            placeholder="粘贴你的 docker run 命令，例如：&#10;docker run -d -p 80:80 --name nginx nginx:latest"
+                            spellcheck="false"
+                        ></textarea>
+                    </div>
+
+                    <!-- 示例按钮 -->
+                    <div class="example-buttons">
+                        <button class="example-btn" data-example="nginx">
+                            <i class="fas fa-globe"></i>
+                            Nginx
+                        </button>
+                        <button class="example-btn" data-example="mysql">
+                            <i class="fas fa-database"></i>
+                            MySQL
+                        </button>
+                        <button class="example-btn" data-example="redis">
+                            <i class="fas fa-compact-disc"></i>
+                            Redis
+                        </button>
+                        <button class="example-btn" data-example="wordpress">
+                            <i class="fab fa-wordpress"></i>
+                            WordPress
+                        </button>
+                        <button class="example-btn" data-example="full">
+                            <i class="fas fa-code"></i>
+                            完整示例
+                        </button>
+                    </div>
+
+                    <!-- 控制区 -->
+                    <div class="controls">
+                        <label class="auto-toggle">
+                            <input type="checkbox" id="auto-toggle">
+                            <span>自动转换</span>
+                        </label>
+                        <button id="convert-btn" class="btn btn-primary">
+                            <i class="fas fa-exchange-alt"></i>
+                            转换
+                        </button>
+                    </div>
+
+                    <!-- 错误提示 -->
+                    <div id="error-box" class="error-box">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="error-message"></span>
+                    </div>
+                </div>
+
+                <!-- 右侧：输出区 -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fas fa-file-code"></i>
+                            <span>docker-compose.yml</span>
+                        </div>
+                    </div>
+
+                    <div class="output-wrapper">
+                        <div id="output-container">
+                            <div class="empty-state">
+                                <i class="fas fa-file-code"></i>
+                                <p>转换结果将显示在这里</p>
+                            </div>
+                        </div>
+                        <div class="output-actions" id="output-actions" style="display: none;">
+                            <button class="action-btn" id="copy-btn">
+                                <i class="fas fa-copy"></i>
+                                复制
+                            </button>
+                            <button class="action-btn" id="download-btn">
+                                <i class="fas fa-download"></i>
+                                下载
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 解析信息 -->
+                    <div id="parse-info" class="parse-info" style="display: none;">
+                        <h4><i class="fas fa-info-circle"></i> 识别到的参数</h4>
+                        <ul id="parse-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS: 工具函数 + 页面逻辑 -->
+    <script src="js/utils/debounce.js"></script>
+    <script src="js/utils/toast.js"></script>
+    <script src="js/utils/copy.js"></script>
+    <script src="js/components/navbar.js"></script>
+    <script src="js/tools/docker-converter.js"></script>
+    <script>
+        (function() {
+            'use strict';
+
+            // DOM 元素
+            var inputCommand = document.getElementById('input-command');
+            var convertBtn = document.getElementById('convert-btn');
+            var autoToggle = document.getElementById('auto-toggle');
+            var errorBox = document.getElementById('error-box');
+            var errorMessage = document.getElementById('error-message');
+            var outputContainer = document.getElementById('output-container');
+            var outputActions = document.getElementById('output-actions');
+            var copyBtn = document.getElementById('copy-btn');
+            var downloadBtn = document.getElementById('download-btn');
+            var parseInfo = document.getElementById('parse-info');
+            var parseList = document.getElementById('parse-list');
+            var exampleBtns = document.querySelectorAll('.example-btn');
+
+            var currentYaml = '';
+            var autoConvert = false;
+            var debounceTimer = null;
+
+            // 示例命令
+            var examples = {
+                nginx: 'docker run -d -p 80:80 --name nginx-web nginx:latest',
+                mysql: 'docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=my-secret-pw --name mysql-db mysql:8.0',
+                redis: 'docker run -d -p 6379:6379 --name redis-cache redis:alpine',
+                wordpress: 'docker run -d -p 8080:80 -e WORDPRESS_DB_HOST=mysql -e WORDPRESS_DB_USER=wordpress -e WORDPRESS_DB_PASSWORD=secret --name wordpress --link mysql:mysql',
+                full: 'docker run -d -p 80:80 -p 443:443 -v /data/nginx/conf:/etc/nginx -v /data/nginx/html:/usr/share/nginx/html -e TZ=Asia/Shanghai --name nginx-full --restart always nginx:latest'
+            };
+
+            // 初始化
+            function init() {
+                // 绑定事件
+                convertBtn.addEventListener('click', handleConvert);
+                autoToggle.addEventListener('change', handleAutoToggle);
+                copyBtn.addEventListener('click', handleCopy);
+                downloadBtn.addEventListener('click', handleDownload);
+
+                // 示例按钮
+                exampleBtns.forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var example = btn.dataset.example;
+                        if (examples[example]) {
+                            inputCommand.value = examples[example];
+                            if (autoConvert) {
+                                convert();
+                            }
+                            Toast.success('已加载示例');
+                        }
+                    });
+                });
+
+                // 自动转换监听
+                inputCommand.addEventListener('input', debounce(function() {
+                    if (autoConvert && inputCommand.value.trim()) {
+                        convert();
+                    }
+                }, 500));
+
+                // 记录访问
+                if (window.recordNavbarVisit) {
+                    recordNavbarVisit();
+                }
+            }
+
+            // 处理转换
+            function handleConvert() {
+                convert();
+            }
+
+            // 自动转换开关
+            function handleAutoToggle() {
+                autoConvert = autoToggle.checked;
+                if (autoConvert && inputCommand.value.trim()) {
+                    convert();
+                }
+            }
+
+            // 执行转换
+            function convert() {
+                var command = inputCommand.value.trim();
+
+                // 清空错误
+                hideError();
+
+                if (!command) {
+                    showError('请输入 docker run 命令');
+                    clearOutput();
+                    return;
+                }
+
+                // 调用解析器
+                var result = DockerConverter.parse(command);
+
+                if (!result.success) {
+                    showError(result.error);
+                    clearOutput();
+                    return;
+                }
+
+                // 生成 YAML
+                currentYaml = DockerConverter.generate(result.data);
+                displayOutput(currentYaml);
+                displayParseInfo(result.data);
+
+                Toast.success('转换成功');
+            }
+
+            // 显示输出
+            function displayOutput(yaml) {
+                outputContainer.innerHTML = '<pre><code>' + escapeHtml(yaml) + '</code></pre>';
+                outputActions.style.display = 'flex';
+            }
+
+            // 清空输出
+            function clearOutput() {
+                outputContainer.innerHTML = '<div class="empty-state"><i class="fas fa-file-code"></i><p>转换结果将显示在这里</p></div>';
+                outputActions.style.display = 'none';
+                parseInfo.style.display = 'none';
+            }
+
+            // 显示解析信息
+            function displayParseInfo(data) {
+                var items = [];
+
+                if (data.image) {
+                    items.push({ label: '镜像', value: data.image });
+                }
+                if (data.containerName) {
+                    items.push({ label: '容器名', value: data.containerName });
+                }
+                if (data.ports.length > 0) {
+                    items.push({ label: '端口', value: data.ports.join(', ') });
+                }
+                if (data.volumes.length > 0) {
+                    items.push({ label: '卷映射', value: data.volumes.length + ' 个' });
+                }
+                if (data.environment.length > 0) {
+                    items.push({ label: '环境变量', value: data.environment.length + ' 个' });
+                }
+                if (data.restart) {
+                    items.push({ label: '重启策略', value: data.restart });
+                }
+                if (data.networks.length > 0) {
+                    items.push({ label: '网络', value: data.networks.join(', ') });
+                }
+                if (data.healthcheck) {
+                    items.push({ label: '健康检查', value: '已配置' });
+                }
+
+                if (items.length > 0) {
+                    parseList.innerHTML = items.map(function(item) {
+                        return '<li><i class="fas fa-check"></i><span class="label">' + item.label + ':</span><span class="value">' + escapeHtml(item.value) + '</span></li>';
+                    }).join('');
+                    parseInfo.style.display = 'block';
+                } else {
+                    parseInfo.style.display = 'none';
+                }
+            }
+
+            // 显示错误
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorBox.classList.add('show');
+            }
+
+            // 隐藏错误
+            function hideError() {
+                errorBox.classList.remove('show');
+            }
+
+            // 处理复制
+            function handleCopy() {
+                if (!currentYaml) return;
+
+                copyToClipboard(currentYaml).then(function() {
+                    Toast.success('已复制到剪贴板');
+                }).catch(function() {
+                    Toast.error('复制失败，请手动复制');
+                });
+            }
+
+            // 处理下载
+            function handleDownload() {
+                if (!currentYaml) return;
+
+                var blob = new Blob([currentYaml], { type: 'text/yaml' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'docker-compose.yml';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                Toast.success('已开始下载');
+            }
+
+            // HTML 转义
+            function escapeHtml(text) {
+                var div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // 初始化
+            init();
+        })();
+    </script>
+</body>
+</html>

@@ -58,6 +58,11 @@
   --color-tool-vrime-light: rgba(236, 72, 153, 0.08);
   --color-tool-vrime-ring: rgba(236, 72, 153, 0.15);
   
+  --color-tool-docker: #0DB7ED;
+  --color-tool-docker-dark: #089CCC;
+  --color-tool-docker-light: rgba(13, 183, 237, 0.08);
+  --color-tool-docker-ring: rgba(13, 183, 237, 0.15);
+  
   /* 中性色 */
   --color-gray-50: #F7F8FA;
   --color-gray-100: #F2F3F5;

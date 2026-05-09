@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="docker icon">
+  <defs>
+    <linearGradient id="docker-bg" x1="20" y1="16" x2="160" y2="164" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0DB7ED"/>
+      <stop offset="1" stop-color="#089CCC"/>
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="40" fill="url(#docker-bg)"/>
+  <path d="M24 28c30-18 82-21 132 2v40C112 48 65 51 24 70V28z" fill="white" opacity=".16"/>
+  <circle cx="142" cy="42" r="8" fill="white" opacity=".18"/>
+  
+  <!-- Docker 容器风格图标 -->
+  <rect x="32" y="52" width="116" height="88" rx="12" fill="white"/>
+  
+  <!-- 容器分层 -->
+  <rect x="42" y="66" width="96" height="24" rx="4" fill="#E8F6FA"/>
+  <rect x="42" y="96" width="96" height="24" rx="4" fill="#CCE9F5"/>
+  <rect x="42" y="126" width="96" height="24" rx="4" fill="#A8D8EA"/>
+  
+  <!-- 容器顶部细节 -->
+  <rect x="48" y="58" width="84" height="6" rx="2" fill="#089CCC" opacity=".3"/>
+  
+  <!-- 小方块装饰 -->
+  <rect x="52" y="74" width="8" height="8" rx="2" fill="#0DB7ED"/>
+  <rect x="66" y="74" width="8" height="8" rx="2" fill="#0DB7ED" opacity=".6"/>
+  <rect x="80" y="74" width="8" height="8" rx="2" fill="#0DB7ED" opacity=".3"/>
+  
+  <rect x="52" y="104" width="8" height="8" rx="2" fill="#089CCC"/>
+  <rect x="66" y="104" width="8" height="8" rx="2" fill="#089CCC" opacity=".6"/>
+  <rect x="80" y="104" width="8" height="8" rx="2" fill="#089CCC" opacity=".3"/>
+  
+  <rect x="52" y="134" width="8" height="8" rx="2" fill="#067A99"/>
+  <rect x="66" y="134" width="8" height="8" rx="2" fill="#067A99" opacity=".6"/>
+  <rect x="80" y="134" width="8" height="8" rx="2" fill="#067A99" opacity=".3"/>
+</svg>

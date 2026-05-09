@@ -256,6 +256,11 @@
         .tool-vrime:hover .tool-icon { background-color: var(--color-tool-vrime-ring); }
         .tool-vrime .tool-icon i { color: var(--color-tool-vrime); }
 
+        .tool-docker .tool-icon { background-color: var(--color-tool-docker-light); }
+        .tool-docker .tool-action { color: var(--color-tool-docker); }
+        .tool-docker:hover .tool-icon { background-color: var(--color-tool-docker-ring); }
+        .tool-docker .tool-icon i { color: var(--color-tool-docker); }
+
         .tool-card:hover .tool-action i {
             transform: translateX(6px);
         }
@@ -510,6 +515,31 @@
                     <div class="tool-card-footer">
                         <i class="fas fa-circle-check"></i>
                         本地WASM · VR友好
+                    </div>
+                </a>
+            </div>
+
+            <!-- Docker 转换器 -->
+            <div class="tool-card tool-docker">
+                <a href="docker-converter.html" class="card-link">
+                    <div class="tool-card-content">
+                        <div class="tool-icon">
+                            <i class="fab fa-docker"></i>
+                        </div>
+                        <h2>Docker 转换器</h2>
+                        <div class="tool-description">
+                            将 docker run 命令一键转换为 docker-compose.yml 格式，支持端口映射、卷挂载、环境变量等常用参数。
+                        </div>
+                        <div class="tool-action-container">
+                            <div class="tool-action">
+                                立即使用
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-card-footer">
+                        <i class="fas fa-circle-check"></i>
+                        快速转换 · 支持高级参数
                     </div>
                 </a>
             </div>

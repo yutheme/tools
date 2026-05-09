@@ -51,6 +51,9 @@
 
   --color-tool-vrime-light: rgba(236, 72, 153, 0.18);
   --color-tool-vrime-ring: rgba(236, 72, 153, 0.25);
+
+  --color-tool-docker-light: rgba(13, 183, 237, 0.15);
+  --color-tool-docker-ring: rgba(13, 183, 237, 0.25);
 }
 
 /* 系统偏好深色模式（未被手动覆盖时生效） */
@@ -99,6 +102,9 @@
 
     --color-tool-vrime-light: rgba(236, 72, 153, 0.18);
     --color-tool-vrime-ring: rgba(236, 72, 153, 0.25);
+
+    --color-tool-docker-light: rgba(13, 183, 237, 0.15);
+    --color-tool-docker-ring: rgba(13, 183, 237, 0.25);
   }
 }
 
