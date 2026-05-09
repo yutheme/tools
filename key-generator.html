@@ -303,11 +303,11 @@
             white-space: nowrap;
         }
 
-        .history-container {
+        .key-history-container {
             margin-top: 0.5rem;
         }
 
-        .history-list {
+        .key-history-list {
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
@@ -316,7 +316,7 @@
             overflow-y: auto;
         }
 
-        .history-item {
+        .key-history-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -327,7 +327,7 @@
             font-size: 0.8rem;
         }
 
-        .history-key {
+        .key-history-key {
             color: var(--color-gray-700);
             cursor: pointer;
             flex: 1;
@@ -336,7 +336,7 @@
             text-overflow: ellipsis;
         }
 
-        .history-key:hover {
+        .key-history-key:hover {
             color: var(--color-primary);
         }
 
@@ -349,15 +349,15 @@
             margin-right: 0.5rem;
         }
 
-        .btn-history-copy {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.7rem;
-            border: none;
-            background: var(--color-primary);
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+       .key-btn-history-copy {
+           padding: 0.25rem 0.5rem;
+           font-size: 0.7rem;
+           border: none;
+           background: var(--color-primary);
+           color: white;
+           border-radius: 4px;
+           cursor: pointer;
+       }
 
         .info-box {
             padding: 0.75rem;
@@ -406,11 +406,11 @@
 
 
 
-        [data-theme="dark"] .history-item {
+        [data-theme="dark"] .key-history-item {
             background: var(--color-gray-600);
         }
 
-        [data-theme="dark"] .history-key {
+        [data-theme="dark"] .key-history-key {
         }
 
         [data-theme="dark"] .info-box {
@@ -515,13 +515,13 @@
                         <i class="fas fa-clipboard"></i>复制
                     </button>
                 </div>
-                <div class="history-container" id="historyContainer" style="display: none;">
-                    <label style="font-size: 0.8rem; color: var(--color-gray-400); display: flex; justify-content: space-between; align-items: center;">
-                        最近生成记录（最多20条）
-                        <button onclick="clearHistory()" class="btn btn-sm btn-secondary">清空</button>
-                    </label>
-                    <div class="history-list" id="historyList"></div>
-                </div>
+               <div class="key-history-container" id="keyHistoryContainer" style="display: none;">
+                   <label style="font-size: 0.8rem; color: var(--color-gray-400); display: flex; justify-content: space-between; align-items: center;">
+                       最近生成记录（最多20条）
+                       <button onclick="clearHistory()" class="btn btn-sm btn-secondary">清空</button>
+                   </label>
+                   <div class="key-history-list" id="keyHistoryList"></div>
+               </div>
             </div>
 
             <div class="form-group full-width">
@@ -705,10 +705,10 @@
             }
         }
 
-        function renderHistory() {
-            var history = getHistory();
-            var container = document.getElementById('historyContainer');
-            var listEl = document.getElementById('historyList');
+       function renderHistory() {
+           var history = getHistory();
+           var container = document.getElementById('keyHistoryContainer');
+           var listEl = document.getElementById('keyHistoryList');
 
             if (history.length === 0) {
                 container.style.display = 'none';
@@ -723,8 +723,8 @@
             };
 
             history.forEach(function(item) {
-                var div = document.createElement('div');
-                div.className = 'history-item';
+               var div = document.createElement('div');
+               div.className = 'key-history-item';
 
                 var content = document.createElement('div');
                 content.style.display = 'flex';
@@ -736,14 +736,14 @@
                 badge.className = 'key-type-badge';
                 badge.textContent = typeLabels[item.type] || 'KEY';
 
-                var keyEl = document.createElement('span');
-                keyEl.className = 'history-key';
+               var keyEl = document.createElement('span');
+               keyEl.className = 'key-history-key';
                 keyEl.title = item.key;
                 keyEl.textContent = item.key;
                 keyEl.addEventListener('click', function() { copyHistoryKey(item.key); });
 
-                var copyBtn = document.createElement('button');
-                copyBtn.className = 'btn-history-copy';
+               var copyBtn = document.createElement('button');
+               copyBtn.className = 'key-btn-history-copy';
                 copyBtn.type = 'button';
                 copyBtn.textContent = '复制';
                 copyBtn.addEventListener('click', function() { copyHistoryKey(item.key); });
