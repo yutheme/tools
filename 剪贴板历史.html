@@ -92,13 +92,13 @@
             align-items: center;
         }
 
-        .search-box {
+        .clipboard-search {
             flex: 1;
             min-width: 200px;
             position: relative;
         }
 
-        .search-box i {
+        .clipboard-search i {
             position: absolute;
             left: 1rem;
             top: 50%;
@@ -106,7 +106,7 @@
             color: var(--color-gray-400);
         }
 
-        .search-box input {
+        .clipboard-search input {
             width: 100%;
             padding: 0.75rem 1rem 0.75rem 2.5rem;
             border: 1px solid var(--color-gray-200);
@@ -115,7 +115,7 @@
             transition: var(--transition-normal);
         }
 
-        .search-box input:focus {
+        .clipboard-search input:focus {
             outline: none;
             border-color: var(--color-primary);
             box-shadow: 0 0 0 3px var(--color-primary-light);
@@ -244,7 +244,7 @@
             border-radius: 3px;
         }
 
-        .history-item {
+        .clipboard-item {
             display: flex;
             gap: 0.75rem;
             padding: 1rem;
@@ -254,7 +254,7 @@
             transition: var(--transition-normal);
         }
 
-        .history-item:hover {
+        .clipboard-item:hover {
             border-color: var(--color-primary);
             box-shadow: 0 0 0 2px var(--color-primary-light);
         }
@@ -334,82 +334,23 @@
             font-size: 0.875rem;
         }
 
-        /* 深色模式适配 */
-        [data-theme="dark"] .search-box input {
-            background: var(--color-gray-100);
-            border-color: var(--color-gray-300);
-            color: var(--color-gray-700);
-        }
 
+
+
+        /* 深色模式 - 页面特有样式（输入框由 themes.css 全局处理） */
         [data-theme="dark"] .toggle-container {
-            background: var(--color-gray-100);
+            background-color: var(--color-gray-100);
         }
-
-        [data-theme="dark"] .history-item {
-            background: var(--color-gray-100);
+        [data-theme="dark"] .clipboard-item {
+            background-color: var(--color-gray-100);
             border-color: var(--color-gray-200);
         }
-
         [data-theme="dark"] .btn-icon {
-            background: var(--color-gray-200);
-            color: var(--color-gray-500);
+            background-color: var(--color-gray-200);
+            color: var(--color-gray-600);
         }
-
         [data-theme="dark"] .btn-danger:hover {
             background-color: #F87171;
-        }
-
-        [data-theme="dark"] .toggle-slider:before {
-            background-color: white;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root:not([data-theme="light"]) .search-box input {
-                background: var(--color-gray-100);
-                border-color: var(--color-gray-300);
-                color: var(--color-gray-700);
-            }
-
-            :root:not([data-theme="light"]) .toggle-container {
-                background: var(--color-gray-100);
-            }
-
-            :root:not([data-theme="light"]) .history-item {
-                background: var(--color-gray-100);
-                border-color: var(--color-gray-200);
-            }
-
-            :root:not([data-theme="light"]) .btn-icon {
-                background: var(--color-gray-200);
-                color: var(--color-gray-500);
-            }
-
-            :root:not([data-theme="light"]) .btn-danger:hover {
-                background-color: #F87171;
-            }
-
-            :root:not([data-theme="light"]) .toggle-slider:before {
-                background-color: white;
-            }
-        }
-
-
-        /* 深色模式 */
-        [data-theme="dark"] .search-box input {
-            background-color: var(--color-gray-800);
-            border-color: var(--color-gray-600);
-            color: var(--color-gray-200);
-        }
-        [data-theme="dark"] .toggle-container {
-            background-color: var(--color-gray-800);
-        }
-        [data-theme="dark"] .history-item {
-            background-color: var(--color-gray-800);
-            border-color: var(--color-gray-600);
-        }
-        [data-theme="dark"] .btn-icon {
-            background-color: var(--color-gray-700);
-            color: var(--color-gray-300);
         }
         [data-theme="dark"] .empty-state {
             color: var(--color-gray-500);
@@ -438,7 +379,7 @@
         </div>
         <div class="content">
             <div class="toolbar">
-                <div class="search-box">
+                <div class="clipboard-search">
                     <i class="fas fa-search"></i>
                     <input type="text" id="searchInput" placeholder="搜索历史记录..." oninput="renderHistory()">
                 </div>
@@ -582,7 +523,7 @@
 
             filtered.forEach(function(item) {
                 var historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
+                historyItem.className = 'clipboard-item';
 
                 var content = document.createElement('div');
                 content.className = 'item-content';
