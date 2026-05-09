@@ -69,6 +69,11 @@ async function copyToClipboard(text, options = {}) {
         if (vibrate && navigator.vibrate) {
           navigator.vibrate(30);
         }
+
+        // 派发自定义事件，供剪贴板历史等页面监听
+        try {
+          document.dispatchEvent(new CustomEvent('clipboard-copy', { detail: { text: text } }));
+        } catch(e) {}
         
         return true;
       } catch (clipboardErr) {
@@ -139,6 +144,12 @@ function copyToClipboardFallback(text, options = {}) {
       if (vibrate && navigator.vibrate) {
         navigator.vibrate(30);
       }
+
+      // 派发自定义事件，供剪贴板历史等页面监听
+      try {
+        document.dispatchEvent(new CustomEvent('clipboard-copy', { detail: { text: text } }));
+      } catch(e) {}
+
       return true;
     } else {
       throw new Error('execCommand 返回 false');

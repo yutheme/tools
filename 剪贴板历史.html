@@ -40,15 +40,12 @@
         }
 
         .page-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: calc(100vh - 56px);
             padding: 1rem;
         }
 
         .container {
+            max-width: 900px;
+            margin: 0 auto;
             background: var(--color-white);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
@@ -589,6 +586,13 @@
                     addToHistory(text.trim());
                 }
             }, 10);
+        });
+
+        // 监听 copy.js 的自定义事件（navigator.clipboard.writeText 不触发原生 copy 事件）
+        document.addEventListener('clipboard-copy', function(e) {
+            if (e.detail && e.detail.text && e.detail.text.trim()) {
+                addToHistory(e.detail.text.trim());
+            }
         });
 
         function handleClipboardChange() {
