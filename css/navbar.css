@@ -291,6 +291,17 @@
   color: var(--color-gray-400);
   margin-left: auto;
   font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.history-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-item-time {
+  flex-shrink: 0;
 }
 
 .history-empty {

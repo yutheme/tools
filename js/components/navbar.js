@@ -6,6 +6,7 @@
 (function() {
   // 工具列表数据（与 index.html 卡片信息保持一致）
   var toolsData = [
+    { name: '首页', path: 'index.html', desc: '实用工具集', icon: 'fas fa-wrench', color: '#165DFF' },
     { name: '数字大写转换', path: '数字大写转换.html', desc: '快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式', icon: 'fas fa-right-left', color: '#165DFF' },
     { name: '字数统计工具', path: '字数统计.html', desc: '精准统计文本中的汉字、数字、字母等字符数量', icon: 'far fa-file-lines', color: '#36CFC9' },
     { name: '智能翻译工具', path: '实时翻译工具.html', desc: '自动识别语言类型，支持多语言互译，实时响应', icon: 'fas fa-language', color: '#8B5CF6' },
@@ -21,7 +22,9 @@
 
   // 记录当前页面访问
   function recordVisit() {
-    var currentPath = location.pathname.split('/').pop();
+    var currentPath = location.pathname.split('/').pop() || 'index.html';
+    // 根路径或空路径视为首页
+    if (!currentPath || currentPath === '') currentPath = 'index.html';
     var tool = toolsData.find(function(t) { return t.path === currentPath; });
     if (!tool) return;
 
@@ -182,25 +185,49 @@
     var historyList = document.getElementById('historyList');
     if (!historyBtn || !historyDropdown) return;
 
+    // 格式化时间为相对时间
+    function formatTime(timestamp) {
+      var now = Date.now();
+      var diff = now - timestamp;
+      var seconds = Math.floor(diff / 1000);
+      var minutes = Math.floor(seconds / 60);
+      var hours = Math.floor(minutes / 60);
+      var days = Math.floor(hours / 24);
+      if (seconds < 60) return '刚刚';
+      if (minutes < 60) return minutes + '分钟前';
+      if (hours < 24) return hours + '小时前';
+      if (days < 7) return days + '天前';
+      return new Date(timestamp).toLocaleDateString();
+    }
+
+    function renderHistoryList() {
+      var history = getHistory();
+      if (history.length === 0) {
+        historyList.innerHTML = '<div class="history-empty">暂无访问记录</div>';
+      } else {
+        historyList.innerHTML = history.map(function(item) {
+          return '<a href="' + item.path + '" class="history-item">' +
+            '<span class="history-item-name">' + item.name + '</span>' +
+            '<small class="history-item-time">' + formatTime(item.time) + '</small>' +
+          '</a>';
+        }).join('');
+      }
+    }
+
     historyBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       var isVisible = historyDropdown.style.display !== 'none';
       historyDropdown.style.display = isVisible ? 'none' : 'block';
 
       if (!isVisible) {
-        var history = getHistory();
-        if (history.length === 0) {
-          historyList.innerHTML = '<div class="history-empty">暂无访问记录</div>';
-        } else {
-          historyList.innerHTML = history.map(function(item) {
-            var date = new Date(item.time);
-            var timeStr = date.toLocaleDateString();
-            return '<a href="' + item.path + '" class="history-item">' +
-              item.name +
-              '<small>' + timeStr + '</small>' +
-            '</a>';
-          }).join('');
-        }
+        renderHistoryList();
+      }
+    });
+
+    // 监听其他标签页的 localStorage 变更
+    window.addEventListener('storage', function(e) {
+      if (e.key === HISTORY_KEY && historyDropdown.style.display !== 'none') {
+        renderHistoryList();
       }
     });
 
@@ -216,6 +243,20 @@
     var hamburger = document.getElementById('hamburgerBtn');
     var mobileMenu = document.getElementById('mobileMenu');
     if (!hamburger || !mobileMenu) return;
+
+    // 格式化时间
+    function formatTime(timestamp) {
+      var now = Date.now();
+      var diff = now - timestamp;
+      var minutes = Math.floor(diff / 60000);
+      var hours = Math.floor(minutes / 60);
+      var days = Math.floor(hours / 24);
+      if (minutes < 1) return '刚刚';
+      if (minutes < 60) return minutes + '分钟前';
+      if (hours < 24) return hours + '小时前';
+      if (days < 7) return days + '天前';
+      return new Date(timestamp).toLocaleDateString();
+    }
 
     hamburger.addEventListener('click', function() {
       this.classList.toggle('active');
@@ -243,6 +284,7 @@
           history.slice(0, 5).forEach(function(item) {
             menuHtml += '<a href="' + item.path + '" class="mobile-menu-item">' +
               '<i class="far fa-clock"></i>' + item.name +
+              '<small style="margin-left:auto;color:var(--color-gray-400);font-size:0.7rem;">' + formatTime(item.time) + '</small>' +
             '</a>';
           });
         }
