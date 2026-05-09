@@ -9,9 +9,22 @@
     <link rel="shortcut icon" href="icons/translate-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/translate-apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
+
+    <!-- 主题闪烁防护 -->
+    <script>
+        (function(){
+            var t=localStorage.getItem('theme');
+            if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+            document.documentElement.setAttribute('data-theme',t);
+        })();
+    </script>
+
     <!-- 引入外部资源 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/loading.css">
 
     <style>
         /* 统一使用CSS变量管理主题 */
@@ -20,25 +33,6 @@
             --color-primary-dark: var(--color-tool-translate-dark);
             --color-primary-light: var(--color-tool-translate-light);
             --color-primary-ring: var(--color-tool-translate-ring);
-            --color-gray-50: #F9FAFB;
-            --color-gray-100: #F3F4F6;
-            --color-gray-200: #E5E7EB;
-            --color-gray-400: #9CA3AF;
-            --color-gray-500: #6B7280;
-            --color-gray-700: #374151;
-            --color-gray-800: #1F2937;
-            --color-danger: #EF4444;
-            --color-danger-light: #FEF2F2;
-            --color-danger-border: #FEE2E2;
-            --white: #FFFFFF;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
 
         .hidden {
@@ -46,16 +40,18 @@
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
             background-color: var(--color-gray-50);
-            color: var(--color-gray-800);
-            line-height: 1.5;
+            color: var(--color-gray-700);
+            min-height: 100vh;
+        }
+
+        .page-content {
             padding: 1.5rem 1rem;
+            max-width: 896px;
+            margin: 0 auto;
         }
 
         .container {
-            max-width: 896px;
-            margin: 0 auto;
             background: var(--color-white);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
@@ -296,8 +292,8 @@
 
         .error-panel {
             margin-top: 1rem;
-            background: var(--color-danger-light);
-            border: 1px solid var(--color-danger-border);
+            background: #FEF2F2;
+            border: 1px solid #FEE2E2;
             border-radius: var(--radius-md);
             padding: 1rem;
             display: none;
@@ -484,37 +480,37 @@
             text-align: right;
         }
 
-        /* 通知提示 */
-        .notification {
-            position: fixed;
-            bottom: 1.25rem;
-            right: 1.25rem;
-            background: var(--color-gray-800);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-md);
-            transform: translateY(5rem);
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
+        /* 深色模式 */
+        [data-theme="dark"] textarea {
+            background-color: var(--color-gray-800);
+            border-color: var(--color-gray-600);
+            color: var(--color-gray-200);
         }
-
-        .notification.show {
-            transform: translateY(0);
-            opacity: 1;
+        [data-theme="dark"] .error-panel {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
         }
-
-        .notification.error {
-            background: var(--color-danger);
+        [data-theme="dark"] .help-card {
+            background-color: var(--color-gray-800);
+        }
+        [data-theme="dark"] .help-title {
+            color: var(--color-gray-200);
+        }
+        [data-theme="dark"] .lang-panel {
+            background-color: var(--color-gray-800);
+        }
+        [data-theme="dark"] .lang-panel-header {
+            color: var(--color-gray-200);
+        }
+        [data-theme="dark"] .lang-option {
+            color: var(--color-gray-200);
+        }
+        [data-theme="dark"] .lang-option:hover {
+            background-color: rgba(59, 130, 246, 0.15);
         }
 
         @media (max-width: 640px) {
-            body {
+            .page-content {
                 padding: 1rem 0.5rem;
             }
 
@@ -539,6 +535,7 @@
     </style>
 </head>
 <body>
+    <div class="page-content">
     <div class="container">
         <!-- 标题区域 -->
         <header class="header">
@@ -650,19 +647,17 @@
         </div>
     </div>
 
-    <!-- 通知提示 -->
-    <div id="notification" class="notification">
-        <i class="fas fa-check-circle" style="color: var(--color-success);"></i>
-        <span id="notificationText">操作成功</span>
-    </div>
-
     <script src="js/utils/toast.js"></script>
-    <script src="js/utils/copy.js"></script>
     <script src="js/utils/debounce.js"></script>
+    <script src="js/utils/copy.js"></script>
+    <script src="js/utils/storage.js"></script>
+    <script src="js/utils/theme.js"></script>
+    <script src="js/utils/loading.js"></script>
+    <script src="js/components/navbar.js"></script>
 
     <script>
         // 语言映射配置 - 使用Google Translate API语言代码
-        const LANGUAGE_CONFIG = {
+        var LANGUAGE_CONFIG = {
             // Google Translate API语言代码
             // 参考文档: https://cloud.google.com/translate/docs/languages
             names: {
@@ -743,7 +738,7 @@
         };
 
         // DOM元素引用
-        const elements = {
+        var elements = {
             sourceText: document.getElementById('sourceText'),
             resultText: document.getElementById('resultText'),
             translateBtn: document.getElementById('translateBtn'),
@@ -754,8 +749,6 @@
             langFrom: document.getElementById('langFrom'),
             langTo: document.getElementById('langTo'),
             swapLangBtn: document.getElementById('swapLangBtn'),
-            notification: document.getElementById('notification'),
-            notificationText: document.getElementById('notificationText'),
             errorPanel: document.getElementById('errorPanel'),
             errorMessage: document.getElementById('errorMessage'),
             retryBtn: document.getElementById('retryBtn'),
@@ -764,14 +757,14 @@
         };
 
         // 翻译方向状态
-        let translationState = {
+        var translationState = {
             from: 'auto',
             to: 'zh'
         };
 
         // 当前正在选择的语言类型 ('from' 或 'to')
-        let selectingLangType = null;
-        let googleDisabledUntil = 0;
+        var selectingLangType = null;
+        var googleDisabledUntil = 0;
 
         // 初始化
         function initialize() {
@@ -1153,15 +1146,5 @@
         document.addEventListener('DOMContentLoaded', initialize);
     </script>
 
-    <div class="back-home" style="margin: 2rem auto; text-align: center; max-width: 896px; padding: 1rem; border-top: 1px solid var(--color-gray-200);">
-        <a href="index.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--color-primary); text-decoration: none; font-size: 0.875rem; padding: 0.5rem 1rem; border-radius: var(--radius-md); transition: var(--transition-normal);">
-            <i class="fas fa-arrow-left"></i>返回工具列表
-        </a>
-    </div>
-    <style>
-        .back-home a:hover {
-            background-color: var(--color-primary-light);
-        }
-    </style>
 </body>
 </html>

@@ -9,46 +9,42 @@
     <link rel="shortcut icon" href="icons/clipboard-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/clipboard-apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
+
+    <!-- 主题闪烁防护（必须在 CSS 之前） -->
+    <script>
+        (function(){
+            var t=localStorage.getItem('theme');
+            if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+            document.documentElement.setAttribute('data-theme',t);
+        })();
+    </script>
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/loading.css">
+
     <style>
         :root {
             --color-primary: var(--color-tool-clipboard);
             --color-primary-dark: var(--color-tool-clipboard-dark);
             --color-primary-light: var(--color-tool-clipboard-light);
             --color-primary-ring: var(--color-tool-clipboard-ring);
-            --color-info: #10B981;
-            --color-success: #10B981;
-            --color-danger: #EF4444;
-            --color-warning: #F59E0B;
-            --color-gray-50: #F9FAFB;
-            --color-gray-100: #F3F4F6;
-            --color-gray-200: #E5E7EB;
-            --color-gray-400: #9CA3AF;
-            --color-gray-500: #6B7280;
-            --color-gray-700: #374151;
-            --color-gray-800: #1F2937;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --transition-normal: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
             background-color: var(--color-gray-50);
-            color: var(--color-gray-800);
-            line-height: 1.5;
+            color: var(--color-gray-700);
             min-height: 100vh;
+        }
+
+        .page-content {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            min-height: calc(100vh - 56px);
             padding: 1rem;
         }
 
@@ -56,10 +52,7 @@
             background: var(--color-white);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
-            width: 100%;
-            max-width: 900px;
             overflow: hidden;
-            transition: var(--transition-normal);
         }
 
         .header {
@@ -157,7 +150,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: var(--color-gray-300, #D1D5DB);
+            background-color: var(--color-gray-300);
             transition: var(--transition-normal);
             border-radius: 22px;
         }
@@ -169,7 +162,7 @@
             width: 16px;
             left: 3px;
             bottom: 3px;
-            background-color: var(--color-white);
+            background-color: white;
             transition: var(--transition-normal);
             border-radius: 50%;
         }
@@ -247,7 +240,7 @@
         }
 
         .history-list::-webkit-scrollbar-thumb {
-            background: var(--color-gray-300, #D1D5DB);
+            background: var(--color-gray-300);
             border-radius: 3px;
         }
 
@@ -341,27 +334,88 @@
             font-size: 0.875rem;
         }
 
-
-        .back-home {
-            padding: 1rem 1.5rem;
-            background-color: var(--color-gray-50);
-            border-top: 1px solid var(--color-gray-200);
+        /* 深色模式适配 */
+        [data-theme="dark"] .search-box input {
+            background: var(--color-gray-100);
+            border-color: var(--color-gray-300);
+            color: var(--color-gray-700);
         }
 
-        .back-home a {
-            color: var(--color-primary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: var(--transition-normal);
-            padding: 0.5rem 0.75rem;
-            border-radius: var(--radius-md);
+        [data-theme="dark"] .toggle-container {
+            background: var(--color-gray-100);
         }
 
-        .back-home a:hover {
-            background-color: var(--color-primary-light);
+        [data-theme="dark"] .history-item {
+            background: var(--color-gray-100);
+            border-color: var(--color-gray-200);
+        }
+
+        [data-theme="dark"] .btn-icon {
+            background: var(--color-gray-200);
+            color: var(--color-gray-500);
+        }
+
+        [data-theme="dark"] .btn-danger:hover {
+            background-color: #F87171;
+        }
+
+        [data-theme="dark"] .toggle-slider:before {
+            background-color: white;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .search-box input {
+                background: var(--color-gray-100);
+                border-color: var(--color-gray-300);
+                color: var(--color-gray-700);
+            }
+
+            :root:not([data-theme="light"]) .toggle-container {
+                background: var(--color-gray-100);
+            }
+
+            :root:not([data-theme="light"]) .history-item {
+                background: var(--color-gray-100);
+                border-color: var(--color-gray-200);
+            }
+
+            :root:not([data-theme="light"]) .btn-icon {
+                background: var(--color-gray-200);
+                color: var(--color-gray-500);
+            }
+
+            :root:not([data-theme="light"]) .btn-danger:hover {
+                background-color: #F87171;
+            }
+
+            :root:not([data-theme="light"]) .toggle-slider:before {
+                background-color: white;
+            }
+        }
+
+
+        /* 深色模式 */
+        [data-theme="dark"] .search-box input {
+            background-color: var(--color-gray-800);
+            border-color: var(--color-gray-600);
+            color: var(--color-gray-200);
+        }
+        [data-theme="dark"] .toggle-container {
+            background-color: var(--color-gray-800);
+        }
+        [data-theme="dark"] .history-item {
+            background-color: var(--color-gray-800);
+            border-color: var(--color-gray-600);
+        }
+        [data-theme="dark"] .btn-icon {
+            background-color: var(--color-gray-700);
+            color: var(--color-gray-300);
+        }
+        [data-theme="dark"] .empty-state {
+            color: var(--color-gray-500);
+        }
+        [data-theme="dark"] .stats-bar {
+            color: var(--color-gray-400);
         }
 
         @media (max-width: 640px) {
@@ -376,6 +430,7 @@
     </style>
 </head>
 <body>
+    <div class="page-content">
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-clipboard-list"></i>剪贴板历史记录</h1>
@@ -410,24 +465,26 @@
                 </div>
             </div>
         </div>
-        <div class="back-home">
-            <a href="index.html">
-                <i class="fas fa-arrow-left"></i>返回工具列表
-            </a>
-        </div>
+    </div>
     </div>
 
+    <!-- 共享 JS（严格按依赖顺序） -->
     <script src="js/utils/toast.js"></script>
+    <script src="js/utils/debounce.js"></script>
     <script src="js/utils/copy.js"></script>
+    <script src="js/utils/storage.js"></script>
+    <script src="js/utils/theme.js"></script>
+    <script src="js/utils/loading.js"></script>
+    <script src="js/components/navbar.js"></script>
 
     <script>
-        const STORAGE_KEY = 'clipboard_history';
-        const MAX_HISTORY = 50;
-        let monitorEnabled = true;
+        var STORAGE_KEY = 'clipboard_history';
+        var MAX_HISTORY = 50;
+        var monitorEnabled = true;
 
         function getHistory() {
             try {
-                const data = localStorage.getItem(STORAGE_KEY);
+                var data = localStorage.getItem(STORAGE_KEY);
                 return data ? JSON.parse(data) : [];
             } catch (e) {
                 return [];
@@ -441,10 +498,10 @@
         function addToHistory(text) {
             if (!text || !text.trim()) return;
 
-            const trimmed = text.trim();
-            const history = getHistory();
+            var trimmed = text.trim();
+            var history = getHistory();
 
-            const filtered = history.filter(item => item.text !== trimmed);
+            var filtered = history.filter(function(item) { return item.text !== trimmed; });
             filtered.unshift({ text: trimmed, timestamp: Date.now() });
 
             if (filtered.length > MAX_HISTORY) {
@@ -456,7 +513,7 @@
         }
 
         function deleteItem(index) {
-            const history = getHistory();
+            var history = getHistory();
             history.splice(index, 1);
             saveHistory(history);
             renderHistory();
@@ -471,46 +528,47 @@
         }
 
         function formatTime(timestamp) {
-            const now = Date.now();
-            const diff = now - timestamp;
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(diff / 3600000);
-            const days = Math.floor(diff / 86400000);
+            var now = Date.now();
+            var diff = now - timestamp;
+            var minutes = Math.floor(diff / 60000);
+            var hours = Math.floor(diff / 3600000);
+            var days = Math.floor(diff / 86400000);
 
             if (diff < 60000) return '刚刚';
-            if (minutes < 60) return `${minutes}分钟前`;
-            if (hours < 24) return `${hours}小时前`;
-            if (days < 7) return `${days}天前`;
+            if (minutes < 60) return minutes + '分钟前';
+            if (hours < 24) return hours + '小时前';
+            if (days < 7) return days + '天前';
 
-            const date = new Date(timestamp);
-            return `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+            var date = new Date(timestamp);
+            return (date.getMonth() + 1) + '/' + date.getDate() + ' ' + date.getHours() + ':' + String(date.getMinutes()).padStart(2, '0');
         }
 
         function renderHistory() {
-            const history = getHistory();
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const container = document.getElementById('historyList');
-            const clearBtn = document.getElementById('clearBtn');
+            var history = getHistory();
+            var searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            var container = document.getElementById('historyList');
+            var clearBtn = document.getElementById('clearBtn');
 
-            const filtered = history.filter(item =>
-                item.text.toLowerCase().includes(searchTerm)
-            );
+            var filtered = history.filter(function(item) {
+                return item.text.toLowerCase().includes(searchTerm);
+            });
 
             document.getElementById('totalCount').textContent = filtered.length;
             clearBtn.disabled = history.length === 0;
+
             container.textContent = '';
 
             if (filtered.length === 0) {
-                const emptyState = document.createElement('div');
+                var emptyState = document.createElement('div');
                 emptyState.className = 'empty-state';
 
-                const icon = document.createElement('i');
+                var icon = document.createElement('i');
                 icon.className = 'fas fa-clipboard';
 
-                const title = document.createElement('p');
+                var title = document.createElement('p');
                 title.textContent = history.length === 0 ? '暂无剪贴板记录' : '未找到匹配的记录';
 
-                const tip = document.createElement('p');
+                var tip = document.createElement('p');
                 tip.style.marginTop = '0.5rem';
                 tip.style.fontSize = '0.75rem';
                 tip.textContent = history.length === 0 ? '复制任意文本后将自动记录' : '试试其他关键词';
@@ -522,55 +580,55 @@
                 return;
             }
 
-            filtered.forEach(item => {
-                const historyItem = document.createElement('div');
+            filtered.forEach(function(item) {
+                var historyItem = document.createElement('div');
                 historyItem.className = 'history-item';
 
-                const content = document.createElement('div');
+                var content = document.createElement('div');
                 content.className = 'item-content';
 
-                const text = document.createElement('div');
+                var text = document.createElement('div');
                 text.className = 'item-text';
                 text.textContent = item.text;
 
-                const meta = document.createElement('div');
+                var meta = document.createElement('div');
                 meta.className = 'item-meta';
 
-                const time = document.createElement('span');
-                const timeIcon = document.createElement('i');
+                var time = document.createElement('span');
+                var timeIcon = document.createElement('i');
                 timeIcon.className = 'far fa-clock';
                 time.appendChild(timeIcon);
                 time.appendChild(document.createTextNode(formatTime(item.timestamp)));
 
-                const length = document.createElement('span');
-                const lengthIcon = document.createElement('i');
+                var length = document.createElement('span');
+                var lengthIcon = document.createElement('i');
                 lengthIcon.className = 'far fa-file-alt';
                 length.appendChild(lengthIcon);
-                length.appendChild(document.createTextNode(`${item.text.length} 字符`));
+                length.appendChild(document.createTextNode(item.text.length + ' 字符'));
 
                 meta.appendChild(time);
                 meta.appendChild(length);
                 content.appendChild(text);
                 content.appendChild(meta);
 
-                const actions = document.createElement('div');
+                var actions = document.createElement('div');
                 actions.className = 'item-actions';
 
-                const copyBtn = document.createElement('button');
+                var copyBtn = document.createElement('button');
                 copyBtn.className = 'btn-icon';
                 copyBtn.type = 'button';
                 copyBtn.title = '复制';
-                copyBtn.addEventListener('click', () => window.copyToClipboard(item.text, { toast: true, successMsg: '已复制', errorMsg: '复制失败' }));
-                const copyIcon = document.createElement('i');
+                copyBtn.addEventListener('click', function() { window.copyToClipboard(item.text, { toast: true, successMsg: '已复制', errorMsg: '复制失败' }); });
+                var copyIcon = document.createElement('i');
                 copyIcon.className = 'fas fa-copy';
                 copyBtn.appendChild(copyIcon);
 
-                const deleteBtn = document.createElement('button');
+                var deleteBtn = document.createElement('button');
                 deleteBtn.className = 'btn-icon btn-delete';
                 deleteBtn.type = 'button';
                 deleteBtn.title = '删除';
-                deleteBtn.addEventListener('click', () => deleteItem(history.indexOf(item)));
-                const deleteIcon = document.createElement('i');
+                deleteBtn.addEventListener('click', function() { deleteItem(history.indexOf(item)); });
+                var deleteIcon = document.createElement('i');
                 deleteIcon.className = 'fas fa-times';
                 deleteBtn.appendChild(deleteIcon);
 
@@ -583,30 +641,28 @@
         }
 
 
-        document.addEventListener('copy', () => {
-            setTimeout(() => {
-                const text = window.getSelection().toString();
+        document.addEventListener('copy', function() {
+            setTimeout(function() {
+                var text = window.getSelection().toString();
                 if (text && text.trim()) {
                     addToHistory(text.trim());
                 }
             }, 10);
         });
 
-        async function handleClipboardChange() {
-            try {
-                const text = await navigator.clipboard.readText();
+        function handleClipboardChange() {
+            navigator.clipboard.readText().then(function(text) {
                 if (text && text.trim()) {
                     addToHistory(text.trim());
                 }
-            } catch (e) {
-            }
+            }).catch(function(e) {
+            });
         }
 
-        async function toggleMonitor() {
-            const toggle = document.getElementById('monitorToggle');
+        function toggleMonitor() {
+            var toggle = document.getElementById('monitorToggle');
             if (toggle.checked) {
-                try {
-                    await navigator.clipboard.readText();
+                navigator.clipboard.readText().then(function() {
                     if (navigator.clipboard.addEventListener) {
                         navigator.clipboard.addEventListener('clipboardchange', handleClipboardChange);
                         monitorEnabled = true;
@@ -615,10 +671,10 @@
                         Toast.error('当前浏览器不支持系统剪贴板监控');
                         toggle.checked = false;
                     }
-                } catch (e) {
+                }).catch(function(e) {
                     Toast.error('权限被拒绝，无法监控系统剪贴板');
                     toggle.checked = false;
-                }
+                });
             } else {
                 if (navigator.clipboard.removeEventListener) {
                     navigator.clipboard.removeEventListener('clipboardchange', handleClipboardChange);

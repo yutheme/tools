@@ -9,8 +9,21 @@
     <link rel="shortcut icon" href="icons/wordcount-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/wordcount-apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
+
+    <!-- 主题闪烁防护 -->
+    <script>
+        (function(){
+            var t=localStorage.getItem('theme');
+            if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+            document.documentElement.setAttribute('data-theme',t);
+        })();
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/loading.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.29.3/docxtemplater.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -20,39 +33,25 @@
             --color-primary: var(--color-tool-wordcount);
             --color-primary-light: var(--color-tool-wordcount-light);
             --color-primary-dark: var(--color-tool-wordcount-dark);
-            --primary-border: var(--color-tool-wordcount-ring);
-            --color-info: #10B981;
-            --color-warning: #F59E0B;
-            --color-danger: #EF4444;
-            --color-gray-1: #64748B;
-            --color-gray-2: #CBD5E1;
-            --color-gray-3: #F1F5F9;
-            --card-shadow-hover: 0 5px 15px var(--color-primary-ring);
-            --radius-md: 10px;
-            --transition-normal: all 0.3s ease;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            --color-primary-ring: var(--color-tool-wordcount-ring);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
             background-color: var(--color-gray-50);
             color: var(--color-gray-700);
-            line-height: 1.5;
-            padding: 1rem;
             min-height: 100vh;
+        }
+
+        .page-content {
+            padding: 1rem;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
             background: var(--color-white);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
             overflow: hidden;
         }
 
@@ -94,7 +93,7 @@
         }
 
         .card:hover {
-            box-shadow: var(--shadow-hover);
+            box-shadow: var(--shadow-lg);
             transform: translateY(-1px);
         }
 
@@ -115,9 +114,9 @@
             width: 100%;
             min-height: 160px;
             padding: 12px;
-            border: 1px solid var(--color-gray-2);
+            border: 1px solid var(--color-gray-200);
             border-radius: var(--radius-md);
-            font-family: 'Inter', sans-serif;
+            
             font-size: 0.95rem;
             resize: vertical;
             transition: var(--transition-normal);
@@ -133,7 +132,7 @@
         }
 
         textarea::placeholder {
-            color: var(--color-gray-1);
+            color: var(--color-gray-500);
         }
 
         .upload-btn {
@@ -164,7 +163,7 @@
 
         .file-info {
             font-size: 0.75rem;
-            color: var(--color-gray-1);
+            color: var(--color-gray-500);
             margin-top: 5px;
             margin-bottom: 5px;
         }
@@ -233,7 +232,7 @@
             flex: 1;
             min-width: 0;
             text-align: center;
-            border: 1px solid var(--color-gray-3);
+            border: 1px solid var(--color-gray-100);
             transition: var(--transition-normal);
             position: relative;
             overflow: visible;
@@ -242,8 +241,8 @@
 
         .stat-card:hover {
             transform: translateY(-5px);
-            border-color: var(--primary-border);
-            box-shadow: var(--card-shadow-hover);
+            border-color: var(--color-primary-ring);
+            box-shadow: 0 5px 15px var(--color-primary-ring);
             z-index: 10;
         }
 
@@ -264,7 +263,7 @@
 
         .stat-label {
             font-size: 0.75rem;
-            color: var(--color-gray-1);
+            color: var(--color-gray-500);
             font-weight: 500;
             white-space: nowrap;
             overflow: hidden;
@@ -281,7 +280,7 @@
             margin-bottom: 10px;
             position: relative;
             padding: 12px;
-            background-color: var(--color-gray-3);
+            background-color: var(--color-gray-100);
             border-radius: var(--radius-md);
         }
 
@@ -324,7 +323,7 @@
         .segment-number { background-color: var(--color-info); }
         .segment-punctuation { background-color: var(--color-warning); }
         .segment-letter { background-color: var(--color-danger); }
-        .segment-space { background-color: var(--color-gray-1); }
+        .segment-space { background-color: var(--color-gray-500); }
         .segment-other { background-color: var(--color-primary); }
 
         .actions {
@@ -348,12 +347,12 @@
         }
 
         .clear-btn {
-            background-color: var(--color-gray-3);
+            background-color: var(--color-gray-100);
             color: var(--color-gray-700);
         }
 
         .clear-btn:hover {
-            background-color: var(--color-gray-2);
+            background-color: var(--color-gray-200);
             transform: translateY(-1px);
         }
 
@@ -410,7 +409,7 @@
             background-color: var(--color-info);
             color: white;
             border-radius: var(--radius-md);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-md);
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s ease;
@@ -426,10 +425,38 @@
         .footer {
             text-align: center;
             font-size: 0.75rem;
-            color: var(--color-gray-1);
+            color: var(--color-gray-500);
             padding: 10px 0;
             margin-top: 5px;
-            border-top: 1px solid var(--color-gray-3);
+            border-top: 1px solid var(--color-gray-100);
+        }
+
+        /* 深色模式 */
+        [data-theme="dark"] textarea {
+            background-color: var(--color-gray-800);
+            border-color: var(--color-gray-600);
+            color: var(--color-gray-200);
+        }
+        [data-theme="dark"] .stat-card {
+            background-color: var(--color-gray-800);
+            border-color: var(--color-gray-600);
+        }
+        [data-theme="dark"] .distribution-section {
+            background-color: var(--color-gray-800);
+        }
+        [data-theme="dark"] .distribution-bar {
+            background-color: var(--color-gray-700);
+        }
+        [data-theme="dark"] .clear-btn {
+            background-color: var(--color-gray-700);
+            color: var(--color-gray-300);
+        }
+        [data-theme="dark"] .file-info {
+            color: var(--color-gray-400);
+        }
+        [data-theme="dark"] .footer {
+            color: var(--color-gray-400);
+            border-top-color: var(--color-gray-700);
         }
 
         @media (max-width: 768px) {
@@ -477,6 +504,7 @@
     </style>
 </head>
 <body>
+    <div class="page-content">
     <div class="container">
         <header>
             <h1>
@@ -583,11 +611,14 @@
         </div>
     </div>
 
-    <div class="notification" id="notification"></div>
 
     <script src="js/utils/toast.js"></script>
-    <script src="js/utils/copy.js"></script>
     <script src="js/utils/debounce.js"></script>
+    <script src="js/utils/copy.js"></script>
+    <script src="js/utils/storage.js"></script>
+    <script src="js/utils/theme.js"></script>
+    <script src="js/utils/loading.js"></script>
+    <script src="js/components/navbar.js"></script>
 
     <script>
         // 等待DOM加载完成后执行
@@ -619,8 +650,7 @@
             const tooltip = document.getElementById('tooltip');
             const clearButton = document.getElementById('clearButton');
             const copyButton = document.getElementById('copyButton');
-            const notification = document.getElementById('notification');
-
+            
             // 字符分布段元素
             const segmentElements = {
                 chinese: document.getElementById('chineseSegment'),
@@ -1153,38 +1183,8 @@
             updateUI(analyzeText(''));
         }
 
-        // 添加返回首页样式
-        const style = document.createElement('style');
-        style.textContent = `
-            .back-home {
-                margin: 2rem auto;
-                text-align: center;
-                max-width: 1000px;
-                padding: 1rem;
-                border-top: 1px solid var(--color-gray-200);
-            }
-            .back-home a {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                color: var(--color-primary);
-                text-decoration: none;
-                font-size: 0.875rem;
-                padding: 0.5rem 1rem;
-                border-radius: 8px;
-                transition: all 0.3s ease;
-            }
-            .back-home a:hover {
-                background-color: var(--color-primary-light);
-            }
-        `;
-        document.head.appendChild(style);
+
     </script>
 
-    <div class="back-home">
-        <a href="index.html">
-            <i class="fa fa-arrow-left"></i>返回工具列表
-        </a>
-    </div>
 </body>
 </html>
