@@ -579,10 +579,36 @@
         }
 
 
+        var lastClipboardText = '';
+
+        function checkClipboardOnFocus() {
+            if (!monitorEnabled) return;
+            try {
+                navigator.clipboard.readText().then(function(text) {
+                    if (text && text.trim() && text.trim() !== lastClipboardText) {
+                        lastClipboardText = text.trim();
+                        addToHistory(text.trim());
+                    }
+                }).catch(function() {});
+            } catch(e) {}
+        }
+
+        // 页面获得焦点时读取剪贴板（最可靠的跨页面/跨应用检测方式）
+        window.addEventListener('focus', function() {
+            setTimeout(checkClipboardOnFocus, 100);
+        });
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                setTimeout(checkClipboardOnFocus, 100);
+            }
+        });
+
+        // 页面内复制监听
         document.addEventListener('copy', function() {
             setTimeout(function() {
                 var text = window.getSelection().toString();
                 if (text && text.trim()) {
+                    lastClipboardText = text.trim();
                     addToHistory(text.trim());
                 }
             }, 10);
@@ -591,13 +617,15 @@
         // 监听 copy.js 的自定义事件（navigator.clipboard.writeText 不触发原生 copy 事件）
         document.addEventListener('clipboard-copy', function(e) {
             if (e.detail && e.detail.text && e.detail.text.trim()) {
+                lastClipboardText = e.detail.text.trim();
                 addToHistory(e.detail.text.trim());
             }
         });
 
         function handleClipboardChange() {
             navigator.clipboard.readText().then(function(text) {
-                if (text && text.trim()) {
+                if (text && text.trim() && text.trim() !== lastClipboardText) {
+                    lastClipboardText = text.trim();
                     addToHistory(text.trim());
                 }
             }).catch(function(e) {
@@ -607,23 +635,17 @@
         function toggleMonitor() {
             var toggle = document.getElementById('monitorToggle');
             if (toggle.checked) {
-                navigator.clipboard.readText().then(function() {
-                    if (navigator.clipboard.addEventListener) {
-                        navigator.clipboard.addEventListener('clipboardchange', handleClipboardChange);
-                        monitorEnabled = true;
-                        Toast.success('系统剪贴板监控已开启');
-                    } else {
-                        Toast.error('当前浏览器不支持系统剪贴板监控');
-                        toggle.checked = false;
+                navigator.clipboard.readText().then(function(text) {
+                    if (text && text.trim()) {
+                        lastClipboardText = text.trim();
                     }
+                    monitorEnabled = true;
+                    Toast.success('系统剪贴板监控已开启');
                 }).catch(function(e) {
                     Toast.error('权限被拒绝，无法监控系统剪贴板');
                     toggle.checked = false;
                 });
             } else {
-                if (navigator.clipboard.removeEventListener) {
-                    navigator.clipboard.removeEventListener('clipboardchange', handleClipboardChange);
-                }
                 monitorEnabled = false;
                 Toast.success('系统剪贴板监控已关闭');
             }
