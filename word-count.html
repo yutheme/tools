@@ -49,9 +49,6 @@
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            background: var(--color-white);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
             overflow: hidden;
         }
 
@@ -60,7 +57,6 @@
             color: white;
             text-align: center;
             padding: 1.5rem;
-            margin-bottom: 0;
             position: relative;
         }
 
@@ -84,22 +80,16 @@
             font-weight: 400;
         }
 
-        .card {
-            background: var(--color-white);
-            padding: 15px;
-            margin: 0 15px 15px 15px;
-            transition: var(--transition-normal);
-            position: relative;
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-1px);
-        }
-
         .input-section {
-            margin-bottom: 15px;
+            margin: 0 15px 15px 15px;
+            padding: 15px;
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
             position: relative;
+        }
+
+        [data-theme="dark"] .input-section {
+            background: var(--color-gray-100);
         }
 
         .input-actions {
@@ -431,6 +421,17 @@
             border-top: 1px solid var(--color-gray-100);
         }
 
+        .stats-section {
+            margin: 0 15px 15px 15px;
+            padding: 15px;
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+        }
+
+        [data-theme="dark"] .stats-section {
+            background: var(--color-gray-100);
+        }
+
         /* 深色模式 - 页面特有样式（输入框由 themes.css 全局处理） */
         [data-theme="dark"] .stat-card {
             background-color: var(--color-gray-100);
@@ -533,7 +534,7 @@
             <input type="file" id="fileInput" class="file-input" accept=".txt,.docx,.pdf,.pptx">
         </div>
 
-        <div class="card">
+        <div class="stats-section">
             <div class="stats-container">
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -605,7 +606,7 @@
             © 2026 字数统计工具 | 简洁高效的文本分析助手
         </div>
     </div>
-
+    </div>
 
     <script src="js/utils/toast.js"></script>
     <script src="js/utils/debounce.js"></script>
