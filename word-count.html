@@ -49,6 +49,9 @@
         .container {
             max-width: 1000px;
             margin: 0 auto;
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
             overflow: hidden;
         }
 
@@ -81,15 +84,12 @@
         }
 
         .input-section {
-            margin: 0 15px 15px 15px;
-            padding: 15px;
-            background: var(--color-white);
-            border-radius: var(--radius-lg);
-            position: relative;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--color-gray-200);
         }
 
         [data-theme="dark"] .input-section {
-            background: var(--color-gray-100);
+            border-bottom-color: var(--color-gray-700);
         }
 
         .input-actions {
@@ -422,14 +422,12 @@
         }
 
         .stats-section {
-            margin: 0 15px 15px 15px;
-            padding: 15px;
-            background: var(--color-white);
-            border-radius: var(--radius-lg);
+            padding: 15px 20px;
+            background-color: var(--color-gray-50);
         }
 
         [data-theme="dark"] .stats-section {
-            background: var(--color-gray-100);
+            background-color: var(--color-gray-900);
         }
 
         /* 深色模式 - 页面特有样式（输入框由 themes.css 全局处理） */
@@ -605,7 +603,6 @@
         <div class="footer">
             © 2026 字数统计工具 | 简洁高效的文本分析助手
         </div>
-    </div>
     </div>
 
     <script src="js/utils/toast.js"></script>
