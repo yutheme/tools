@@ -269,7 +269,7 @@
         /* 入场动画 */
         .card-enter {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(10px);
         }
 
         .card-enter-active {
@@ -338,14 +338,14 @@
     <script>
         // 工具配置数据
         const TOOLS_CONFIG = [
-            { id: 'number-converter', name: '数字大写转换', url: 'number-converter.html', icon: 'fa-right-left', category: 'number', description: '快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式，支持大额数字和小数。', feature: '符合财务规范格式' },
-            { id: 'word-count', name: '字数统计工具', url: 'word-count.html', icon: 'fa-file-lines', category: 'wordcount', description: '精准统计文本中的汉字、数字、字母等字符数量，支持多种文件格式上传分析。', feature: '支持多格式文件分析' },
-            { id: 'translator', name: '智能翻译工具', url: 'translator.html', icon: 'fa-language', category: 'translate', description: '自动识别语言类型，支持多语言互译，实时响应，操作简单，满足跨语言沟通需求。', feature: '自动语言检测' },
-            { id: 'password-generator', name: '密码生成器', url: 'password-generator.html', icon: 'fa-lock', category: 'password', description: '本地生成高强度账号密码，支持同时生成用户名 + 密码、排除易混淆字符、密码强度可视化、常用模板、批量生成。', feature: '隐私安全 · 前端生成' },
-            { id: 'yaml-previewer', name: 'YAML 工具', url: 'yaml-previewer.html', icon: 'fa-file-code', category: 'yaml', description: 'YAML 格式化验证一站式工具，支持 YAML⇔JSON 双向转换、保留注释、差异对比。', feature: '双向转换 · 差异对比' },
-            { id: 'clipboard-history', name: '剪贴板历史', url: 'clipboard-history.html', icon: 'fa-clipboard', category: 'clipboard', description: '记录复制粘贴历史，一键找回之前复制的内容，支持搜索和快速复用。', feature: '本地存储 · 安全隐私' },
-            { id: 'key-generator', name: '密钥生成器', url: 'key-generator.html', icon: 'fa-key', category: 'key', description: '生成 API Key、UUID、Base62、十六进制等多种格式密钥，支持自定义前缀和批量生成，完全本地运行。', feature: '本地生成 · 支持多种格式' },
-            { id: 'vrime', name: '在线中文输入法', url: 'vrime.html', icon: 'fa-keyboard', category: 'vrime', description: '基于 RIME 的网页中文输入法，适合 Meta Quest VR 浏览器使用，支持拼音、五笔、双拼，完全本地运行。', feature: '本地 WASM · VR 友好' },
+            { id: 'number-converter', name: '数字大写转换', url: 'number-converter.html', icon: 'fas fa-right-left', category: 'number', description: '快速将阿拉伯数字或中文数字转换为符合财务规范的大写金额格式，支持大额数字和小数。', feature: '符合财务规范格式' },
+            { id: 'word-count', name: '字数统计工具', url: 'word-count.html', icon: 'fas fa-file-lines', category: 'wordcount', description: '精准统计文本中的汉字、数字、字母等字符数量，支持多种文件格式上传分析。', feature: '支持多格式文件分析' },
+            { id: 'translator', name: '智能翻译工具', url: 'translator.html', icon: 'fas fa-language', category: 'translate', description: '自动识别语言类型，支持多语言互译，实时响应，操作简单，满足跨语言沟通需求。', feature: '自动语言检测' },
+            { id: 'password-generator', name: '密码生成器', url: 'password-generator.html', icon: 'fas fa-lock', category: 'password', description: '本地生成高强度账号密码，支持同时生成用户名 + 密码、排除易混淆字符、密码强度可视化、常用模板、批量生成。', feature: '隐私安全 · 前端生成' },
+            { id: 'yaml-previewer', name: 'YAML 工具', url: 'yaml-previewer.html', icon: 'fas fa-file-code', category: 'yaml', description: 'YAML 格式化验证一站式工具，支持 YAML⇔JSON 双向转换、保留注释、差异对比。', feature: '双向转换 · 差异对比' },
+            { id: 'clipboard-history', name: '剪贴板历史', url: 'clipboard-history.html', icon: 'fas fa-clipboard', category: 'clipboard', description: '记录复制粘贴历史，一键找回之前复制的内容，支持搜索和快速复用。', feature: '本地存储 · 安全隐私' },
+            { id: 'key-generator', name: '密钥生成器', url: 'key-generator.html', icon: 'fas fa-key', category: 'key', description: '生成 API Key、UUID、Base62、十六进制等多种格式密钥，支持自定义前缀和批量生成，完全本地运行。', feature: '本地生成 · 支持多种格式' },
+            { id: 'vrime', name: '在线中文输入法', url: 'vrime.html', icon: 'fas fa-keyboard', category: 'vrime', description: '基于 RIME 的网页中文输入法，适合 Meta Quest VR 浏览器使用，支持拼音、五笔、双拼，完全本地运行。', feature: '本地 WASM · VR 友好' },
             { id: 'docker-converter', name: 'Docker 转换器', url: 'docker-converter.html', icon: 'fab fa-docker', category: 'docker', description: '将 docker run 命令一键转换为 docker-compose.yml 格式，支持端口映射、卷挂载、环境变量等常用参数。', feature: '快速转换 · 支持高级参数' }
         ];
 
