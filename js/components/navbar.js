@@ -102,21 +102,17 @@
             '<div id="themeDropdownContainer" style="position:relative;">' +
               '<button id="themeToggle" class="navbar-btn" title="主题设置">' +
                 '<i class="far fa-moon"></i>' +
-                '<span id="themeText">浅色</span>' +
               '</button>' +
               '<div id="themeDropdown" class="theme-dropdown" style="display:none;">' +
                 '<div class="theme-option" data-mode="light">' +
-                  '<i class="far fa-moon"></i>' +
                   '<span>浅色模式</span>' +
                   '<i class="fas fa-check"></i>' +
                 '</div>' +
                 '<div class="theme-option" data-mode="dark">' +
-                  '<i class="far fa-sun"></i>' +
                   '<span>深色模式</span>' +
                   '<i class="fas fa-check"></i>' +
                 '</div>' +
                 '<div class="theme-option" data-mode="system">' +
-                  '<i class="fas fa-desktop"></i>' +
                   '<span>跟随系统</span>' +
                   '<i class="fas fa-check"></i>' +
                 '</div>' +
@@ -212,28 +208,24 @@
   function initTheme() {
     var themeToggle = document.getElementById('themeToggle');
     var themeDropdown = document.getElementById('themeDropdown');
-    var themeText = document.getElementById('themeText');
     var themeOptions = themeDropdown ? themeDropdown.querySelectorAll('.theme-option') : [];
-    if (!themeToggle || !themeDropdown || !themeText) return;
+    if (!themeToggle || !themeDropdown) return;
 
-    // 更新按钮显示和下拉菜单高亮
+    // 更新按钮图标和下拉菜单高亮
     function updateThemeUI(mode) {
-      var icon, text;
+      var icon;
+      // 按钮图标：浅色=太阳，深色=月亮，跟随系统=桌面
       if (mode === 'system') {
         icon = 'fas fa-desktop';
-        text = '跟随系统';
       } else if (mode === 'dark') {
-        icon = 'far fa-sun';
-        text = '深色';
+        icon = 'far fa-moon';  // 深色模式显示月亮
       } else {
-        icon = 'far fa-moon';
-        text = '浅色';
+        icon = 'far fa-sun';   // 浅色模式显示太阳
       }
       
-      // 更新按钮图标和文字
+      // 更新按钮图标
       var btnIcon = themeToggle.querySelector('i');
       if (btnIcon) btnIcon.className = icon;
-      themeText.textContent = text;
       
       // 更新下拉菜单选中状态
       themeOptions.forEach(function(option) {
@@ -244,7 +236,7 @@
           if (checkIcon) checkIcon.style.opacity = '1';
         } else {
           option.classList.remove('selected');
-          if (checkIcon) checkIcon.style.opacity = '0.3';
+          if (checkIcon) checkIcon.style.opacity = '0';
         }
       });
     }
@@ -385,19 +377,16 @@
         
         menuHtml += '<div class="history-header" style="margin-top:0;">主题设置</div>';
         menuHtml += '<div class="mobile-menu-item" data-theme-mode="light" style="cursor:pointer;">' +
-          '<i class="far fa-moon"></i>' +
           '浅色模式' +
-          '<i class="fas fa-check" style="margin-left:auto;color:var(--color-primary);opacity:' + (currentMode === 'light' ? '1' : '0.3') + ';"></i>' +
+          '<i class="fas fa-check" style="margin-left:auto;color:var(--color-primary);opacity:' + (currentMode === 'light' ? '1' : '0') + ';"></i>' +
         '</div>';
         menuHtml += '<div class="mobile-menu-item" data-theme-mode="dark" style="cursor:pointer;">' +
-          '<i class="far fa-sun"></i>' +
           '深色模式' +
-          '<i class="fas fa-check" style="margin-left:auto;color:var(--color-primary);opacity:' + (currentMode === 'dark' ? '1' : '0.3') + ';"></i>' +
+          '<i class="fas fa-check" style="margin-left:auto;color:var(--color-primary);opacity:' + (currentMode === 'dark' ? '1' : '0') + ';"></i>' +
         '</div>';
         menuHtml += '<div class="mobile-menu-item" data-theme-mode="system" style="cursor:pointer;">' +
-          '<i class="fas fa-desktop"></i>' +
           '跟随系统' +
-          '<i class="fas fa-check" style="margin-left:auto;color:var(--color-primary);opacity:' + (currentMode === 'system' ? '1' : '0.3') + ';"></i>' +
+          '<i class="fas fa-check" style="margin-left:auto;color:var(--color-primary);opacity:' + (currentMode === 'system' ? '1' : '0') + ';"></i>' +
         '</div>';
 
         // GitHub
