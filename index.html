@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-title" content="实用工具集">
-    <meta name="description" content="实用工具集提供数字大写转换、字数统计、智能翻译、密码生成器、YAML工具等多种在线工具，简洁高效，满足日常办公与开发需求">
-    <meta name="keywords" content="实用工具,数字大写转换,字数统计,智能翻译,密码生成器,YAML格式化,YAML对比,在线工具,开发工具,办公工具">
+    <meta name="description" content="实用工具集提供数字大写转换、字数统计、智能翻译、密码生成器、YAML 工具、Markdown 编辑器、Docker 转换器、在线中文输入法等多种在线工具，简洁高效，满足日常办公与开发需求">
+    <meta name="keywords" content="实用工具，数字大写转换，字数统计，智能翻译，密码生成器,YAML 格式化,YAML 对比，Markdown 编辑器，在线工具，开发工具，办公工具">
     <title>实用工具集 - 高效的在线工具解决方案</title>
     <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -262,6 +262,11 @@
         .tool-docker:hover .tool-icon { background-color: var(--color-tool-docker-ring); }
         .tool-docker .tool-icon i { color: var(--color-tool-docker); }
 
+        .tool-markdown .tool-icon { background-color: var(--color-tool-translate-light); }
+        .tool-markdown .tool-action { color: var(--color-tool-translate); }
+        .tool-markdown:hover .tool-icon { background-color: var(--color-tool-translate-ring); }
+        .tool-markdown .tool-icon i { color: var(--color-tool-translate); }
+
         .tool-card:hover .tool-action i {
             transform: translateX(6px);
         }
@@ -347,7 +352,8 @@
             { id: 'clipboard-history', name: '剪贴板历史', url: 'clipboard-history.html', icon: 'fas fa-clipboard', category: 'clipboard', description: '记录复制粘贴历史，一键找回之前复制的内容，支持搜索和快速复用。', feature: '本地存储 · 安全隐私' },
             { id: 'key-generator', name: '密钥生成器', url: 'key-generator.html', icon: 'fas fa-key', category: 'key', description: '生成 API Key、UUID、Base62、十六进制等多种格式密钥，支持自定义前缀和批量生成，完全本地运行。', feature: '本地生成 · 支持多种格式' },
             { id: 'vrime', name: '在线中文输入法', url: 'vrime.html', icon: 'fas fa-keyboard', category: 'vrime', description: '基于 RIME 的网页中文输入法，适合 Meta Quest VR 浏览器使用，支持拼音、五笔、双拼，完全本地运行。', feature: '本地 WASM · VR 友好' },
-            { id: 'docker-converter', name: 'Docker 转换器', url: 'docker-converter.html', icon: 'fab fa-docker', category: 'docker', description: '将 docker run 命令一键转换为 docker-compose.yml 格式，支持端口映射、卷挂载、环境变量等常用参数。', feature: '快速转换 · 支持高级参数' }
+            { id: 'docker-converter', name: 'Docker 转换器', url: 'docker-converter.html', icon: 'fab fa-docker', category: 'docker', description: '将 docker run 命令一键转换为 docker-compose.yml 格式，支持端口映射、卷挂载、环境变量等常用参数。', feature: '快速转换 · 支持高级参数' },
+            { id: 'markdown-editor', name: 'Markdown 编辑器', url: 'markdown-editor.html', icon: 'fab fa-markdown', category: 'markdown', description: '实时预览 Markdown，左右分屏编辑，支持代码高亮、导出 HTML/MD、本地自动保存、同步滚动。', feature: '实时预览 · 本地保存' }
         ];
 
         document.addEventListener('DOMContentLoaded', function() {
