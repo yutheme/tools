@@ -99,9 +99,29 @@
             '</div>' +
           '</div>' +
           '<div class="navbar-btns" style="position:relative;">' +
-            '<button id="themeToggle" class="navbar-btn" title="切换深色模式">' +
-              '<i class="far fa-moon"></i>' +
-            '</button>' +
+            '<div id="themeDropdownContainer" style="position:relative;">' +
+              '<button id="themeToggle" class="navbar-btn" title="主题设置">' +
+                '<i class="far fa-moon"></i>' +
+                '<span id="themeText">浅色</span>' +
+              '</button>' +
+              '<div id="themeDropdown" class="theme-dropdown" style="display:none;">' +
+                '<div class="theme-option" data-mode="light">' +
+                  '<i class="far fa-moon"></i>' +
+                  '<span>浅色模式</span>' +
+                  '<i class="fas fa-check"></i>' +
+                '</div>' +
+                '<div class="theme-option" data-mode="dark">' +
+                  '<i class="far fa-sun"></i>' +
+                  '<span>深色模式</span>' +
+                  '<i class="fas fa-check"></i>' +
+                '</div>' +
+                '<div class="theme-option" data-mode="system">' +
+                  '<i class="fas fa-desktop"></i>' +
+                  '<span>跟随系统</span>' +
+                  '<i class="fas fa-check"></i>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
             '<a href="https://github.com/yutheme/tools" target="_blank" rel="noopener noreferrer" class="navbar-btn" title="GitHub">' +
               '<i class="fab fa-github"></i>' +
             '</a>' +
@@ -191,39 +211,84 @@
 
   function initTheme() {
     var themeToggle = document.getElementById('themeToggle');
-    if (!themeToggle) return;
+    var themeDropdown = document.getElementById('themeDropdown');
+    var themeText = document.getElementById('themeText');
+    var themeOptions = themeDropdown ? themeDropdown.querySelectorAll('.theme-option') : [];
+    if (!themeToggle || !themeDropdown || !themeText) return;
 
-    // 更新图标和提示
-    function updateIcon(mode) {
-      var icon = themeToggle.querySelector('i');
-      var title;
+    // 更新按钮显示和下拉菜单高亮
+    function updateThemeUI(mode) {
+      var icon, text;
       if (mode === 'system') {
-        icon.className = 'fas fa-desktop';
-        title = '跟随系统';
+        icon = 'fas fa-desktop';
+        text = '跟随系统';
       } else if (mode === 'dark') {
-        icon.className = 'far fa-sun';
-        title = '浅色模式';
+        icon = 'far fa-sun';
+        text = '深色';
       } else {
-        icon.className = 'far fa-moon';
-        title = '深色模式';
+        icon = 'far fa-moon';
+        text = '浅色';
       }
-      themeToggle.title = title + '（点击切换）';
+      
+      // 更新按钮图标和文字
+      var btnIcon = themeToggle.querySelector('i');
+      if (btnIcon) btnIcon.className = icon;
+      themeText.textContent = text;
+      
+      // 更新下拉菜单选中状态
+      themeOptions.forEach(function(option) {
+        var optionMode = option.getAttribute('data-mode');
+        var checkIcon = option.querySelector('.fa-check');
+        if (optionMode === mode) {
+          option.classList.add('selected');
+          if (checkIcon) checkIcon.style.opacity = '1';
+        } else {
+          option.classList.remove('selected');
+          if (checkIcon) checkIcon.style.opacity = '0.3';
+        }
+      });
     }
 
-    // 初始化图标
+    // 初始化
     var current = window.Theme ? window.Theme.get() : 'system';
-    updateIcon(current);
+    updateThemeUI(current);
 
-    // 点击切换
-    themeToggle.addEventListener('click', function() {
-      var result = window.Theme ? window.Theme.toggle() : { mode: 'dark', effective: 'dark' };
-      updateIcon(result.mode);
-      if (window.Toast) {
-        var msg;
-        if (result.mode === 'system') msg = '已开启跟随系统主题';
-        else if (result.mode === 'dark') msg = '已切换到深色模式';
-        else msg = '已切换到浅色模式';
-        Toast.success(msg);
+    // 点击按钮切换下拉菜单
+    themeToggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var isVisible = themeDropdown.style.display !== 'none';
+      themeDropdown.style.display = isVisible ? 'none' : 'block';
+      if (!isVisible) {
+        // 聚焦到第一个选项
+        var firstOption = themeDropdown.querySelector('.theme-option');
+        if (firstOption) firstOption.scrollIntoView({ block: 'nearest' });
+      }
+    });
+
+    // 点击选项切换主题
+    themeOptions.forEach(function(option) {
+      option.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var mode = this.getAttribute('data-mode');
+        if (window.Theme) {
+          var result = window.Theme.setMode(mode);
+          updateThemeUI(mode);
+          if (window.Toast) {
+            var msg;
+            if (mode === 'system') msg = '已开启跟随系统主题';
+            else if (mode === 'dark') msg = '已切换到深色模式';
+            else msg = '已切换到浅色模式';
+            Toast.success(msg);
+          }
+        }
+        themeDropdown.style.display = 'none';
+      });
+    });
+
+    // 点击外部关闭
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#themeDropdownContainer')) {
+        themeDropdown.style.display = 'none';
       }
     });
   }
@@ -315,26 +380,24 @@
         var history = getHistory();
         var menuHtml = '';
 
-        // 主题切换
-        var mode = window.Theme ? window.Theme.get() : 'system';
-        var effective = window.Theme ? window.Theme.getEffective() : 'light';
-        var isDark = effective === 'dark';
+        // 主题切换 - 显示三个选项
+        var currentMode = window.Theme ? window.Theme.get() : 'system';
         
-        var themeIcon, themeText;
-        if (mode === 'system') {
-          themeIcon = 'fas fa-desktop';
-          themeText = '跟随系统';
-        } else if (mode === 'dark') {
-          themeIcon = 'far fa-sun';
-          themeText = '浅色模式';
-        } else {
-          themeIcon = 'far fa-moon';
-          themeText = '深色模式';
-        }
-        
-        menuHtml += '<div class="mobile-menu-item" id="mobileThemeToggle">' +
-          '<i class="' + themeIcon + '"></i>' +
-          themeText +
+        menuHtml += '<div class="history-header" style="margin-top:0;">主题设置</div>';
+        menuHtml += '<div class="mobile-menu-item" data-theme-mode="light" style="cursor:pointer;">' +
+          '<i class="far fa-moon"></i>' +
+          '浅色模式' +
+          '<i class="fas fa-check" style="margin-left:auto;color:var(--color-primary);opacity:' + (currentMode === 'light' ? '1' : '0.3') + ';"></i>' +
+        '</div>';
+        menuHtml += '<div class="mobile-menu-item" data-theme-mode="dark" style="cursor:pointer;">' +
+          '<i class="far fa-sun"></i>' +
+          '深色模式' +
+          '<i class="fas fa-check" style="margin-left:auto;color:var(--color-primary);opacity:' + (currentMode === 'dark' ? '1' : '0.3') + ';"></i>' +
+        '</div>';
+        menuHtml += '<div class="mobile-menu-item" data-theme-mode="system" style="cursor:pointer;">' +
+          '<i class="fas fa-desktop"></i>' +
+          '跟随系统' +
+          '<i class="fas fa-check" style="margin-left:auto;color:var(--color-primary);opacity:' + (currentMode === 'system' ? '1' : '0.3') + ';"></i>' +
         '</div>';
 
         // GitHub
@@ -357,21 +420,23 @@
         mobileMenu.classList.add('active');
 
         // 绑定移动端主题切换
-        var mobileThemeBtn = document.getElementById('mobileThemeToggle');
-        if (mobileThemeBtn) {
-          mobileThemeBtn.addEventListener('click', function() {
-            var result = window.Theme ? window.Theme.toggle() : { mode: 'dark', effective: 'dark' };
-            if (window.Toast) {
-              var msg;
-              if (result.mode === 'system') msg = '已开启跟随系统主题';
-              else if (result.mode === 'dark') msg = '已切换到深色模式';
-              else msg = '已切换到浅色模式';
-              Toast.success(msg);
+        mobileMenu.querySelectorAll('[data-theme-mode]').forEach(function(item) {
+          item.addEventListener('click', function() {
+            var mode = this.getAttribute('data-theme-mode');
+            if (window.Theme) {
+              var result = window.Theme.setMode(mode);
+              if (window.Toast) {
+                var msg;
+                if (mode === 'system') msg = '已开启跟随系统主题';
+                else if (mode === 'dark') msg = '已切换到深色模式';
+                else msg = '已切换到浅色模式';
+                Toast.success(msg);
+              }
             }
             hamburger.classList.remove('active');
             mobileMenu.classList.remove('active');
           });
-        }
+        });
       } else {
         mobileMenu.classList.remove('active');
       }
