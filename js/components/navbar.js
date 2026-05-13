@@ -193,22 +193,37 @@
     var themeToggle = document.getElementById('themeToggle');
     if (!themeToggle) return;
 
-    // 更新图标
-    function updateIcon(theme) {
+    // 更新图标和提示
+    function updateIcon(mode) {
       var icon = themeToggle.querySelector('i');
-      if (icon) icon.className = theme === 'dark' ? 'far fa-sun' : 'far fa-moon';
+      var title;
+      if (mode === 'system') {
+        icon.className = 'fas fa-desktop';
+        title = '跟随系统';
+      } else if (mode === 'dark') {
+        icon.className = 'far fa-sun';
+        title = '浅色模式';
+      } else {
+        icon.className = 'far fa-moon';
+        title = '深色模式';
+      }
+      themeToggle.title = title + '（点击切换）';
     }
 
     // 初始化图标
-    var current = document.documentElement.getAttribute('data-theme') || 'light';
+    var current = window.Theme ? window.Theme.get() : 'system';
     updateIcon(current);
 
     // 点击切换
     themeToggle.addEventListener('click', function() {
-      var next = window.Theme ? window.Theme.toggle() : 'dark';
-      updateIcon(next);
+      var result = window.Theme ? window.Theme.toggle() : { mode: 'dark', effective: 'dark' };
+      updateIcon(result.mode);
       if (window.Toast) {
-        Toast.success(next === 'dark' ? '已切换到深色模式' : '已切换到浅色模式');
+        var msg;
+        if (result.mode === 'system') msg = '已开启跟随系统主题';
+        else if (result.mode === 'dark') msg = '已切换到深色模式';
+        else msg = '已切换到浅色模式';
+        Toast.success(msg);
       }
     });
   }
@@ -301,10 +316,25 @@
         var menuHtml = '';
 
         // 主题切换
-        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var mode = window.Theme ? window.Theme.get() : 'system';
+        var effective = window.Theme ? window.Theme.getEffective() : 'light';
+        var isDark = effective === 'dark';
+        
+        var themeIcon, themeText;
+        if (mode === 'system') {
+          themeIcon = 'fas fa-desktop';
+          themeText = '跟随系统';
+        } else if (mode === 'dark') {
+          themeIcon = 'far fa-sun';
+          themeText = '浅色模式';
+        } else {
+          themeIcon = 'far fa-moon';
+          themeText = '深色模式';
+        }
+        
         menuHtml += '<div class="mobile-menu-item" id="mobileThemeToggle">' +
-          '<i class="' + (isDark ? 'far fa-sun' : 'far fa-moon') + '"></i>' +
-          (isDark ? '浅色模式' : '深色模式') +
+          '<i class="' + themeIcon + '"></i>' +
+          themeText +
         '</div>';
 
         // GitHub
@@ -330,9 +360,13 @@
         var mobileThemeBtn = document.getElementById('mobileThemeToggle');
         if (mobileThemeBtn) {
           mobileThemeBtn.addEventListener('click', function() {
-            var next = window.Theme ? window.Theme.toggle() : 'dark';
+            var result = window.Theme ? window.Theme.toggle() : { mode: 'dark', effective: 'dark' };
             if (window.Toast) {
-              Toast.success(next === 'dark' ? '已切换到深色模式' : '已切换到浅色模式');
+              var msg;
+              if (result.mode === 'system') msg = '已开启跟随系统主题';
+              else if (result.mode === 'dark') msg = '已切换到深色模式';
+              else msg = '已切换到浅色模式';
+              Toast.success(msg);
             }
             hamburger.classList.remove('active');
             mobileMenu.classList.remove('active');
