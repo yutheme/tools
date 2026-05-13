@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown 编辑器 - 实时预览与导出</title>
-    <link rel="icon" type="image/png" href="icons/clipboard-96x96.png" sizes="96x96">
-    <link rel="icon" type="image/svg+xml" href="icons/clipboard.svg">
-    <link rel="shortcut icon" href="icons/clipboard-96x96.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/clipboard-apple-touch-icon.png">
-    <link rel="manifest" href="site.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512'%3E%3Cpath fill='%238B5CF6' d='M593.8 59.17H46.19C20.69 59.17 0 79.86 0 105.4v301.2C0 432.1 20.69 452.8 46.19 452.8h547.6c25.5 0 46.19-20.69 46.19-46.19V105.4C640 79.86 619.3 59.17 593.8 59.17zM160.1 349.3L96 279.7l32.09-32.09 32.09 32.09 64.17-96.26 64.17 96.26 32.09-32.09 32.09 32.09-64.17 96.26L320 349.3l32.09 32.09-64.17 96.26L160.1 349.3zM528 349.3h-64.17v-96.26L528 349.3z'/%3E%3C/svg%3E">
+    <link rel="shortcut icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512'%3E%3Cpath fill='%238B5CF6' d='M593.8 59.17H46.19C20.69 59.17 0 79.86 0 105.4v301.2C0 432.1 20.69 452.8 46.19 452.8h547.6c25.5 0 46.19-20.69 46.19-46.19V105.4C640 79.86 619.3 59.17 593.8 59.17zM160.1 349.3L96 279.7l32.09-32.09 32.09 32.09 64.17-96.26 64.17 96.26 32.09-32.09 32.09 32.09-64.17 96.26L320 349.3l32.09 32.09-64.17 96.26L160.1 349.3z'/%3E%3C/svg%3E">
 
     <!-- 主题闪烁防护 -->
     <script>
@@ -425,7 +422,7 @@
         <div class="container">
             <div class="header">
                 <div class="header-left">
-                    <h1><i class="fas fa-markdown"></i>Markdown 编辑器</h1>
+                    <h1><i class="fab fa-markdown"></i>Markdown 编辑器</h1>
                 </div>
                 <div class="toolbar">
                     <button onclick="newDocument()" class="btn btn-secondary">
@@ -518,6 +515,7 @@
 
             // 防抖函数
             const debounce = createDebounce(150);
+            const saveDebounce = createDebounce(500);
 
             // 初始化
             function init() {
@@ -533,6 +531,12 @@
                 // 绑定事件
                 editor.addEventListener('input', function() {
                     debounce(updatePreview);
+                    updateStatsNow();
+                    saveDebounce(saveToStorage);
+                });
+
+                // 失焦时立即保存
+                editor.addEventListener('blur', function() {
                     saveToStorage();
                 });
 
@@ -560,15 +564,28 @@
 
             // 更新统计信息
             function updateStats(text) {
-                // 字数统计
-                const words = text.trim().split(/\s+/).filter(function(w) {
-                    return w.length > 0;
-                }).length;
-                wordCountEl.textContent = words;
+                // 字符数（所有字符）
+                const chars = text.length;
+                
+                // 汉字数
+                const chineseChars = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+                
+                // 英文词数（剔除汉字后按空格分词）
+                const englishText = text.replace(/[\u4e00-\u9fff]/g, ' ');
+                const englishWords = englishText.trim() ? englishText.trim().split(/\s+/).filter(function(w) { return w.length > 0; }).length : 0;
+                
+                // 显示：汉字 / 英文词 / 总字符
+                wordCountEl.textContent = chineseChars + ' 汉字 · ' + englishWords + ' 英文词 · ' + chars + ' 字符';
 
-                // 阅读时间估算（假设每分钟 300 字）
-                const readTime = Math.ceil(words / 300);
+                // 阅读时间估算（按中文 300 字/分钟 + 英文 200 词/分钟 混合计算）
+                const readMinutes = chineseChars / 300 + englishWords / 200;
+                const readTime = Math.max(1, Math.ceil(readMinutes));
                 readTimeEl.textContent = readTime + ' 分钟';
+            }
+
+            // 更新统计（立即执行版本，供 input 事件使用）
+            function updateStatsNow() {
+                updateStats(editor.value);
             }
 
             // 处理任务列表
@@ -773,6 +790,25 @@ ${htmlContent}
             window.addEventListener('beforeunload', function() {
                 saveToStorage();
             });
+
+            // ====== 暴露函数到 window，供 onclick 使用 ======
+            window.newDocument = newDocument;
+            window.loadFromStorage = loadFromStorage;
+            window.saveToStorage = saveToStorage;
+            window.clearEditor = clearEditor;
+            window.downloadMarkdown = downloadMarkdown;
+            window.downloadHTML = downloadHTML;
+            window.copyPreview = copyPreview;
+
+            // showToast 快捷函数（适配 Toast 模块）
+            function showToast(msg, type) {
+                if (window.Toast) {
+                    if (type === 'success') Toast.success(msg);
+                    else if (type === 'warning') Toast.warning(msg);
+                    else if (type === 'error') Toast.error(msg);
+                    else Toast.info(msg);
+                }
+            }
 
             // 初始化
             init();

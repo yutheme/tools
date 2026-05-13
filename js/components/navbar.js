@@ -22,7 +22,8 @@
     { name: '剪贴板历史', path: 'clipboard-history.html', desc: '记录复制粘贴历史，一键找回之前复制的内容', icon: 'fas fa-clipboard', color: '#A855F7' },
     { name: '密钥生成器', path: 'key-generator.html', desc: '生成 API Key、UUID、Base62、Hex 等多种格式密钥', icon: 'fas fa-key', color: '#F97316' },
     { name: '在线中文输入法', path: 'vrime.html', desc: '基于RIME的网页中文输入法，支持拼音、五笔、双拼', icon: 'far fa-keyboard', color: '#06B6D4' }
-    ,{ name: 'Docker 转换器', path: 'docker-converter.html', desc: '将 docker run 命令一键转换为 docker-compose.yml 格式', icon: 'fab fa-docker', color: '#0DB7ED' }
+    { name: 'Docker 转换器', path: 'docker-converter.html', desc: '将 docker run 命令一键转换为 docker-compose.yml 格式', icon: 'fab fa-docker', color: '#0DB7ED' },
+    { name: 'Markdown 编辑器', path: 'markdown-editor.html', desc: '实时预览 Markdown，左右分屏编辑，支持代码高亮、导出 HTML', icon: 'fab fa-markdown', color: '#8B5CF6' }
   ];
 
   var HISTORY_KEY = 'visit_history';
