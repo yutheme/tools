@@ -13,7 +13,8 @@
   }
 
   function getPreferredTheme() {
-    var saved = localStorage.getItem(THEME_KEY);
+    var saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch (err) { /* 存储被禁用：退回默认 */ }
     if (saved) return saved;
     return 'system'; // 默认跟随系统
   }

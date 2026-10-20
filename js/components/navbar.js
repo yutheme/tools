@@ -26,55 +26,66 @@
     { name: 'Markdown 编辑器', path: 'markdown-editor.html', desc: '实时预览 Markdown，左右分屏编辑，支持代码高亮、导出 HTML', icon: 'fab fa-markdown', color: '#8B5CF6' }
   ];
 
-  var HISTORY_KEY = 'visit_history';
   var MAX_HISTORY = 5;
 
-  // 记录当前页面访问
-  function recordVisit() {
+  // 当前页面所属工具（根路径或未知页面返回 null）
+  function currentTool() {
     var currentPath = decodeURIComponent(location.pathname.split('/').pop() || '');
-    if (!currentPath) return; // 根路径不记录
+    if (!currentPath) return null;
     var tool = toolsData.find(function(t) { return t.path === currentPath; });
-    // 兼容旧中文路径：如果当前路径是旧路径，也能匹配到对应工具
-    if (!tool) {
-      var alias = PATH_ALIASES[currentPath];
-      if (alias) {
-        tool = toolsData.find(function(t) { return t.path === alias; });
-      }
-    }
-    if (!tool) return;
-
-    var history = [];
-    try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e) { history = []; }
-
-    // 移除相同路径的旧记录（同时清理旧中文路径的记录）
-    var pathsToClean = [tool.path];
-    Object.keys(PATH_ALIASES).forEach(function(oldPath) {
-      if (PATH_ALIASES[oldPath] === tool.path) pathsToClean.push(oldPath);
-    });
-    history = history.filter(function(h) { return pathsToClean.indexOf(h.path) === -1; });
-    history.unshift({ name: tool.name, path: tool.path, time: Date.now() });
-    if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
-
-    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch(e) {}
+    if (tool) return tool;
+    // 兼容旧中文路径
+    var alias = PATH_ALIASES[currentPath];
+    return alias ? (toolsData.find(function(t) { return t.path === alias; }) || null) : null;
   }
 
+  // 打开页面记一次 open（数据统一写入 Usage）
+  function recordVisit() {
+    var tool = currentTool();
+    if (!tool || !window.Usage) return;
+    Usage.track(tool.path, 'open');
+  }
+
+  // 真正使用（产生结果的操作）记一次 use；每次页面加载只记一次
+  function recordUseOnce() {
+    var tool = currentTool();
+    if (!tool || !window.Usage) return;
+    var done = false;
+
+    function mark() {
+      if (done) return;
+      done = true;
+      Usage.track(tool.path, 'use');
+      document.removeEventListener('input', onInput, true);
+      document.removeEventListener('click', onUseClick, true);
+    }
+
+    function onInput(e) {
+      var el = e.target;
+      if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) return;
+      if (el.closest && el.closest('.navbar')) return;
+      mark();
+    }
+
+    function onUseClick(e) {
+      var el = e.target;
+      if (el && el.closest && el.closest('[data-track-use]')) mark();
+    }
+
+    document.addEventListener('input', onInput, true);
+    document.addEventListener('click', onUseClick, true);
+  }
+
+  // 最近使用：只展示已知工具，避免脏数据或经存储篡改的路径进入 href
   function getHistory() {
-    try {
-      var history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-      // 自动迁移旧中文路径到新英文路径
-      var migrated = false;
-      history = history.map(function(item) {
-        if (PATH_ALIASES[item.path]) {
-          migrated = true;
-          return { name: item.name, path: PATH_ALIASES[item.path], time: item.time };
-        }
-        return item;
-      });
-      if (migrated) {
-        try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch(e) {}
-      }
-      return history;
-    } catch(e) { return []; }
+    if (!window.Usage) return [];
+    return Usage.recent(50).reduce(function(acc, item) {
+      if (acc.length >= MAX_HISTORY) return acc;
+      var tool = toolsData.find(function(t) { return t.path === item.path; });
+      if (!tool) return acc;
+      acc.push({ name: tool.name, path: tool.path, time: item.last });
+      return acc;
+    }, []);
   }
 
   function createNavbar() {
@@ -121,13 +132,16 @@
             '<a href="https://github.com/yutheme/tools" target="_blank" rel="noopener noreferrer" class="navbar-btn" title="GitHub">' +
               '<i class="fab fa-github"></i>' +
             '</a>' +
-            '<button id="historyBtn" class="navbar-btn" title="最近使用">' +
-              '<i class="fas fa-clock-rotate-left"></i>' +
-              '<div id="historyDropdown" class="history-dropdown" style="display:none;">' +
+            '<div class="navbar-history">' +
+              '<button type="button" id="historyBtn" class="navbar-btn" title="最近使用" aria-haspopup="true" aria-expanded="false">' +
+                '<i class="fas fa-clock-rotate-left"></i>' +
+              '</button>' +
+              '<div id="historyDropdown" class="history-dropdown" style="display:none;" role="menu" aria-label="最近使用">' +
                 '<div class="history-header">最近使用</div>' +
                 '<div id="historyList" class="history-list"></div>' +
+                '<button type="button" id="historyClear" class="history-clear" hidden>清除记录</button>' +
               '</div>' +
-            '</button>' +
+            '</div>' +
             '<button id="hamburgerBtn" class="navbar-btn hamburger" title="菜单">' +
               '<span></span><span></span><span></span>' +
             '</button>' +
@@ -289,7 +303,8 @@
     var historyBtn = document.getElementById('historyBtn');
     var historyDropdown = document.getElementById('historyDropdown');
     var historyList = document.getElementById('historyList');
-    if (!historyBtn || !historyDropdown) return;
+    var historyClear = document.getElementById('historyClear');
+    if (!historyBtn || !historyDropdown || !historyList) return;
 
     // 格式化时间为相对时间
     function formatTime(timestamp) {
@@ -306,41 +321,111 @@
       return new Date(timestamp).toLocaleDateString();
     }
 
+    function setOpen(open) {
+      historyDropdown.style.display = open ? 'block' : 'none';
+      historyBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) renderHistoryList();
+    }
+
+    // 全部用 DOM API + textContent 构建，不拼接 HTML
     function renderHistoryList() {
       var history = getHistory();
+      historyList.innerHTML = '';
+
       if (history.length === 0) {
-        historyList.innerHTML = '<div class="history-empty">暂无访问记录</div>';
+        var empty = document.createElement('div');
+        empty.className = 'history-empty';
+
+        // 区分「真的没记录」与「记录存不下来」，后者要给出可操作提示
+        if (window.Usage && !Usage.isAvailable()) {
+          empty.appendChild(document.createTextNode('当前浏览器无法保存访问记录'));
+          var tip = document.createElement('small');
+          tip.textContent = '请通过 http/https 访问，或关闭无痕模式';
+          empty.appendChild(tip);
+        } else {
+          empty.appendChild(document.createTextNode('暂无访问记录'));
+          var tip2 = document.createElement('small');
+          tip2.textContent = '访问过的工具会出现在这里';
+          empty.appendChild(tip2);
+        }
+        historyList.appendChild(empty);
       } else {
-        historyList.innerHTML = history.map(function(item) {
-          return '<a href="' + item.path + '" class="history-item">' +
-            '<span class="history-item-name">' + item.name + '</span>' +
-            '<small class="history-item-time">' + formatTime(item.time) + '</small>' +
-          '</a>';
-        }).join('');
+        history.forEach(function(item) {
+          var link = document.createElement('a');
+          link.className = 'history-item';
+          link.href = item.path;
+          link.setAttribute('role', 'menuitem');
+
+          var name = document.createElement('span');
+          name.className = 'history-item-name';
+          name.textContent = item.name;
+
+          var time = document.createElement('small');
+          time.className = 'history-item-time';
+          time.textContent = formatTime(item.time);
+
+          link.appendChild(name);
+          link.appendChild(time);
+          historyList.appendChild(link);
+        });
       }
+
+      if (historyClear) historyClear.hidden = history.length === 0;
     }
 
     historyBtn.addEventListener('click', function(e) {
       e.stopPropagation();
-      var isVisible = historyDropdown.style.display !== 'none';
-      historyDropdown.style.display = isVisible ? 'none' : 'block';
-
-      if (!isVisible) {
-        renderHistoryList();
-      }
+      setOpen(historyDropdown.style.display === 'none');
     });
 
-    // 监听其他标签页的 localStorage 变更
-    window.addEventListener('storage', function(e) {
-      if (e.key === HISTORY_KEY && historyDropdown.style.display !== 'none') {
-        renderHistoryList();
-      }
+    // 键盘：按钮上按 ↓ 展开并聚焦第一项
+    historyBtn.addEventListener('keydown', function(e) {
+      if (e.key !== 'ArrowDown') return;
+      e.preventDefault();
+      setOpen(true);
+      var first = historyList.querySelector('.history-item');
+      if (first) first.focus();
     });
+
+    // 菜单内 ↑↓ 循环切换，Esc 关闭并回到按钮
+    historyDropdown.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setOpen(false);
+        historyBtn.focus();
+        return;
+      }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      e.preventDefault();
+      var items = Array.prototype.slice.call(historyList.querySelectorAll('.history-item'));
+      if (!items.length) return;
+      var index = items.indexOf(document.activeElement);
+      var next = e.key === 'ArrowDown' ? index + 1 : index - 1;
+      if (next < 0) next = items.length - 1;
+      if (next >= items.length) next = 0;
+      items[next].focus();
+    });
+
+    if (historyClear) {
+      historyClear.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (window.Usage) Usage.clear();
+        renderHistoryList();
+        if (window.Toast) Toast.success('访问记录已清除');
+      });
+    }
+
+    // 其他标签页改动时同步（仅在展开状态下重绘）
+    if (window.Usage) {
+      Usage.subscribe(function() {
+        if (historyDropdown.style.display !== 'none') renderHistoryList();
+      });
+    }
 
     // 点击外部关闭
     document.addEventListener('click', function(e) {
       if (!e.target.closest('#historyBtn') && !e.target.closest('.history-dropdown')) {
-        historyDropdown.style.display = 'none';
+        setOpen(false);
       }
     });
   }
@@ -432,15 +517,25 @@
     });
   }
 
+  // 单个模块初始化失败不应连累其他模块（此前 Theme 抛错会导致最近使用等功能全部不初始化）
+  function safeInit(fn, label) {
+    try {
+      fn();
+    } catch (e) {
+      console.warn('[navbar] ' + label + ' 初始化失败：', e);
+    }
+  }
+
   // 初始化
   document.addEventListener('DOMContentLoaded', function() {
     var nav = createNavbar();
     document.body.insertBefore(nav, document.body.firstChild);
 
-    initSearch();
-    initTheme();
-    initHistory();
-    initMobileMenu();
-    recordVisit();
+    safeInit(initSearch, 'search');
+    safeInit(initTheme, 'theme');
+    safeInit(initHistory, 'history');
+    safeInit(initMobileMenu, 'mobileMenu');
+    safeInit(recordVisit, 'recordVisit');
+    safeInit(recordUseOnce, 'recordUseOnce');
   });
 })();

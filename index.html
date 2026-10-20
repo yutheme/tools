@@ -31,7 +31,6 @@
     <link rel="stylesheet" href="css/themes.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/loading.css">
-    <script src="js/utils/click-tracker.js"></script>
 
     <style>
         /* ========== 首页特有样式 ========== */
@@ -338,6 +337,7 @@
     <script src="js/utils/debounce.js"></script>
     <script src="js/utils/copy.js"></script>
     <script src="js/utils/theme.js"></script>
+    <script src="js/utils/usage.js"></script>
     <script src="js/components/navbar.js"></script>
 
     <script>
@@ -355,24 +355,24 @@
             { id: 'markdown-editor', name: 'Markdown 编辑器', url: 'markdown-editor.html', icon: 'fab fa-markdown', category: 'markdown', description: '实时预览 Markdown，左右分屏编辑，支持代码高亮、导出 HTML/MD、本地自动保存、同步滚动。', feature: '实时预览 · 本地保存' }
         ];
 
+        // 按常用度排序：使用权重 2、打开权重 1，同分按最近访问（数据由 Usage 统一维护）
+        function sortByUsage(tools) {
+            if (!window.Usage) return tools.slice();
+            const scores = {};
+            Usage.frequent(50).forEach(item => { scores[item.path] = item.score; });
+            return tools.slice().sort((a, b) => (scores[b.url] || 0) - (scores[a.url] || 0));
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const grid = document.getElementById('tools-grid');
             
-            // 按点击量排序
-            const sortedTools = ClickTracker.sortByClicks(TOOLS_CONFIG);
+            // 按常用度排序
+            const sortedTools = sortByUsage(TOOLS_CONFIG);
             
             // 渲染卡片
             sortedTools.forEach((tool, index) => {
                 const card = createToolCard(tool, index);
                 grid.appendChild(card);
-            });
-            
-            // 绑定点击事件（追踪点击）
-            document.querySelectorAll('.tool-card').forEach(card => {
-                card.addEventListener('click', function(e) {
-                    const url = this.dataset.url;
-                    if (url) ClickTracker.increment(url);
-                });
             });
         });
         
@@ -403,9 +403,9 @@
             return card;
         }
 
-        // 调试工具：重置点击数据
-        window.resetClicks = () => {
-            ClickTracker.reset();
+        // 调试工具：重置用量数据
+        window.resetUsage = () => {
+            if (window.Usage) Usage.clear();
             location.reload();
         };
     </script>

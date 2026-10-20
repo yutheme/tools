@@ -80,8 +80,7 @@ tools/
 │   │   ├── debounce.js                # 防抖/节流
 │   │   ├── copy.js                    # 复制能力
 │   │   ├── toast.js                   # 轻量通知
-│   │   ├── storage.js                 # 本地存储封装
-│   │   ├── loading.js                 # 轻量 Loading
+│   │   ├── usage.js                   # 工具用量记录（最近使用 / 常用排序的唯一数据源）
 │   │   └── theme.js                   # 主题切换
 │   └── tools/
 │       └── docker-converter.js        # Docker 转换器核心引擎
@@ -119,8 +118,7 @@ tools/
 │   │   ├── debounce.js                # 防抖/节流
 │   │   ├── copy.js                    # 复制能力
 │   │   ├── toast.js                   # 轻量通知
-│   │   ├── storage.js                 # 本地存储封装
-│   │   └── loading.js                 # 可选：轻量 Loading
+│   │   └── usage.js                   # 工具用量记录（open/use 计数，供最近使用与排序）
 │   └── tools/                         # 可选：仅当某个页面脚本过长时再拆出
 │       └── xxx.js
 ├── icons/
