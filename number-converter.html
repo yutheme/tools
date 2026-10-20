@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数字大写转换工具</title>
+    <meta name="description" content="在线数字转人民币大写工具，按财务规范处理零位与壹拾写法，同时支持大写金额转数字，适用于票据、报销与合同场景。">
     <link rel="icon" type="image/png" href="icons/number-96x96.png" sizes="96x96">
     <link rel="shortcut icon" href="icons/number-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/number-apple-touch-icon.png">
@@ -201,9 +202,7 @@
     <script src="js/utils/toast.js"></script>
     <script src="js/utils/debounce.js"></script>
     <script src="js/utils/copy.js"></script>
-    <script src="js/utils/storage.js"></script>
     <script src="js/utils/theme.js"></script>
-    <script src="js/utils/loading.js"></script>
     <script src="js/components/navbar.js"></script>
 
     <!-- 工具专属 JS -->
@@ -255,6 +254,15 @@
 
                     var integerResult = this.convertInteger(integerPart);
                     var decimalResult = this.convertDecimal(decimalPart);
+
+                    // 元与分之间补零：1000.01 应为「壹仟元零壹分」。
+                    // 有角（如 1000.10 → 壹仟元壹角）或无整数部分（0.05 → 伍分）时不补。
+                    if (integerResult && decimalPart &&
+                        parseInt(decimalPart[0], 10) === 0 &&
+                        parseInt(decimalPart[1] || '0', 10) > 0) {
+                        decimalResult = '零' + decimalResult;
+                    }
+
                     var result = integerResult + decimalResult;
 
                     if (isNegative) {
@@ -346,25 +354,37 @@
                 convertInteger: function(integerPart) {
                     if (integerPart === '0') return '';
 
-                    var result = '';
-                    var sectionCount = 0;
-                    var intPart = integerPart;
-
-                    while (intPart.length > 0) {
-                        var section = intPart.slice(-4);
-                        intPart = intPart.slice(0, -4);
-
-                        var sectionResult = this.convertSection(section);
-
-                        if (sectionResult && sectionCount < this.sectionUnits.length) {
-                            sectionResult += this.sectionUnits[sectionCount];
-                        }
-
-                        result = sectionResult + result;
-                        sectionCount++;
+                    // 去掉高位多余的 0（如 0086 → 86），再按 4 位分节，从高位到低位拼接。
+                    // 原实现从低位往高位拼接、且从不给"有前导零的低位节"补零，
+                    // 导致 10086 → 壹万捌拾陆（应为 壹万零捌拾陆）。
+                    var s = integerPart.replace(/^0+(?=\d)/, '');
+                    var sections = [];
+                    while (s.length > 0) {
+                        sections.unshift(s.slice(-4));
+                        s = s.slice(0, -4);
                     }
 
-                    result = result.replace(/零+/g, '零').replace(/零$/, '');
+                    var result = '';
+                    var zeroPending = false;
+
+                    for (var i = 0; i < sections.length; i++) {
+                        var secText = this.convertSection(sections[i]);
+                        var secValue = parseInt(sections[i], 10);
+                        var unitIdx = sections.length - 1 - i;
+
+                        if (secValue === 0) {
+                            // 整节为 0：先记一笔，等后面出现非零节时补一个「零」
+                            if (result !== '') zeroPending = true;
+                            continue;
+                        }
+
+                        // 组边界补零：本节不足 4 位（有前导零），或中间隔了整节的零
+                        if (result !== '' && (zeroPending || secValue < 1000)) {
+                            result += '零';
+                        }
+                        zeroPending = false;
+                        result += secText + this.sectionUnits[unitIdx];
+                    }
 
                     if (result === '') return '零元整';
 
@@ -372,30 +392,30 @@
                 },
 
                 convertSection: function(section) {
+                    // 节内规则：遇零打标，遇到下一个非零位时只输出一个「零」。
+                    // 原实现在遇到非零位时无条件删掉末尾的「零」，导致单零必丢
+                    // （101 → 壹佰壹），只有连续两个零才残留一个（所以 1001 反而是对的）。
                     var sectionResult = '';
-                    var hasNonZero = false;
+                    var pendingZero = false;
 
                     for (var i = 0; i < section.length; i++) {
                         var digit = parseInt(section[i], 10);
                         var position = section.length - 1 - i;
 
-                        if (digit !== 0) {
-                            if (sectionResult.endsWith('零')) {
-                                sectionResult = sectionResult.slice(0, -1);
-                            }
-                            sectionResult += this.digits[digit] + this.units[position];
-                            hasNonZero = true;
-                        } else if (hasNonZero) {
-                            sectionResult += '零';
+                        if (digit === 0) {
+                            if (sectionResult !== '') pendingZero = true;
+                            continue;
                         }
+
+                        if (pendingZero) {
+                            sectionResult += '零';
+                            pendingZero = false;
+                        }
+                        sectionResult += this.digits[digit] + this.units[position];
                     }
 
-                    sectionResult = sectionResult.replace(/零+$/, '');
-
-                    if (sectionResult.startsWith('壹拾')) {
-                        sectionResult = sectionResult.slice(1);
-                    }
-
+                    // 注意：这里不能把「壹拾」简化成「拾」——票据/财务大写为防篡改，
+                    // 10–19 必须写作「壹拾X」，原实现主动削掉「壹」不符合财务规范。
                     return sectionResult;
                 },
 

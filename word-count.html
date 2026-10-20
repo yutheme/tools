@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>字数统计工具 - 在线统计字符字数</title>
+    <meta name="description" content="在线字数统计工具，实时统计中文字数、英文单词、数字、标点与总字符数，支持上传 txt、md、docx、PDF 文件进行统计。">
         <link rel="icon" type="image/png" href="icons/wordcount-96x96.png" sizes="96x96">
     <link rel="shortcut icon" href="icons/wordcount-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/wordcount-apple-touch-icon.png">
@@ -24,7 +25,6 @@
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/loading.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.29.3/docxtemplater.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -610,9 +610,7 @@
     <script src="js/utils/toast.js"></script>
     <script src="js/utils/debounce.js"></script>
     <script src="js/utils/copy.js"></script>
-    <script src="js/utils/storage.js"></script>
     <script src="js/utils/theme.js"></script>
-    <script src="js/utils/loading.js"></script>
     <script src="js/components/navbar.js"></script>
 
     <script>
@@ -801,7 +799,7 @@
                         const arrayBuffer = await file.arrayBuffer();
                         const pdf = await pdfjsLib.getDocument({
                             data: arrayBuffer,
-                            cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/cmaps/',
+                            cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.14.305/cmaps/',
                             cMapPacked: true
                         }).promise;
 

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown 编辑器 - 实时预览与导出</title>
+    <meta name="description" content="在线 Markdown 编辑器，实时预览、代码高亮、任务列表渲染与字数统计，支持本地草稿自动保存与 Markdown 导出。">
     <link rel="icon" type="image/png" href="icons/markdown-96x96.png" sizes="96x96">
     <link rel="shortcut icon" href="icons/markdown-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/markdown-apple-touch-icon.png">
@@ -19,22 +20,23 @@
     </script>
 
     <!-- marked.js + Prism.js -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.9/dist/purify.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/prism.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-javascript.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-python.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-java.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-go.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-rust.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-typescript.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-css.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-bash.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-json.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-yaml.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-markdown.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-sql.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/1.29.0/components/prism-shell-session.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-go.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-rust.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-markdown.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-shell-session.min.js"></script>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="css/shared.css">
@@ -486,9 +488,7 @@
     <script src="js/utils/toast.js"></script>
     <script src="js/utils/debounce.js"></script>
     <script src="js/utils/copy.js"></script>
-    <script src="js/utils/storage.js"></script>
     <script src="js/utils/theme.js"></script>
-    <script src="js/utils/loading.js"></script>
     <script src="js/components/navbar.js"></script>
 
     <script>
@@ -550,12 +550,22 @@
             function updatePreview() {
                 const markdown = editor.value;
                 const html = marked.parse(markdown);
-                preview.innerHTML = html;
 
-                // 高亮代码块
-                preview.querySelectorAll('pre code').forEach(function(block) {
-                    Prism.highlightElement(block);
-                });
+                // 安全：marked 的输出直连 innerHTML 会执行用户输入里的脚本
+                // （已实测 <img src=x onerror=...> 与 javascript: 链接均可执行）。
+                // 有 DOMPurify 就消毒；未加载时降级为纯文本，宁可不渲染也不执行。
+                if (window.DOMPurify) {
+                    preview.innerHTML = DOMPurify.sanitize(html);
+                } else {
+                    preview.textContent = markdown;
+                }
+
+                // 高亮代码块（Prism 依赖 CDN，缺失时不应中断后续的统计与任务列表渲染）
+                if (window.Prism) {
+                    preview.querySelectorAll('pre code').forEach(function(block) {
+                        Prism.highlightElement(block);
+                    });
+                }
 
                 // 更新统计
                 updateStats(markdown);
@@ -634,9 +644,9 @@
 
             // 保存到本地存储
             function saveToStorage() {
-                localStorage.setItem(STORAGE_KEY, editor.value);
+                try { localStorage.setItem(STORAGE_KEY, editor.value); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
                 const now = Date.now();
-                localStorage.setItem(LAST_SAVED_KEY, now.toString());
+                try { localStorage.setItem(LAST_SAVED_KEY, now.toString()); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
                 lastSavedEl.textContent = formatTime(new Date(now));
             }
 
@@ -659,8 +669,8 @@
                 }
                 editor.value = '';
                 updatePreview();
-                localStorage.removeItem(STORAGE_KEY);
-                localStorage.removeItem(LAST_SAVED_KEY);
+                try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
+                try { localStorage.removeItem(LAST_SAVED_KEY); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
                 lastSavedEl.textContent = '未保存';
                 showToast('已新建文档', 'success');
             }

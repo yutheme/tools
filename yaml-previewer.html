@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YAML 预览/验证/格式化工具 - YAML JSON互转对比</title>
+    <meta name="description" content="在线 YAML 工具，支持语法校验、格式化（保留注释）、YAML 与 JSON 互转、文本对比与文件上传下载。">
     <link rel="icon" type="image/png" href="icons/yaml-96x96.png" sizes="96x96">
     <link rel="shortcut icon" href="icons/yaml-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/yaml-apple-touch-icon.png">
@@ -19,7 +20,11 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/yaml@2.2.2/dist/yaml.js"></script>
+    <!-- yaml v2 官方只提供 ESM 构建（无 UMD），需用 module 引入后挂到 window.yaml -->
+    <script type="module">
+        import * as YAML from 'https://cdn.jsdelivr.net/npm/yaml@2.2.2/+esm';
+        window.yaml = YAML;
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="css/shared.css">
@@ -501,9 +506,7 @@
     <script src="js/utils/toast.js"></script>
     <script src="js/utils/debounce.js"></script>
     <script src="js/utils/copy.js"></script>
-    <script src="js/utils/storage.js"></script>
     <script src="js/utils/theme.js"></script>
-    <script src="js/utils/loading.js"></script>
     <script src="js/components/navbar.js"></script>
 
     <script>
@@ -519,9 +522,11 @@
         }
 
         function showError(msg, extraTip) {
-            var fullMsg = msg;
+            // 安全：msg 里可能夹带用户输入的原文（js-yaml 报错快照会回显出错行），
+            // 必须转义后再写入 innerHTML，否则可被执行（如 <img src=x onerror=...>）
+            var fullMsg = escapeHtml(String(msg));
             if (extraTip) {
-                fullMsg += '<br><br>💡 建议：' + extraTip;
+                fullMsg += '<br><br>💡 建议：' + escapeHtml(String(extraTip));
             }
             errorBox.innerHTML = fullMsg;
             errorBox.style.display = 'block';
@@ -658,6 +663,22 @@
                 showError('请输入YAML内容');
                 return;
             }
+
+            // yaml 库为 ESM，由 module 脚本异步加载。未就绪时明确提示，
+            // 不要静默落入下面的 jsyaml 降级分支（否则会把"库没加载"误报成"语法问题"）
+            if (typeof window.yaml === 'undefined') {
+                try {
+                    var fallback = jsyaml.load(content);
+                    outputArea.value = jsyaml.dump(fallback, { indent: 2, lineWidth: 120, noRefs: true, sortKeys: false });
+                    updateOutput();
+                    showError('⚠️ 注释保留功能暂不可用（yaml 库尚未加载完成或网络受限）',
+                              '已用基础模式完成格式化，注释会被丢弃；请检查网络后刷新页面重试');
+                } catch (e0) {
+                    showError('❌ 格式化失败: ' + e0.message);
+                }
+                return;
+            }
+
             try {
                 var parsed = yaml.parseDocument(content);
                 var formatted = yaml.stringify(parsed, { indent: 2, lineWidth: 120 });
@@ -669,7 +690,7 @@
                     var parsed2 = jsyaml.load(content);
                     var formatted2 = jsyaml.dump(parsed2, { indent: 2, lineWidth: 120, noRefs: true, sortKeys: false });
                     outputArea.value = formatted2;
-                    showSuccess('✅ YAML 格式化完成（注释无法保留，因为存在语法问题）');
+                    showSuccess('✅ YAML 格式化完成（已降级为基础模式，注释未保留）');
                 } catch (e2) {
                     showError('❌ 格式化失败: ' + e.message);
                 }

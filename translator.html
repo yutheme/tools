@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智能翻译工具 - 多语言实时翻译</title>
+    <meta name="description" content="在线多语言翻译工具，支持中英日韩等语言自动检测与实时互译，接口异常时自动切换备用服务。">
         <link rel="icon" type="image/png" href="icons/translate-96x96.png" sizes="96x96">
     <link rel="shortcut icon" href="icons/translate-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/translate-apple-touch-icon.png">
@@ -644,9 +645,7 @@
     <script src="js/utils/toast.js"></script>
     <script src="js/utils/debounce.js"></script>
     <script src="js/utils/copy.js"></script>
-    <script src="js/utils/storage.js"></script>
     <script src="js/utils/theme.js"></script>
-    <script src="js/utils/loading.js"></script>
     <script src="js/components/navbar.js"></script>
 
     <script>
@@ -1074,6 +1073,10 @@
 
         // 执行翻译
         async function performTranslation() {
+            // 防重入：按钮点击会在下方置 disabled，但回车键入口（keydown）不检查 disabled，
+            // 翻译中连按回车会并发多次请求，导致结果乱序、更易触发接口限流
+            if (elements.translateBtn.disabled) return;
+
             const textToTranslate = elements.sourceText.value;
             if (!textToTranslate.trim()) {
                 Toast.warning('请输入要翻译的文本');
