@@ -206,9 +206,9 @@
     return true;
   }
 
-  function rank(scoreFn, limit) {
+  function rank(scoreFn, limit, filterFn) {
     var tools = read().tools;
-    return Object.keys(tools)
+    var list = Object.keys(tools)
       .map(function(path) {
         var item = tools[path];
         return {
@@ -221,14 +221,25 @@
       })
       .sort(function(a, b) {
         return b.score - a.score || b.last - a.last;
-      })
-      .slice(0, limit || 5);
+      });
+
+    if (filterFn) list = list.filter(filterFn);
+
+    var n = (limit === undefined || limit === null) ? 5 : limit;
+    return list.slice(0, n);
   }
 
+  /**
+   * 最近使用：只取真正访问过的（有 last）。
+   * 从旧 tool_clicks 迁移来的条目只有点击次数、没有时间戳，
+   * 它们属于「常用」而非「最近」，否则会显示成 1970 年。
+   */
   function recent(limit) {
     return rank(function(item) {
       return item.last || 0;
-    }, limit);
+    }, limit, function(item) {
+      return item.last > 0;
+    });
   }
 
   // 常用：使用权重高于打开，次数相同按最近时间排

@@ -326,10 +326,13 @@
     var historyClear = document.getElementById('historyClear');
     if (!historyBtn || !historyDropdown || !historyList) return;
 
-    // 格式化时间为相对时间
+    // 格式化时间为相对时间；时间戳无效时返回空串（不渲染 1970 这类误导信息）
     function formatTime(timestamp) {
+      var ts = Number(timestamp) || 0;
+      if (ts <= 0) return '';
       var now = Date.now();
-      var diff = now - timestamp;
+      var diff = now - ts;
+      if (diff < 0) diff = 0;
       var seconds = Math.floor(diff / 1000);
       var minutes = Math.floor(seconds / 60);
       var hours = Math.floor(minutes / 60);
@@ -385,7 +388,7 @@
           time.textContent = formatTime(item.time);
 
           link.appendChild(name);
-          link.appendChild(time);
+          if (time.textContent) link.appendChild(time);
           historyList.appendChild(link);
         });
       }
@@ -455,10 +458,13 @@
     var mobileMenu = document.getElementById('mobileMenu');
     if (!hamburger || !mobileMenu) return;
 
-    // 格式化时间
+    // 格式化时间；时间戳无效时返回空串
     function formatTime(timestamp) {
+      var ts = Number(timestamp) || 0;
+      if (ts <= 0) return '';
       var now = Date.now();
-      var diff = now - timestamp;
+      var diff = now - ts;
+      if (diff < 0) diff = 0;
       var minutes = Math.floor(diff / 60000);
       var hours = Math.floor(minutes / 60);
       var days = Math.floor(hours / 24);
@@ -466,7 +472,7 @@
       if (minutes < 60) return minutes + '分钟前';
       if (hours < 24) return hours + '小时前';
       if (days < 7) return days + '天前';
-      return new Date(timestamp).toLocaleDateString();
+      return new Date(ts).toLocaleDateString();
     }
 
     hamburger.addEventListener('click', function() {
@@ -503,9 +509,12 @@
         if (history.length > 0) {
           menuHtml += '<div class="history-header" style="margin-top:0.25rem;">最近使用</div>';
           history.slice(0, 5).forEach(function(item) {
+            var timeText = formatTime(item.time);
+            var timeHtml = timeText
+              ? '<small style="margin-left:auto;color:var(--color-gray-400);font-size:0.7rem;">' + timeText + '</small>'
+              : '';
             menuHtml += '<a href="' + item.path + '" class="mobile-menu-item">' +
-              '<i class="far fa-clock"></i>' + item.name +
-              '<small style="margin-left:auto;color:var(--color-gray-400);font-size:0.7rem;">' + formatTime(item.time) + '</small>' +
+              '<i class="far fa-clock"></i>' + item.name + timeHtml +
             '</a>';
           });
         }
