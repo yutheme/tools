@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>密钥生成器 - API Key / UUID 生成工具</title>
+    <meta name="description" content="在线随机密钥生成器，支持 API Key、UUID v4、Base62、十六进制与自定义字符集，可批量生成高强度密钥，全部在浏览器本地生成。">
     <link rel="icon" type="image/png" sizes="96x96" href="icons/key-96x96.png">
     <link rel="shortcut icon" href="icons/key-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/key-apple-touch-icon.png">
@@ -549,9 +550,7 @@
     <script src="js/utils/toast.js"></script>
     <script src="js/utils/debounce.js"></script>
     <script src="js/utils/copy.js"></script>
-    <script src="js/utils/storage.js"></script>
     <script src="js/utils/theme.js"></script>
-    <script src="js/utils/loading.js"></script>
     <script src="js/components/navbar.js"></script>
 
     <script>
@@ -701,7 +700,7 @@
             if (history.length > 20) {
                 history.pop();
             }
-            localStorage.setItem('key_generator_history', JSON.stringify(history));
+            try { localStorage.setItem('key_generator_history', JSON.stringify(history)); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
         }
 
         function getHistory() {
@@ -779,7 +778,7 @@
         }
 
         function clearHistory() {
-            localStorage.removeItem('key_generator_history');
+            try { localStorage.removeItem('key_generator_history'); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
             renderHistory();
         }
 

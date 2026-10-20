@@ -35,7 +35,7 @@
     else if (current === 'dark') next = 'system';
     else next = 'light';
     
-    localStorage.setItem(THEME_KEY, next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
     var effective = getEffectiveTheme();
     applyTheme(effective);
     return { mode: next, effective: effective };
@@ -46,7 +46,7 @@
       console.warn('Invalid theme mode:', mode);
       return getEffectiveTheme();
     }
-    localStorage.setItem(THEME_KEY, mode);
+    try { localStorage.setItem(THEME_KEY, mode); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
     var effective = getEffectiveTheme();
     applyTheme(effective);
     return { mode: mode, effective: effective };

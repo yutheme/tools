@@ -237,12 +237,24 @@ var Toast = (function() {
     toast.appendChild(text);
     toast.appendChild(closeBtn);
 
-    // 自动消失（loading不消失）
-    if (duration > 0 && type !== 'loading') {
-      setTimeout(function() { removeToast(toast, false); }, duration);
-    }
+    // 自动消失改为「上屏后计时」（见 show / startTimer）。
+    // 若在创建时就启动，超出 maxToasts、还在队列里排队的 toast 会在看不见的时候
+    // 把时长走完，导致排队项永远不显示。这里只记下参数。
+    toast._duration = duration;
+    toast._type = type;
 
     return toast;
+  };
+
+  // ==================== 上屏后启动消失计时 ====================
+  var startTimer = function(toastElement) {
+    if (!toastElement) return;
+    if (toastElement._duration > 0 && toastElement._type !== 'loading') {
+      clearTimeout(toastElement._timer);
+      toastElement._timer = setTimeout(function() {
+        removeToast(toastElement, false);
+      }, toastElement._duration);
+    }
   };
 
   // ==================== 移除Toast ====================
@@ -258,8 +270,12 @@ var Toast = (function() {
       if (idx > -1) toastQueue.splice(idx, 1);
 
       // 显示下一个等待中的Toast
+      // 必须出队：原实现取 toastQueue[0] 但从不 shift，同一元素会既在容器又在队列，
+      // 下次出队时被重复 append（已移除的 toast「复活」）并阻塞后面的排队项
       if (toastQueue.length > 0 && container && container.children.length < config.maxToasts) {
-        container.appendChild(toastQueue[0]);
+        var next = toastQueue.shift();
+        container.appendChild(next);
+        startTimer(next);
       }
     }, delay);
   };
@@ -282,6 +298,7 @@ var Toast = (function() {
       toastQueue.push(toastElement);
     } else {
       container.appendChild(toastElement);
+      startTimer(toastElement);
     }
 
     return toastElement;

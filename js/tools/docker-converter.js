@@ -389,82 +389,11 @@
     return key + '=' + value;
   }
 
-  // ==================== 工具函数 ====================
-
-  /**
-   * 将 YAML 字符串转换为 JSON（用于预览）
-   */
-  function yamlToJson(yaml) {
-    // 简化版：仅用于显示，不做完整解析
-    try {
-      // 使用浏览器原生 eval（安全：仅处理本地生成的 YAML）
-      var json = simpleYamlToJson(yaml);
-      return JSON.stringify(json, null, 2);
-    } catch (e) {
-      return '// 无法转换为 JSON: ' + e.message;
-    }
-  }
-
-  /**
-   * 简化版 YAML → JSON 转换
-   */
-  function simpleYamlToJson(yaml) {
-    // 这里仅做简单转换，复杂场景建议引入 js-yaml
-    var obj = {};
-    var lines = yaml.split('\n');
-    var currentPath = [];
-    
-    for (var i = 0; i < lines.length; i++) {
-      var line = lines[i];
-      if (!line.trim() || line.trim().startsWith('#')) continue;
-      
-      var indent = line.match(/^(\s*)/)[1].length;
-      var content = line.trim();
-      
-      // 调整路径深度
-      while (currentPath.length > indent / 2) {
-        currentPath.pop();
-      }
-      
-      if (content.endsWith(':')) {
-        // 对象开始
-        var key = content.slice(0, -1);
-        if (currentPath.length === 0) {
-          obj[key] = {};
-        }
-        currentPath.push(key);
-      } else if (content.startsWith('- ')) {
-        // 数组项
-        var value = content.slice(2);
-        var parent = currentPath.reduce(function(o, k, i) {
-          return i === currentPath.length - 1 ? o[k] : o[k];
-        }, obj);
-        if (Array.isArray(parent)) {
-          parent.push(value.replace(/"/g, ''));
-        }
-      } else if (content.indexOf(':') !== -1) {
-        // 键值对
-        var colonIndex = content.indexOf(':');
-        var key = content.slice(0, colonIndex);
-        var value = content.slice(colonIndex + 1).trim().replace(/"/g, '');
-        var parent = currentPath.reduce(function(o, k) {
-          return o[k];
-        }, obj);
-        if (parent) {
-          parent[key] = value;
-        }
-      }
-    }
-    
-    return obj;
-  }
-
   // ==================== 暴露 API ====================
 
   window.DockerConverter = {
     parse: parseDockerRun,
-    generate: generateComposeYaml,
-    yamlToJson: yamlToJson
+    generate: generateComposeYaml
   };
 
 })();

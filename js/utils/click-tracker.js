@@ -21,7 +21,7 @@ const ClickTracker = (() => {
   function increment(toolUrl) {
     const all = getAll();
     all[toolUrl] = (all[toolUrl] || 0) + 1;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(all)); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
     return all[toolUrl];
   }
   
@@ -36,7 +36,7 @@ const ClickTracker = (() => {
   
   // 重置所有点击数据（用于调试）
   function reset() {
-    localStorage.removeItem(STORAGE_KEY);
+    try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
   }
   
   return {

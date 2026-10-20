@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>剪贴板历史 - 复制粘贴记录管理</title>
+    <meta name="description" content="在线剪贴板历史管理工具，自动记录复制内容，支持搜索、置顶、去重与本地持久化，数据仅保存在浏览器本地，不上传服务器。">
     <link rel="icon" type="image/png" href="icons/clipboard-96x96.png" sizes="96x96">
     <link rel="shortcut icon" href="icons/clipboard-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/clipboard-apple-touch-icon.png">
@@ -409,9 +410,7 @@
     <script src="js/utils/toast.js"></script>
     <script src="js/utils/debounce.js"></script>
     <script src="js/utils/copy.js"></script>
-    <script src="js/utils/storage.js"></script>
     <script src="js/utils/theme.js"></script>
-    <script src="js/utils/loading.js"></script>
     <script src="js/components/navbar.js"></script>
 
     <script>
@@ -429,7 +428,7 @@
         }
 
         function saveHistory(history) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
         }
 
         function addToHistory(text) {
@@ -459,7 +458,7 @@
 
         function clearAll() {
             if (!confirm('确定要清空所有历史记录吗？')) return;
-            localStorage.removeItem(STORAGE_KEY);
+            try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* 无痕模式或配额超限：静默降级 */ }
             renderHistory();
             Toast.success('已清空所有记录');
         }
@@ -621,19 +620,20 @@
             }
         });
 
-        function handleClipboardChange() {
-            navigator.clipboard.readText().then(function(text) {
-                if (text && text.trim() && text.trim() !== lastClipboardText) {
-                    lastClipboardText = text.trim();
-                    addToHistory(text.trim());
-                }
-            }).catch(function(e) {
-            });
-        }
-
-        function toggleMonitor() {
+        function toggleMonitor(silent) {
             var toggle = document.getElementById('monitorToggle');
             if (toggle.checked) {
+                // Clipboard API 只在安全上下文（https / localhost）可用。
+                // 非安全上下文下直接调用会抛未捕获 TypeError 并中断整页脚本，
+                // 因此先判断存在性（同页 checkClipboardOnFocus、copy.js 均有保护）。
+                if (!navigator.clipboard || !navigator.clipboard.readText) {
+                    toggle.checked = false;
+                    monitorEnabled = false;
+                    if (!silent) {
+                        Toast.error('当前环境不支持剪贴板监控（需 HTTPS 或 localhost 访问）');
+                    }
+                    return;
+                }
                 navigator.clipboard.readText().then(function(text) {
                     if (text && text.trim()) {
                         lastClipboardText = text.trim();
@@ -651,7 +651,7 @@
         }
 
         renderHistory();
-        toggleMonitor();
+        toggleMonitor(true);   // 页面加载时为静默模式，不支持时不打扰用户
     </script>
 </body>
 </html>
