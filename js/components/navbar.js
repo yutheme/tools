@@ -28,15 +28,35 @@
 
   var MAX_HISTORY = 5;
 
+  /**
+   * 归一化路径后取最后一段，去掉 .html 扩展名。
+   * 自定义域名（tools.999260.xyz）会把 /xxx.html 重定向成 /xxx，
+   * 若按 .html 精确比对，那类站点永远匹配不到工具，也就不会有访问记录。
+   */
+  function normalizePath(raw) {
+    var p = String(raw || '');
+    p = p.split('?')[0].split('#')[0];
+    try { p = decodeURIComponent(p); } catch (e) { /* 非法编码保持原样 */ }
+    p = p.replace(/\/+$/, '');
+    p = p.split('/').pop() || '';
+    return p.replace(/\.html?$/i, '');
+  }
+
   // 当前页面所属工具（根路径或未知页面返回 null）
   function currentTool() {
-    var currentPath = decodeURIComponent(location.pathname.split('/').pop() || '');
-    if (!currentPath) return null;
-    var tool = toolsData.find(function(t) { return t.path === currentPath; });
+    var current = normalizePath(location.pathname);
+    if (!current) return null;
+
+    var tool = toolsData.find(function(t) { return normalizePath(t.path) === current; });
     if (tool) return tool;
+
     // 兼容旧中文路径
-    var alias = PATH_ALIASES[currentPath];
-    return alias ? (toolsData.find(function(t) { return t.path === alias; }) || null) : null;
+    var aliasKey = Object.keys(PATH_ALIASES).find(function(key) {
+      return normalizePath(key) === current;
+    });
+    if (!aliasKey) return null;
+    var target = normalizePath(PATH_ALIASES[aliasKey]);
+    return toolsData.find(function(t) { return normalizePath(t.path) === target; }) || null;
   }
 
   // 打开页面记一次 open（数据统一写入 Usage）
